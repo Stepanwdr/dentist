@@ -1,0 +1,5 @@
+// src/entities/appointment/index.js
+export { MOCK_APPOINTMENTS, TIME_SLOTS, BUSY_SLOTS } from './model/mockData';
+export { STATUS_CONFIG } from './model/statusConfig';
+export { AppointmentCard } from './ui/AppointmentCard';
+export type { Appointment, AppointmentStatus } from '@shared/types';

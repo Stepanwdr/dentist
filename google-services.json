@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "954625520450",
+    "project_id": "dentist-37300",
+    "storage_bucket": "dentist-37300.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954625520450:android:2de62812d520d963a68edb",
+        "android_client_info": {
+          "package_name": "com.dentist.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcVP-mueldEtyNRixgo4q2awp3u-oX28Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
