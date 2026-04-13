@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Service } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 interface ServiceCardProps {
   service: Service;

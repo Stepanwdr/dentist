@@ -9,9 +9,10 @@ export class PushService {
       sound: "default",
       title: payload.title,
       body: payload.message,
-      data: payload.data,
+      data: JSON.parse(JSON.stringify(payload.data || {})),
+      priority:"high"
     };
 
-    await expo.sendPushNotificationsAsync([message]);
+     await expo.sendPushNotificationsAsync([message]);
   }
 }

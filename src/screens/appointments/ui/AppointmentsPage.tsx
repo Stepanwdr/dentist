@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { FlatList, View, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { AppointmentCard } from '@entities/appointment';
 import { useBookingStore } from '@features/booking';
 import { useCancelConfirm } from '@features/appointment-cancel';

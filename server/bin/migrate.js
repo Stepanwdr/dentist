@@ -1,12 +1,12 @@
 import {
-  Users, Clinic, Appointment, TimeSlot,
+  Users, Clinic,  BookingSlot, Notifications,
 } from '../models/index.js';
 
 const models = {
   Clinic,
   Users,
-  Appointment,
-  TimeSlot,
+  BookingSlot,
+  Notifications
 };
 
 async function main() {

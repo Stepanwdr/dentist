@@ -14,15 +14,15 @@ export function useMeQuery(options?: { enabled?: boolean }) {
     queryKey: authQueryKeys.me(),
     queryFn: async () => {
       const res = await authApi.me();
-      return res.result as AuthUser ;
+      console.log(res)
+      return res.data as AuthUser;
     },
-    enabled: options?.enabled ?? false,
   });
 }
 
 export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiResponse) => void) {
   const qc = useQueryClient();
-  const { login }=useAuth()
+  const { login } = useAuth()
   return useMutation({
     mutationKey: [...authQueryKeys.root, 'login'],
     mutationFn: async (body: LoginBody) => {

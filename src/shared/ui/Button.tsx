@@ -7,7 +7,7 @@ import {
   ViewStyle,
   ActivityIndicator,
 } from 'react-native';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 

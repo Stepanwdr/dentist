@@ -4,6 +4,7 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      "@assets/*": ["src/assets/*"],
       "@shared/*": ["src/shared/*"],
       "@entities/*": ["src/entities/*"],
       "@features/*": ["src/features/*"],

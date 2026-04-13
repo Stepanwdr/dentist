@@ -1,4 +1,3 @@
-// src/pages/confirmation/ui/ConfirmationPage.tsx
 import React, { useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
@@ -8,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { formatDateFull } from '@shared/lib/formatDate';
 import { useBookingStore } from '@features/booking';
 import { RootStackParamList } from '@app/navigation/types';

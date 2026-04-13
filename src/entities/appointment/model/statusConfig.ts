@@ -1,6 +1,6 @@
-// src/entities/appointment/models/statusConfig.ts
+// src/entities/appointment/model/statusConfig.ts
 import { AppointmentStatus } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 
 interface StatusConfig {

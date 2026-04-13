@@ -3,17 +3,18 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Service } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
+import {SafeAreaView} from "react-native-safe-area-context";
 
 interface ServiceFilterTagProps {
   service: Service;
 }
 
 export const ServiceFilterTag: React.FC<ServiceFilterTagProps> = ({ service }) => (
-  <View style={styles.tag}>
+  <SafeAreaView style={styles.tag}>
     <Ionicons name="medical" size={14} color={Colors.primary} />
     <Text style={styles.text}>{service.title}</Text>
-  </View>
+  </SafeAreaView>
 );
 
 const styles = StyleSheet.create({
@@ -27,6 +28,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     alignSelf: 'flex-start',
     marginBottom: 12,
+    marginTop: 12,
   },
   text: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
 });

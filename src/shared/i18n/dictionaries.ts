@@ -6,7 +6,8 @@ export type Dictionary = Record<string, string>;
 export const dictionaries: Record<Locale, Dictionary> = {
   ru: {
     // Tabs
-    'tab.booking': 'Запись',
+    'tab.home': 'Главная',
+    'tab.booking': 'Записаться',
     'tab.appointments': 'Мои записи',
     'tab.profile': 'Профиль',
 
@@ -57,6 +58,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
   },
   hy: {
     // Tabs
+    'tab.home': 'Գլխավոր',
     'tab.booking': 'Գրանցում',
     'tab.appointments': 'Իմ գրանցումները',
     'tab.profile': 'Պրոֆիլ',

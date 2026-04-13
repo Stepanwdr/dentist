@@ -60,12 +60,10 @@ export default function (req, res, next) {
       return;
     }
     const { authorization = '' } = req.headers;
-    console.log(authorization)
     const token = authorization.replace(/^Bearer /, '');
     let userId;
     try {
       const data = jwt.verify(token, JWT_SECRET);
-      console.log(data)
       userId = data.userId;
     } catch (e) {
 

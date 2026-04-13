@@ -1,7 +1,6 @@
-// src/entities/service/models/mockData.ts
 import { Service } from '@shared/types';
 
-export const SERVICES: Service[] = [
+export const FULL_SERVICES: Service[] = [
   {
     id: '1',
     title: 'Терапия',
@@ -56,4 +55,17 @@ export const SERVICES: Service[] = [
     duration: '45 мин',
     price: '1 500 – 6 000 ₽',
   },
+];
+
+export const SERVICES = [
+  { id: 'consult', label: 'Консультация',  price: 'Free',    icon: '🦷' },
+  { id: 'xray',    label: 'Рентген',        price: '₽3 300',  icon: '📸' },
+  { id: 'clean',   label: 'Чистка зубов',   price: '₽2 500',  icon: '🪥' },
+  { id: 'treat',   label: 'Лечение',         price: '₽4 000',  icon: '💉' },
+  { id: 'white',   label: 'Отбеливание',     price: '₽6 000',  icon: '✨' },
+];
+
+export const WEEK   = [
+  { day: 'Пн', num: 14 }, { day: 'Вт', num: 15 }, { day: 'Ср', num: 16 },
+  { day: 'Чт', num: 17 }, { day: 'Пт', num: 18 }, { day: 'Сб', num: 19 },
 ];

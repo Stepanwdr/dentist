@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CalendarDay } from '@shared/lib/formatDate';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { Button } from '@shared/ui';
 import { useI18n } from '@shared/i18n/core';
 

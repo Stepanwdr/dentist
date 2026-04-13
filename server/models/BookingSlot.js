@@ -3,9 +3,9 @@ import sequelize from '../services/sequelize.js';
 import Users from './Users.js';
 import Clinic from './Clinic.js';
 
-class TimeSlot extends Model {}
+class BookingSlot extends Model {}
 
-TimeSlot.init(
+BookingSlot.init(
   {
     id: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -57,32 +57,32 @@ TimeSlot.init(
 );
 
 // Associations
-Users.hasMany(TimeSlot, {
+Users.hasMany(BookingSlot, {
   foreignKey: 'dentistId',
   onDelete: 'cascade',
   onUpdate: 'cascade',
   as: 'timeSlots',
 });
 
-TimeSlot.belongsTo(Users, {
+BookingSlot.belongsTo(Users, {
   foreignKey: 'dentistId',
   onDelete: 'cascade',
   onUpdate: 'cascade',
   as: 'dentist',
 });
 
-Clinic.hasMany(TimeSlot, {
+Clinic.hasMany(BookingSlot, {
   foreignKey: 'clinicId',
   onDelete: 'set null',
   onUpdate: 'cascade',
   as: 'timeSlots',
 });
 
-TimeSlot.belongsTo(Clinic, {
+BookingSlot.belongsTo(Clinic, {
   foreignKey: 'clinicId',
   onDelete: 'set null',
   onUpdate: 'cascade',
   as: 'clinic',
 });
 
-export default TimeSlot;
+export default BookingSlot;

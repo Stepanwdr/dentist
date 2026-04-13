@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Appointment } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { Badge } from '@shared/ui';
 import { STATUS_CONFIG } from '../model/statusConfig';
 import { formatDateShort } from '@shared/lib/formatDate';

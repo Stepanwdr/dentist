@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Patient } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 interface PatientHeaderProps {
   patient: Patient;

@@ -4,7 +4,7 @@ import {
   TouchableOpacity, Text, View,
   StyleSheet, ActivityIndicator,
 } from 'react-native';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 interface GoogleSignInButtonProps {
   loading: boolean;

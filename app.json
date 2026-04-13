@@ -9,14 +9,21 @@
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
     "newArchEnabled": true,
-    "plugins": ["expo-notifications"],
+    "owner": "stepan94",
+    "plugins": [
+      "expo-notifications"
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dentist.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,10 +32,16 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.dentist.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "jsEngine": "hermes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e6f50adb-5f1c-406e-aff6-18fc86df3967"
+      }
     }
   }
 }

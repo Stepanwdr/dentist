@@ -41,3 +41,24 @@ export function generateCalendarDays(count = 30): CalendarDay[] {
   }
   return days;
 }
+
+export function dateToSlot(date:Date) {
+  const start = new Date(date);
+  const end   = new Date(date);
+  end.setMinutes(end.getMinutes() + 30);
+
+  const fmt = (d:Date) =>
+    `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:00`;
+
+  return {
+    startTime: fmt(start),
+    endTime:   fmt(end),
+  };
+}
+
+export const formatDateYMD = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};

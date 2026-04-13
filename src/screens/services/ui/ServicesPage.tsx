@@ -3,12 +3,13 @@ import React from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { SERVICES } from '@entities/service';
 import { Service } from '@shared/types';
 import { useBookingStore, useBookingActions } from '@features/booking';
 import { ServicesList } from '@widgets/services-list';
 import { RootStackParamList } from '@app/navigation/types';
+import {useMeQuery} from "@shared/api";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Services'>;
@@ -17,7 +18,7 @@ type Props = {
 export const ServicesPage: React.FC<Props> = ({ navigation }) => {
   const { state } = useBookingStore();
   const { selectService } = useBookingActions();
-
+  const { data } = useMeQuery()
   const upcomingCount = state.appointments.filter(a => a.status === 'upcoming').length;
 
   function handleSelect(service: Service) {

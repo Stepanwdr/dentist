@@ -3,13 +3,13 @@ import * as Device from "expo-device";
 
 export async function registerForPush() {
 
-  if (!Device.isDevice) {
-    console.log("Must use real device");
-    return;
-  }
+  // if (!Device.isDevice) {
+  //   console.log("Must use real device");
+  //   return;
+  // }
+
 
   const { status } = await Notifications.requestPermissionsAsync();
-
   if (status !== "granted") {
     console.log("Permission denied");
     return;

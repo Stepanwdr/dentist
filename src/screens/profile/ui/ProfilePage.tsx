@@ -1,9 +1,8 @@
-// src/pages/profile/ui/ProfilePage.tsx
 import React, {useEffect, useState} from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { useI18n } from '@shared/i18n/core';
 import { useBookingStore } from '@features/booking';
 import { ProfileForm } from '@features/profile-edit';
@@ -13,29 +12,36 @@ import {
   PatientInfoCard,
   SettingsCard,
 } from '@widgets/patient-profile';
-import {baseApi, useMeQuery} from "@shared/api";
+import { authQueryKeys, baseApi, useMeQuery } from "@shared/api";
 import {registerForPush} from "@shared/lib/registerForPush";
+import {useQueryClient} from "@tanstack/react-query";
 
 export const ProfilePage: React.FC = () => {
   const { state } = useBookingStore();
-  const { data, refetch }= useMeQuery()
+  const { data, refetch } = useMeQuery()
   const [editing, setEditing] = useState(false);
   const { t } = useI18n();
+  const qc = useQueryClient();
 
   const completedCount = state.appointments.filter(a => a.status === 'completed').length;
   const upcomingCount = state.appointments.filter(a => a.status === 'upcoming').length;
-const notifConfig= async () =>{
-  const token = await registerForPush();
+  const notifConfig= async () => {
+    const token = await registerForPush();
+    await baseApi.post("/users/push-token", {
+      pushToken: token,
+      userId:data?.id
+    });
+  }
 
-  await baseApi.post("/users/push-token", {
-    pushToken: token,
-  });
-}
+  const invalidate=async () => {
+    await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
+  }
 
   useEffect(() => {
-    refetch()
-    notifConfig()
-  }, []);
+    void invalidate()
+    void refetch()
+    void notifConfig()
+  }, [data]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -66,7 +72,7 @@ const notifConfig= async () =>{
             onDone={() => setEditing(false)}
           />
         ) : (
-          <PatientInfoCard patient={state.patient} name={data?.name || ''}/>
+          <PatientInfoCard patient={data}  />
         )}
 
         {!editing && (
@@ -84,7 +90,7 @@ const notifConfig= async () =>{
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { paddingHorizontal: 20 },
+  scroll: { paddingHorizontal: 20, },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

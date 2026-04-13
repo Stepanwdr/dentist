@@ -26,7 +26,6 @@ class ClinicController {
       const {
         name, address, phone, email, description, image,
       } = req.body;
-      console.log(req.body);
       const existClinic = await Clinic.findOne({
         where: {
           $or: [

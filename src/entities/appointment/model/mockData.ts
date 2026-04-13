@@ -1,11 +1,11 @@
-// src/entities/appointment/models/mockData.ts
+// src/entities/appointment/model/mockData.ts
 import { Appointment } from '@shared/types';
 
 export const MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: 'a1',
     serviceId: '4',
-    doctorId: '1',
+    dentistId: '1',
     date: '2024-01-20',
     time: '11:00',
     status: 'completed',
@@ -15,7 +15,7 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: 'a2',
     serviceId: '1',
-    doctorId: '4',
+    dentistId: '4',
     date: '2024-02-05',
     time: '14:30',
     status: 'completed',

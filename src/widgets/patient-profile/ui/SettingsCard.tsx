@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import {tokenStorage} from "@shared/lib/tokenStorage";
-import {setItem} from "expo-secure-store";
 import {useAuth} from "@features/auth/model/useAuth";
 
 interface SettingItem {
@@ -33,7 +32,7 @@ const DANGER_SETTINGS: SettingItem[] = [
 ];
 
 function SettingRow({ item }: { item: SettingItem }) {
-  const { logout }=useAuth()
+  const { logout } = useAuth()
 
 
   const handleLogout = () => {

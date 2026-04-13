@@ -2,29 +2,31 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Patient } from '@shared/types';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
+import type {AuthUser} from "@shared/api";
 
 interface InfoRow {
   iconName: React.ComponentProps<typeof Ionicons>['name'];
   label: string;
   value: string;
 }
-
-const buildRows = (patient: Patient,name:string): InfoRow[] => [
-  { iconName: 'person-outline', label: 'ФИО', value: name },
-  { iconName: 'call-outline', label: 'Телефон', value: patient.phone },
-  { iconName: 'mail-outline', label: 'Email', value: patient.email },
-  { iconName: 'gift-outline', label: 'Дата рождения', value: patient.birthDate },
+const formatDate=(date:string)=>{
+  return new Date(date).toLocaleDateString('en-US');
+}
+const buildRows = (patient: AuthUser): InfoRow[] => [
+  { iconName: 'person-outline', label: 'ФИО', value: patient?.name || '' },
+  { iconName: 'call-outline', label: 'Телефон', value: patient?.phone || '' },
+  { iconName: 'mail-outline', label: 'Email', value: patient?.email},
+  { iconName: 'gift-outline', label: 'Дата рождения', value: formatDate(patient.birthDate) },
   { iconName: 'warning-outline', label: 'Аллергии', value: patient.allergies },
 ];
 
 interface PatientInfoCardProps {
-  patient: Patient;
-  name: string
+  patient?: AuthUser;
 }
 
-export const PatientInfoCard: React.FC<PatientInfoCardProps> = ({ patient,name }) => {
-  const rows = buildRows(patient,name);
+export const PatientInfoCard: React.FC<PatientInfoCardProps> = ({ patient }) => {
+  const rows = buildRows(patient || {} as AuthUser);
   return (
     <View style={styles.card}>
       {rows.map((row, idx) => (

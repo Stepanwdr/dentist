@@ -16,7 +16,6 @@ class AuthController {
         name, lname, fname,
         email, password, address, phone, birthDate, role, speciality, gender,
       } = req.body;
-      console.log(req.body)
       validate(req.body, {
         name: 'required|alpha|between:2,14',
         // lname: 'required|alpha|between:2,14',

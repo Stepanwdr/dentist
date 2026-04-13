@@ -1,0 +1,16 @@
+export const bookingColors = {
+  skyTop:    '#4A9FF5',
+  skyBot:    '#2D7DD2',
+  teal:      '#4DD9AC',
+  pink:      '#FF4D7D',
+  bg:        '#F0F6FF',
+  white:     '#FFFFFF',
+  text:      '#0F172A',
+  textSub:   '#64748B',
+  textMuted: '#94A3B8',
+  border:    '#E2EBF6',
+  selected:  '#EFF6FF',
+  green:     '#22C55E',
+  sky:      '#4A9FF5',
+  skyLight: '#EFF6FF',
+};

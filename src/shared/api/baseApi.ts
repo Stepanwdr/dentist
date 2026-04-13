@@ -1,13 +1,13 @@
 import axios, { AxiosError } from "axios";
 
 import Constants from "expo-constants";
-import {tokenStorage} from "@shared/lib/tokenStorage";
+import { tokenStorage } from "@shared/lib/tokenStorage";
 
-const API_BASE_URL = `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
-
+const API_BASE_URL = "http://ozhao9-ip-217-76-13-74.tunnelmole.net";
+// const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
-    (error.response?.data as any)?.message || error.message
+    (error.response?.data as any)?.message || (error.response?.data)
   );
 
   apiError.status = error.response?.status;
@@ -77,7 +77,7 @@ api.interceptors.response.use(
       const refreshToken = await tokenStorage.getRefreshToken();
 
       const res = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/auth/refresh`,
+        `${API_BASE_URL}/auth/refresh`,
         {
           refreshToken,
         }

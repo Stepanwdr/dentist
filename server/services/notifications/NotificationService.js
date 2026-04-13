@@ -1,13 +1,13 @@
 import Users from "../../models/Users.js";
 import { PushService } from "./PushService.js";
-
+import {Notifications} from "../../models/index.js";
 export class NotificationService {
   static async send(userId, payload) {
     const user = await Users.findByPk(userId);
-    const notification = await Notification.create({
+    const notification = await Notifications.create({
       userId,
       title: payload.title,
-      message: payload.message,
+      message: payload.body,
       type: payload.type,
       data: payload.data
     });

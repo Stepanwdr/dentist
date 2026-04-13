@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,25 +9,20 @@ import {
   Animated,
   TouchableOpacity,
   Dimensions,
+  Image
 } from 'react-native';
-import {Colors} from '@shared/config/colors';
+import {Colors} from '@shared/theme/colors';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {authWithGoogle} from "@features/auth/api/authWithGoogle";
 import {LoginForm} from "@features/auth/ui/LoginForm";
 import {RegisterForm} from "@features/auth/ui/RegisterForm";
 import {LoginBody, RegisterBody, useLoginMutation, useRegisterMutation} from "@shared/api";
-
-const { width } = Dimensions.get('window');
+import { FloatingTooth } from "@shared/ui/FloatingTooth";
 
 // ─── Анимированный декоративный зуб ──────────────────────────────────────────
 const ToothIllustration: React.FC = () => (
   <SafeAreaView style={ill.wrap}>
-    <View style={ill.circle}>
-      <Text style={ill.emoji}>🦷</Text>
-    </View>
-    <View style={[ill.dot, ill.dot1]}/>
-    <View style={[ill.dot, ill.dot2]}/>
-    <View style={[ill.dot, ill.dot3]}/>
+    <FloatingTooth size={'s'} />
   </SafeAreaView>
 );
 
@@ -65,8 +60,7 @@ export const AuthPage: React.FC = () => {
     setMode(next);
   }
 
-
-  const handleLogin=(data: LoginBody)=>{
+  const handleLogin=async (data: LoginBody)=>{
     loginMutate(data)
   }
 
@@ -135,7 +129,7 @@ export const AuthPage: React.FC = () => {
                   onPress={() => authWithGoogle()}
                   activeOpacity={0.7}
                 >
-                  <Text
+                  <Text style={{color:Colors.primary}}
                   >
                     Google
                   </Text>
@@ -231,14 +225,14 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: 'row',
     backgroundColor: Colors.background,
-    borderRadius: 14,
+    borderRadius: 24,
     padding: 4,
     marginBottom: 20,
   },
   tab: {
     flex: 1,
     paddingVertical: 9,
-    borderRadius: 11,
+    borderRadius: 24,
     alignItems: 'center',
   },
   tabActive: {
@@ -256,7 +250,7 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     fontWeight: '700',
-    color: Colors.text,
+    color: Colors.primary,
   },
 
   // Google error
@@ -378,7 +372,7 @@ const googleButton = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     backgroundColor: Colors.surface,
-    borderRadius: 14,
+    borderRadius: 24,
     height: 54,
     borderWidth: 1.5,
     borderColor: Colors.border,
@@ -392,7 +386,7 @@ const googleButton = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#4285F4',
+    backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

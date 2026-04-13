@@ -1,7 +1,7 @@
 // src/widgets/appointments-list/ui/AppointmentsTabs.tsx
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 export type AppointmentsTab = 'upcoming' | 'history';
 

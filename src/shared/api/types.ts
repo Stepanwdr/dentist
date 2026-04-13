@@ -6,17 +6,22 @@ export interface ApiResponse<T = any> {
   status: ApiStatus;
   message?: string;
   errors?: any;
-  [key: string]: any; // allow backend-specific payloads like { slots: TimeSlot[] }
+  data?: T;
 }
 
 // ===== Auth types =====
 export interface AuthUser {
-  id: number | string;
+  id: number;
   name?: string;
   lname?: string;
   fname?: string;
   email: string;
+  clinicId?: number
+  phone?: string;
   role?: 'admin' | 'administrator' | 'director' | 'doctor' | 'patient' | string;
+  dentistId?:number
+  birthDate: string;
+  allergies: string;
 }
 
 export interface LoginBody {

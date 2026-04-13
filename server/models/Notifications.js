@@ -40,3 +40,5 @@ Notification.init({
   sequelize,
   tableName: "notifications",
 });
+
+export default Notification;

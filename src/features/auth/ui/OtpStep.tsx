@@ -4,7 +4,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator,
 } from 'react-native';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 const OTP_LENGTH = 6;
 

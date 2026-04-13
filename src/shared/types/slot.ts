@@ -1,0 +1,43 @@
+// export interface TimeSlot {
+//   id?:         number;
+//   startTime?:  string;    // '09:00'
+//   endTime?:    string;    // '09:30'
+//   duration:   number;    // минуты
+//   isBooked:     boolean;
+//   // Опционально:
+//   dentistId?:  string;
+//   price?:     number;
+//   label?:     string;
+//   date?:      Date// кастомное название слота
+//   time?:      string
+//   start:string
+//   end:string
+//   notes:string
+// }
+
+// shared/types/slot.ts
+
+export interface TimeSlotDentist {
+  id:         number;
+  name:       string;
+  lname:      string;
+  fname:      string;
+  speciality: string | null;
+  clinicId:   number | null;
+}
+
+export interface TimeSlot {
+  id:         number;
+  date:       string;        // 'YYYY-MM-DD'
+  startTime:  string;        // '09:00:00'
+  endTime:    string;        // '09:30:00'
+  isBooked:   boolean;
+  notes:      string | null;
+  dentistId:  number;
+  clinicId:   number | null;
+  dentist:    TimeSlotDentist | null;
+  clinic:     { id: number; name: string } | null;
+  createdAt:  string;
+  updatedAt:  string;
+  duration:   number;
+}

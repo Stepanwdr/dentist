@@ -1,16 +1,14 @@
-// src/pages/booking/ui/BookingPage.tsx
 import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, StyleSheet, Alert, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 import { generateCalendarDays } from '@shared/lib/formatDate';
 import { useI18n } from '@shared/i18n/core';
 import { TIME_SLOTS, BUSY_SLOTS } from '@entities/appointment';
 import { useBookingStore, useBookingActions, DayPicker, TimeSlotGrid } from '@features/booking';
 import { BookingSummaryCard, BookingFooter } from '@widgets/booking-calendar';
 import { RootStackParamList } from '@app/navigation/types';
-import type { CalendarDay } from '@shared/lib/formatDate';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Booking'>;

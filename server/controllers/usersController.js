@@ -2,7 +2,7 @@ import {
   Users, Clinic, UserHistory
 } from '../models/index.js';
 import jwt from "jsonwebtoken";
-import { NotificationService } from "../services/notifications/NotificationService.js";
+import {NotificationService} from "../services/notifications/NotificationService.js";
 const { JWT_SECRET  } = process.env;
 
 class UsersController {
@@ -13,6 +13,19 @@ class UsersController {
       const token = authorization.replace(/^Bearer /, '');
       const data = await jwt.verify(token, JWT_SECRET);
       const user = await Users.findByPk(data.userId);
+      try {
+        await NotificationService.send(data.userId,{
+          title: "У вас запись через 2 часа",
+          body: "У вас запись через 2 часа",
+          data: {
+            screen: "Booking",
+            bookingId: 123,
+          },
+        });
+        console.log("Push sent");
+      } catch (e) {
+        console.log("Push error", e);
+      }
       if (user && user.status !== 'active') {
         res.status(403).json({
           errors: {
@@ -21,10 +34,10 @@ class UsersController {
         });
         return;
       }
-      await  NotificationService.send(user.id,{title:"Welcome to Dentist",body:"Welcome to Dentist",type:"welcome",data:{}});
+
       res.json({
         status: 'ok',
-        result: user,
+        data: user,
         loginService: req.loginService,
       });
     } catch (e) {
@@ -263,9 +276,9 @@ class UsersController {
 
   static pushToken = async (req, res, next) => {
     try {
-      const { token, userId } = req.body;
+      const { pushToken, userId } = req.body;
       const user = await Users.findByPk(userId);
-      user.pushToken = token;
+      user.pushToken = pushToken;
       await user.save();
       res.json({
         status: 'ok',

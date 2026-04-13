@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -203,7 +203,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     backgroundColor: Colors.background,
-    borderRadius: 12,
+    borderRadius: 24,
     borderWidth: 1.5,
     borderColor: Colors.border,
     paddingHorizontal: 12,
@@ -260,7 +260,7 @@ const s = StyleSheet.create({
   },
   submitBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 14,
+    borderRadius: 24,
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',

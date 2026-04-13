@@ -2,9 +2,9 @@
 import { Patient } from '@shared/types';
 
 export const DEFAULT_PATIENT: Patient = {
-  name: 'Александр Смирнов',
-  phone: '+7 (999) 123-45-67',
-  email: 'a.smirnov@mail.ru',
+  name: 'Stepan Manukyan',
+  phone: '+374 98 82 39 87',
+  email: 'stepanwdr@gmail.com',
   birthDate: '15.03.1990',
   allergies: 'Нет',
 };

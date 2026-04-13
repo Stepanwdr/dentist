@@ -2,12 +2,6 @@ import React, { createContext,  useEffect, useState } from "react";
 import {type AuthUser, baseApi} from "@shared/api";
 import {tokenStorage} from "@shared/lib/tokenStorage";
 
-
-type User = {
-  id: number;
-  email: string;
-};
-
 type AuthContextType = {
   user: AuthUser | null;
   token: string | null;
@@ -33,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(savedToken);
 
         try {
-          const me = await baseApi.get<User>("/users/account");
+          const me = await baseApi.get<AuthUser>("/users/account");
 
           setUser(me);
         } catch {
@@ -46,6 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     init();
   }, []);
+
+
 
   const login = async (token: string, user: AuthUser) => {
     setToken(token);

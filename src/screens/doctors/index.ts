@@ -1,2 +1,4 @@
 // src/pages/doctors/index.js
-export { DoctorsPage } from './ui/DoctorsPage';
+import DoctorsPage from "./ui/DoctorsPage";
+
+export { DoctorsPage }

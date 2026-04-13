@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -226,7 +226,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         label="Телефон"
         value={values.phone}
         onChangeText={handlePhoneChange}
-        placeholder="+374 91 123 45 67"
+        placeholder="+374 55 13 13 13"
         iconName="call-outline"
         keyboardType="phone-pad"
         error={errors.phone}
@@ -322,7 +322,7 @@ const f = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     backgroundColor: Colors.background,
-    borderRadius: 12,
+    borderRadius: 24,
     borderWidth: 1.5,
     borderColor: Colors.border,
     paddingHorizontal: 12,
@@ -399,7 +399,7 @@ const s = StyleSheet.create({
   },
   submitBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 14,
+    borderRadius: 24,
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',

@@ -1,4 +1,3 @@
-// src/entities/doctor/models/mockData.ts
 import { Doctor } from '@shared/types';
 
 export const DOCTORS: Doctor[] = [

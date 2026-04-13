@@ -25,7 +25,7 @@ export function useBookingActions() {
     const appointment: Appointment = {
       id: `a${Date.now()}`,
       serviceId: service.id,
-      doctorId: doctor.id,
+      dentistId: doctor.id,
       date,
       time,
       status: 'upcoming',

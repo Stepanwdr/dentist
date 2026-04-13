@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { CalendarDay } from '@shared/lib/formatDate';
-import { Colors } from '@shared/config/colors';
+import { Colors } from '@shared/theme/colors';
 
 interface DayPickerProps {
   days: CalendarDay[];
