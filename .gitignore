@@ -35,7 +35,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-*dentist-37300-firebase-adminsdk-fbsvc-2cb31eb687.json
 # generated native folders
 /ios
 /android
