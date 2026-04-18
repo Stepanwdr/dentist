@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Colors } from '@shared/theme/colors';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 
 interface ButtonProps {
   label: string;
@@ -25,6 +25,7 @@ const variantStyles: Record<Variant, { bg: string; text: string; border?: string
   secondary: { bg: Colors.primaryLight, text: Colors.primary },
   ghost: { bg: 'transparent', text: Colors.textSecondary, border: Colors.border },
   danger: { bg: Colors.dangerLight, text: Colors.danger },
+  success: { bg: Colors.success, text: Colors.successDark },
 };
 
 export const Button: React.FC<ButtonProps> = ({

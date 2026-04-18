@@ -19,11 +19,12 @@ class UsersController {
           isRead: false,
         },
       });
+
       try {
         await NotificationService.send(data.userId,{
           title: "У вас запись через 2 часа",
           body: "У вас запись через 2 часа",
-          type:"booking",
+          type: "booking",
           data: {
             screen: "Booking",
             bookingId: 123,
@@ -61,7 +62,6 @@ class UsersController {
           model: Clinic,
           as: 'clinic',
           required: true,
-
           where: {
             id: clinicId,
           },
@@ -128,7 +128,6 @@ class UsersController {
             ...(clinicId && {
               where: { id: clinicId },
             }),
-            attributes: ['id', 'name'],
           },
         ],
 
@@ -213,7 +212,6 @@ class UsersController {
         where: {
           id: userIds,
         },
-        attributes: ['id', 'name', 'lname'],
       });
       res.json({
         status: 'ok',

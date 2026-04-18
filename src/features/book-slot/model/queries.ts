@@ -2,6 +2,7 @@ import {BookSlotParams, bookSlotRequest, BookSlotResponse, fetchAvailableDates} 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Toast from "react-native-toast-message";
 import {bookingKeys} from "@entities/booking/model/booking.model";
+import {TimeSlot} from "@shared/types/slot";
 
 const USE_MOCK = false;
 
@@ -76,24 +77,23 @@ async function mockBookSlot(params: BookSlotParams): Promise<BookSlotResponse> {
   } as BookSlotResponse;
 }
 
-export function useBookSlot(onSuccess?: (payload: BookSlotResponse)=> void ){
+export function useBookSlot(onSuccess?: (payload: TimeSlot)=> void ){
   const queryClient = useQueryClient();
   return useMutation<BookSlotResponse, Error, BookSlotParams>({
     // Оптимистичное обновление — слот занят сразу
     mutationFn: async (params) => {
       return bookSlotRequest(params)
     },
-    onSettled:(data,error,params) => {
+    onSettled:async(data,error,params) => {
 
-
-      if (data?.data) {
-        onSuccess?.(data);
+      if (data) {
+        onSuccess?.(data?.slot);
         Toast.show({
           type:  'success',
           text1: 'Запись создана!',
           text2: `${params.date}`,
         });
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey:bookingKeys.all,
         });
         return;

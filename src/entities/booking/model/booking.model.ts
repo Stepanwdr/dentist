@@ -1,8 +1,9 @@
 // ─── Hook ─────────────────────────────────────────────
 import {useQuery} from "@tanstack/react-query";
-import {TimeSlot} from "@shared/types/slot";
+import {bookStatus, TimeSlot} from "@shared/types/slot";
 import {fetchSlots} from "@entities/booking/api/bookingApi";
 import {baseApi} from "@shared/api";
+import TimeSlots from "@shared/api/endpoints/timeSlots";
 
 // ─── Query key factory ────────────────────────────────
 export const bookingKeys = {
@@ -20,12 +21,13 @@ export interface GetAvailableDatesParams {
 }
 export function useGetBookings(
   params: {
-   date: string,
-   dentistId:  string,
+   date?: string,
+   dentistId?:  string,
    serviceId?: string,
+   status?: bookStatus | 'upcoming'
   }
 ) {
-  const { dentistId, serviceId, date} = params;
+  const { dentistId ='', serviceId, date='', status=''} = params;
   return useQuery<TimeSlot[], Error>({
     queryKey: bookingKeys.slots(dentistId,date),
     queryFn:  async () => {
@@ -33,7 +35,7 @@ export function useGetBookings(
       //   await new Promise(r => setTimeout(r, 280));
       //   return mockSlots(new Date(params.date), dentistId);
       // }
-      const data= await fetchSlots({ dentistId:params.dentistId, date, serviceId });
+      const data= await fetchSlots({date, serviceId, status, dentistId });
 
 
       return data.map((s: any): TimeSlot => ({
@@ -41,7 +43,6 @@ export function useGetBookings(
         startTime: s.startTime,   // '09:00:00'
         endTime:   s.endTime,     // '09:30:00'
         date:      s.date,        // '2026-03-22'
-        isBooked:  s.isBooked,
         notes:     s.notes,
         dentistId: s.dentistId,
         clinicId:  s.clinicId,
@@ -52,25 +53,21 @@ export function useGetBookings(
         duration:  s.duration,
         status:    s.status,
         service:   s.service,
+        isBooked:  s.isBooked,
       }));
     },
       staleTime:            30_000,
       gcTime:               5 * 60_000,
       retry:                2,
       refetchOnWindowFocus: false,
-      enabled: !!params.date && !!dentistId,
+      enabled: !!dentistId,
   });
 }
 export function useGetAvailableDates(params: GetAvailableDatesParams) {
   const { dentistId, from, to } = params;
-
   return useQuery<Set<string>, Error>({
     queryKey: [...bookingKeys.all, 'available-dates', dentistId, from, to],
     queryFn:  async () => {
-      // if (USE_MOCK) {
-      //   const { availableDatesSet } = await import('@features/book-slot/api/mocks');
-      //   return availableDatesSet(new Date(from), 90, dentistId);
-      // }
 
       const q   = new URLSearchParams({  dentistId, from, to });
       const res = await baseApi.get(`/booking/available-dates?${q}`) as { dates: string[] };

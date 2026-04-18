@@ -10,9 +10,8 @@ export class PushService {
       title: payload.title,
       body: payload.message,
       data: JSON.parse(JSON.stringify(payload.data || {})),
-      priority:"high"
+      priority:"high",
     };
-
      await expo.sendPushNotificationsAsync([message]);
   }
 }

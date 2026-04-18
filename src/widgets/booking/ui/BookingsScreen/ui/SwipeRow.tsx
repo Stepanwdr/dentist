@@ -7,6 +7,7 @@ import { TimeSlot } from '@shared/types/slot';
 import { s } from '../BookingScreen.styles';
 import {Ionicons} from "@expo/vector-icons";
 import {Colors} from "@shared/theme/colors";
+import {BookStatus} from "@shared/ui/BookStatus";
 
 const ACTION_W   = 70;
 const ACTIONS_W  = ACTION_W * 3;
@@ -119,15 +120,21 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
             <View style={{ flex: 1 }}>
               <View style={[s.cardRow, { marginBottom: 2 }]}>
                 <Text style={s.doctorName}>{item.dentist?.name ?? '—'}</Text>
-                <View style={[s.pill, { backgroundColor: color + '22' }]}>
-                  <Text style={[s.pillTxt, { color }]}>+{days}д</Text>
+                <View style={{ flex: 1}}>
+                  <View style={[s.pill, { backgroundColor: color + '22' }]}>
+                    <Text style={[s.pillTxt, { color }]}>До визита {days} дня</Text>
+                  </View>
+                  <View style={{ position:'absolute',top:30, right:0 }}>
+                    <BookStatus status={item.status} />
+                  </View>
                 </View>
               </View>
+              <Text style={{color:'#30292a'}}>{item.dentist?.speciality ?? '—'}</Text>
               <Text style={s.serviceTxt}>
                 {item.startTime} – {item.endTime}
               </Text>
               {item.notes && (
-                <Text style={s.roomTxt}>{item.notes}</Text>
+                <Text style={s.roomTxt}>{item.service}</Text>
               )}
             </View>
 

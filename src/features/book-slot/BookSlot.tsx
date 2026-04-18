@@ -59,7 +59,7 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[], today: string, cur
       || (date === today && startTime <= currentTime)
       || (date === today && startTime < thresholdTime);
     const disabledReason = date < today
-      || (date === today && startTime <= currentTime)
+    || (date === today && startTime <= currentTime)
       ? 'Прошло'
       : 'Мало времени';
 
@@ -70,7 +70,7 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[], today: string, cur
       date,
       startTime,
       endTime,
-      isBooked:  existing?.isBooked  ?? false,
+      isBooked: Boolean(existing?.id)  ?? false,
       disabled,
       disabledReason: disabled ? disabledReason : undefined,
       notes:     existing?.notes     ?? null,
@@ -80,7 +80,7 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[], today: string, cur
       clinic:    existing?.clinic    ?? null,
       createdAt: existing?.createdAt ?? '',
       updatedAt: existing?.updatedAt ?? '',
-      duration:  existing?.duration ?? -1,
+      duration:  existing?.duration  ?? -1,
       service:   existing?.service   ?? '',
       status:    existing?.status    ?? 'pending',
     });
@@ -111,13 +111,13 @@ export interface TimeScreenProps {
 // COMPONENT
 // ─────────────────────────────────────────────────────────
 const BookSlot: React.FC<TimeScreenProps> = ({
-   onBack,
-   onConfirm,
-   dentistId,
-   minYear   = new Date().getFullYear(),
-   maxYear   = new Date().getFullYear() + 2,
-   setSelTime,
-}) => {
+                                               onBack,
+                                               onConfirm,
+                                               dentistId,
+                                               minYear   = new Date().getFullYear(),
+                                               maxYear   = new Date().getFullYear() + 2,
+                                               setSelTime,
+                                             }) => {
   const insets = useSafeAreaInsets();
 
   const [date,         setDate]         = useState<Date>(new Date());
@@ -130,7 +130,6 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     d.setDate(d.getDate() + 90);
     return formatDateYMD(d);
   }, []);
-
   // ── Доступные даты (точки в календаре) ───────────────
   const { data: available = new Set<string>() } = useGetAvailableDates({
     dentistId: String(dentistId),

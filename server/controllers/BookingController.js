@@ -9,7 +9,12 @@ function toHMS(value) {
   if (parts.length === 3) return `${parts[0].padStart(2,'0')}:${parts[1].padStart(2,'0')}:${parts[2].padStart(2,'0')}`;
   return value;
 }
-
+function getLocalDate() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 10);
+}
 function isValidDateOnly(str) {
   return /^\d{4}-\d{2}-\d{2}$/.test(str);
 }
@@ -31,24 +36,79 @@ class BookingController {
   // GET /bookings?dentistId=&date=&isBooked=&from=&to=
   static list = async (req, res, next) => {
     try {
-      const { dentistId, clinicId, date, isBooked, from, to } = req.query;
-      const where = {};
-      if (dentistId) where.dentistId = dentistId;
-      if (clinicId)  where.clinicId  = clinicId;
-      if (date)      where.date      = date;
-      if (typeof isBooked !== 'undefined') where.isBooked = String(isBooked) === 'true';
-      if (from) where.startTime = { ...(where.startTime || {}), [Op.gte]: toHMS(from) };
-      if (to)   where.endTime   = { ...(where.endTime   || {}), [Op.lte]: toHMS(to) };
+      const {
+        dentistId,
+        clinicId = 1,
+        date,
+        from,
+        to,
+        page = 1,
+        limit = 100,
+        status,
+      } = req.query;
+      const now = new Date();
+      const userId = req.userId;
+      const today = now.toISOString().slice(0, 10);
+      const safeLimit = Math.min(parseInt(limit, 10) || 100, 200);
+      const offset = (parseInt(page, 10) - 1) * safeLimit;
+      const currentTime = now.toTimeString().slice(0, 8);
 
-      const slots = await BookingSlot.findAll({
+      const where = {};
+      if (dentistId) where.dentistId = Number(dentistId);
+      if (date)  where.date  = date;
+
+      if (from) {
+        where.startTime = {
+          ...(where.startTime || {}),
+          [Op.gte]: toHMS(from),
+        };
+      }
+
+      if (to) {
+        where.endTime = {
+          ...(where.endTime || {}),
+          [Op.lte]: toHMS(to),
+        };
+      }
+
+      if (!date && status === 'upcoming') {
+        where[Op.or] = [
+          {
+            status: "pending",
+            date: { [Op.gt]: today }, // будущие дни
+          },
+          {
+            date: today,
+            startTime: { [Op.gte]: currentTime }, // только будущие сегодня
+          },
+        ];
+      }
+
+      if(status && status !== 'upcoming') where.status = status;
+      if(status){
+        where.patientId = req.userId;
+      }
+      const { rows: slots, count } = await BookingSlot.findAndCountAll({
         where,
         include: [
-          { model: Users,  as: 'dentist', attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId'] },
-          { model: Clinic, as: 'clinic',  attributes: ['id', 'name'] },
+          { model: Users, as: 'dentist' },
+          { model: Clinic, as: 'clinic' },
         ],
         order: [['date', 'ASC'], ['startTime', 'ASC']],
+        limit: safeLimit,
+        offset,
       });
-      res.json({ status: 'ok', slots });
+      res.json({
+        status: 'ok',
+        pagination: {
+          limit: safeLimit,
+          total: count,
+          totalPages: Math.ceil(count / safeLimit),
+          page: Number(page),
+        },
+        slots,
+      });
+
     } catch (e) {
       next(e);
     }
@@ -58,16 +118,15 @@ class BookingController {
   static nextBooking = async (req, res, next) => {
     try {
       const now = new Date();
-
+       const patientId = req.userId;
       // текущая дата YYYY-MM-DD
+      console.log(patientId)
       const today = now.toISOString().slice(0, 10);
       // текущее время HH:mm:ss
       const currentTime = now.toTimeString().slice(0, 8);
-
       const slot = await BookingSlot.findOne({
         where: {
-          isBooked: true,
-
+          patientId,
           [Op.or]: [
             // будущие даты
             {
@@ -91,7 +150,6 @@ class BookingController {
           {
             model: Clinic,
             as: 'clinic',
-            attributes: ['id', 'name'],
           },
         ],
 
@@ -138,7 +196,6 @@ class BookingController {
       const rows = await BookingSlot.findAll({
         where: {
           dentistId,
-          isBooked: false,
           date: { [Op.between]: [from, to] },
         },
         attributes: ['date'],
@@ -146,7 +203,7 @@ class BookingController {
         order:  [['date', 'ASC']],
         raw:    true,
       });
-
+      console.log({rows})
       const dates = rows.map(r => r.date);
       res.json({ status: 'ok', dates });
     } catch (e) {
@@ -157,8 +214,9 @@ class BookingController {
   // POST /slot
   static create = async (req, res, next) => {
     try {
-      const { dentistId, clinicId = null, date, startTime, endTime, notes = null, service } = req.body || {};
-      console.log({service})
+      const { dentistId, date, startTime, endTime, notes = null, service } = req.body || {};
+      const userId = req.userId
+      console.log({userId})
       if (!dentistId || !date || !startTime || !endTime) {
         return res.status(400).json({ status: 'error', message: 'dentistId, date, startTime, endTime are required' });
       }
@@ -176,10 +234,25 @@ class BookingController {
       if (!dentist) return res.status(404).json({ status: 'error', message: 'Dentist not found' });
 
       if (await hasOverlap({ dentistId, date, startTime: s, endTime: e })) {
-        return res.status(409).json({ status: 'error', message: 'Overlapping slot exists for this dentist and date' });
+        return res.status(409).json({ status: 'error', message: 'Это время записа занято, выбирайте другое время!' });
       }
+     const dentistClinic = dentist.toJSON().clinicId;
+      const created = await BookingSlot.create({ dentistId, clinicId: dentistClinic, date, startTime: s, endTime: e, notes,isBooked:true,service, createdById: userId, patientId:userId });
 
-      const created = await BookingSlot.create({ dentistId, clinicId, date, startTime: s, endTime: e, notes,isBooked:true,service });
+      await created.reload({
+        include: [
+          {
+            model: Users,
+            as: 'dentist',
+            attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
+          },
+          {
+            model: Clinic,
+            as: 'clinic',
+            attributes: ['id', 'name', 'address', 'lat', 'long']
+          }
+        ]
+      });
       res.status(201).json({ status: 'ok', slot: created });
     } catch (e) {
       next(e);
@@ -277,7 +350,7 @@ class BookingController {
         return res.status(400).json({ status: 'error', message: 'startTime must be earlier than endTime' });
       }
       if (await hasOverlap({ dentistId: slot.dentistId, date: newDate, startTime: newStart, endTime: newEnd, excludeId: slot.id })) {
-        return res.status(409).json({ status: 'error', message: 'Overlapping slot exists for this dentist and date' });
+        return res.status(409).json({ status: 'error', message: 'Время записи занят, выберите другою...' });
       }
 
       patch.date      = newDate;
@@ -297,7 +370,6 @@ class BookingController {
       const { id } = req.params;
       const slot = await BookingSlot.findByPk(id);
       if (!slot)         return res.status(404).json({ status: 'error', message: 'Slot not found' });
-      if (slot.isBooked) return res.status(409).json({ status: 'error', message: 'Cannot delete a booked slot' });
       await slot.destroy();
       res.json({ status: 'ok' });
     } catch (e) {

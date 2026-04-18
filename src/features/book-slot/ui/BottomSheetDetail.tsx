@@ -2,21 +2,21 @@ import React, {useEffect, useRef} from "react";
 import {Animated, Dimensions, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
-import { SERVICES} from "@entities/service";
 const {  height: SH } = Dimensions.get('window');
-import {WEEK} from "@entities/service/model/mockData";
 import {shadow} from "@features/book-slot/lib";
-import {useMeQuery} from "@shared/api";
+import {TimeSlot} from "@shared/types/slot";
 
 export const BottomSheetDetail: React.FC<{
   visible:  boolean;
-  service:  typeof SERVICES[0];
-  time:     string;
-  day:      typeof WEEK[0];
+  booked:  TimeSlot | null;
   onClose:  () => void;
-}> = ({ visible, service, time, day, onClose }) => {
+  handleBooksNavigate:  () => void;
+  startTime: string;
+  shortMonth: string;
+  day: string;
+  isToday?: boolean;
+}> = ({ visible, onClose, handleBooksNavigate,booked,startTime,shortMonth, day, isToday }) => {
   const translateY = useRef(new Animated.Value(SH)).current;
-  const {data} =useMeQuery()
   useEffect(() => {
     Animated.spring(translateY, {
       toValue:  visible ? 0 : SH,
@@ -51,9 +51,9 @@ export const BottomSheetDetail: React.FC<{
             <Text style={styles.sheetAvatarTxt}>ДГ</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.sheetAvatarLabel}>Терапевт</Text>
-            <Text style={styles.sheetDoctorName}>Георгий Русланович</Text>
-            <Text style={styles.sheetDoctorRating}>★ 4.9 · 12 лет опыта</Text>
+            <Text style={styles.sheetAvatarLabel}>{booked?.dentist?.speciality}</Text>
+            <Text style={styles.sheetDoctorName}>{booked?.dentist?.name}</Text>
+            {/*<Text style={styles.sheetDoctorRating}>★ 4.9 · 12 лет опыта</Text>*/}
           </View>
           <View style={styles.sheetCheckCircle}>
             <Text style={{ fontSize: 14, color: '#059669' }}>✓</Text>
@@ -62,17 +62,18 @@ export const BottomSheetDetail: React.FC<{
 
         <View style={styles.sheetDivider} />
 
-        {ROW('📅', 'Дата и время', `${day.day} ${day.num} · ${time?.split('–')[0].trim()}`)}
+        {ROW('📅', 'Дата и время', ` ${shortMonth} · ${day} ·  ${startTime}`)}
         <View style={styles.sheetDivider} />
-        {ROW('🦷', 'Услуга', service.label)}
+        {ROW('🦷', 'Услуга', booked?.service || '')}
         <View style={styles.sheetDivider} />
-        {ROW('🏥', 'Кабинет', '203 · ул. Ленина 5')}
+        {ROW('📱', 'Телефон', String(booked?.dentist?.phone))}
         <View style={styles.sheetDivider} />
-        {ROW('💳', 'Стоимость', service.price)}
+        {ROW('🏥', 'Адрес', String(booked?.clinic?.address))}
+        <View style={styles.sheetDivider} />
 
         {/* Actions */}
         <View style={styles.sheetActions}>
-          <TouchableOpacity style={styles.sheetBtnPrimary} onPress={onClose} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.sheetBtnPrimary} onPress={handleBooksNavigate} activeOpacity={0.85}>
             <Text style={styles.sheetBtnTxt}>Смотреть список</Text>
           </TouchableOpacity>
         </View>
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', paddingVertical: 12,
   },
-  sheetRowLabel: { fontSize: 13, color: C.textMuted },
+  sheetRowLabel: { fontSize: 13, color: C.textMuted, width:"30%" },
   sheetRowValue: { fontSize: 13, fontWeight: '700', color: C.text },
   sheetActions:  { flexDirection: 'row', gap: 12, marginTop: 20 },
   sheetBtnPrimary: {

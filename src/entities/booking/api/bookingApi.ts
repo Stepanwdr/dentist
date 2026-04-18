@@ -37,11 +37,12 @@ interface slotsResponse extends ApiResponse {
 export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
   try {
     const q = new URLSearchParams({
-      dentistId: params.dentistId,
-      date:      params.date,
-      ...(params?.serviceId ? { service_id: params?.serviceId } : {}),
-    });
+      dentistId: params?.dentistId || '',
+      date:      params?.date || '',
+     ...(params?.status ? { status: params?.status } : {}),
+    })
 
+    console.log({q,params})
     const res  = await baseApi.get(`booking/bookings?${q}`) as slotsResponse;
 
     return res.slots as TimeSlot[];

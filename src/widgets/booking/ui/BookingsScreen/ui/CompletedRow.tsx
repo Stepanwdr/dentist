@@ -5,12 +5,11 @@ import { s } from '../BookingScreen.styles';
 
 interface CompletedRowProps {
   item:     TimeSlot;
-  onRebook: (item: TimeSlot) => void;
 }
 
-export const CompletedRow: React.FC<CompletedRowProps> = ({ item, onRebook }) => (
+export const CompletedRow: React.FC<CompletedRowProps> = ({ item }) => (
   <View style={[s.card, { opacity: 0.85 }]}>
-    <View style={[s.cardAccent, { backgroundColor: '#4DD9AC' }]} />
+    <View style={[s.cardAccent, { backgroundColor: '#949494' }]} />
     <View style={s.cardBody}>
       <View style={s.cardRow}>
 
@@ -28,7 +27,7 @@ export const CompletedRow: React.FC<CompletedRowProps> = ({ item, onRebook }) =>
           <View style={[s.cardRow, { marginBottom: 2 }]}>
             <Text style={s.doctorName}>{item.dentist?.name ?? '—'}</Text>
             <View style={[s.pill, { backgroundColor: '#ECFDF5' }]}>
-              <Text style={[s.pillTxt, { color: '#059669' }]}>✓ Прошёл</Text>
+              <Text style={[s.pillTxt, { color: '#059669' }]}>{item.status === 'finished' ? "✓ Завершен" : "✓ Отменен"}</Text>
             </View>
           </View>
 
@@ -56,12 +55,6 @@ export const CompletedRow: React.FC<CompletedRowProps> = ({ item, onRebook }) =>
           {/*  </TouchableOpacity>*/}
           {/*)}*/}
         </View>
-
-        {/* Повторная запись */}
-        <TouchableOpacity style={s.rebookBtn} onPress={() => onRebook(item)}>
-          <Text style={s.rebookTxt}>Повтор</Text>
-        </TouchableOpacity>
-
       </View>
     </View>
   </View>

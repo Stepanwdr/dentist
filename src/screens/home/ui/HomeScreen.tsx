@@ -21,16 +21,6 @@ import { HomeColor, SHADOW_SM } from "@shared/theme/home";
 import { TimeLineSection } from "@widgets/TimeLineSection/TimeLineSection";
 import { Connector } from "@widgets/TimeLineSection/Connector";
 
-const APPOINTMENT = {
-  doctorName: 'Саакян Д.',
-  specialty: 'Терапевт',
-  procedure: 'Ани Саргсян',
-  day: 12,
-  month: 'НОЯ',
-  time: '11:00',
-  rating: 4.9,
-}
-
 // ─── HomeScreen ──────────────────────────────────────────────────────────────
 interface IProps {
   navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
@@ -39,11 +29,14 @@ interface IProps {
 const HomeScreen: React.FC<IProps> = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {refetch} = useNotifications();
-  const {refetch:refetchUseMe} = useMeQuery();
+  const { refetch: refetchUseMe } = useMeQuery();
   const headerY = useRef(new Animated.Value(-20)).current;
   const headerO = useRef(new Animated.Value(0)).current;
   const [openNotifModal,setOpenNotifModal] = useState(false);
 
+    const onNextBookCreate = ()=> {
+      navigation.navigate('BookingTab',{ screen: "Time", params:{} })
+    }
 
   useEffect(() => {
     Animated.parallel([
@@ -88,7 +81,7 @@ const HomeScreen: React.FC<IProps> = ({navigation}) => {
         </View>
         {/* ── Appointment Details Section ── */}
         <Text style={styles.sectionTitle}>Appointments details</Text>
-        <NextBookingCard  />
+        <NextBookingCard onNextBookCreate={onNextBookCreate}  />
         {/* ── Dentists Section ── */}
         <Text style={styles.sectionTitle}>Dentists</Text>
         <DoctorList navigation={navigation} horizontal />

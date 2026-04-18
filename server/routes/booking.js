@@ -3,7 +3,6 @@ import BookingController from '../controllers/BookingController.js';
 
 const router = express.Router();
 
-// GET /booking/bookings?dentistId=&date=&isBooked=
 router.get('/bookings',          BookingController.list);
 
 // ✅ GET /booking/available-dates?dentistId=&from=&to=

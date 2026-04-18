@@ -5,7 +5,8 @@ export const Colors = {
   primaryLight: '#EBF3FF',
   primaryDim: '#93B8E4',
 
-  success: '#22C55E',
+  success: '#65ff9b',
+  successDark: '#004c19',
   successLight: '#F0FDF4',
 
   warning: '#F59E0B',

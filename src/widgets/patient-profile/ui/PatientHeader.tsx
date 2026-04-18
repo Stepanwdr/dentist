@@ -1,20 +1,15 @@
 // src/widgets/patient-profile/ui/PatientHeader.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Patient } from '@shared/types';
 import { Colors } from '@shared/theme/colors';
+import type {AuthUser} from "@shared/api";
 
 interface PatientHeaderProps {
-  patient: Patient;
+  patient: AuthUser;
 }
 
 export const PatientHeader: React.FC<PatientHeaderProps> = ({ patient }) => {
-  const initials = patient.name
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = (patient?.fname?.[0] || '').toUpperCase() + (patient?.lname?.[0] || '').toUpperCase();
 
   return (
     <View style={styles.wrap}>

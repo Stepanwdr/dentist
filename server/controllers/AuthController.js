@@ -16,10 +16,11 @@ class AuthController {
         name, lname, fname,
         email, password, address, phone, birthDate, role, speciality, gender,
       } = req.body;
+      console.log(req.body);
       validate(req.body, {
-        name: 'required|alpha|between:2,14',
-        // lname: 'required|alpha|between:2,14',
-        // fname: 'required|alpha|between:2,14',
+        // name: 'required|alpha|between:2,14',
+        lname: 'required|alpha|between:2,14',
+        fname: 'required|alpha|between:2,14',
         email: 'required|email',
         password: 'required|string|between:2,16',
         // address: ['required', 'string'],
@@ -43,10 +44,11 @@ class AuthController {
         if (existUser.phone === phone) {
           errors.phone = ['Phone must be unique'];
         }
+        console.log(existUser)
         throw HttpError(422, { errors });
       }
       const user = await Users.create({
-        name,
+        name:`${fname} ${lname}`,
         lname,
         fname,
         email,

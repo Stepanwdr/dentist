@@ -13,7 +13,6 @@ import {authQueryKeys } from "@shared/api";
 const QUERY_KEY = ["notifications"];
 
 export const useNotifications = (params?: GetNotificationsParams) => {
-  console.log({params},'hook')
   return useQuery<GetNotificationsResponse>({
     queryKey: [...QUERY_KEY, params],
     queryFn: async () => {

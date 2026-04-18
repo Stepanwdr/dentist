@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   View, Text, FlatList,
-  Alert, StatusBar,
+  Alert, StatusBar, ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,31 +14,15 @@ import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
 import { useGetBookings } from "@entities/booking/model/booking.model";
 import {useFocusEffect} from "@react-navigation/native";
 
-// ─── Mock — замени на useGetBookings ──────────────────
-// const { data } = useGetBookings({ dentistId, date, isBooked: true });
 
 const BookingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
-
-  const { data:bookingsData,refetch } = useGetBookings({dentistId: '4', date: '2026-03-23',});
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
+  const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || ''});
+
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0); // сброс времени — только дата
-    return d;
-  }, []);
 
-// item.date = '2026-03-23' → new Date('2026-03-23') = полночь UTC
-  const upcoming = useMemo(
-    () => data.filter(item => new Date(item.date).getUTCSeconds() >= today.getUTCSeconds()),
-    [data, today],
-  );
-  const completed = useMemo(
-    () => data.filter(item => new Date(item.date).getUTCSeconds() < today.getUTCSeconds()),
-    [data, today],
-  );
   // ── Handlers ──────────────────────────────────────
   const handleReschedule = useCallback((item: TimeSlot) => {
     Alert.alert('Перенос записи', `${item.dentist?.name} · ${item.date}`, [
@@ -77,7 +61,7 @@ const BookingsScreen: React.FC = () => {
   }, []);
 
   // ── renderItem ────────────────────────────────────
-  const renderUpcoming = useCallback(({ item }: { item: TimeSlot }) => (
+  const renderList = useCallback(({ item }: { item: TimeSlot }) => (
     <SwipeRow
       item={item}
       onReschedule={handleReschedule}
@@ -87,7 +71,7 @@ const BookingsScreen: React.FC = () => {
   ), [handleReschedule, handleEdit, handleCancel]);
 
   const renderCompleted = useCallback(({ item }: { item: TimeSlot }) => (
-    <CompletedRow item={item} onRebook={handleRebook} />
+    <CompletedRow item={item} />
   ), [handleRebook]);
 
   const keyExtractor = useCallback((item: TimeSlot) => String(item.id), []);
@@ -100,7 +84,7 @@ const BookingsScreen: React.FC = () => {
     </View>
   ), []);
 
-  const CompletedEmpty = useCallback(() => (
+  const FinishedEmpty = useCallback(() => (
     <View style={s.emptyWrap}>
       <Text style={s.emptyIcon}>📋</Text>
       <Text style={s.emptyTitle}>Нет завершённых записей</Text>
@@ -108,7 +92,19 @@ const BookingsScreen: React.FC = () => {
     </View>
   ), []);
 
-  const paddingBottom = { paddingBottom: insets.bottom + 24 };
+  const CancelledEmpty = useCallback(() => (
+    <View style={s.emptyWrap}>
+      <Text style={s.emptyIcon}>📋</Text>
+      <Text style={s.emptyTitle}>Нет Отмененных записей</Text>
+    </View>
+  ), []);
+
+  const emptyContent = {
+    upcoming: UpcomingEmpty,
+    finished: FinishedEmpty,
+    cancelled: CancelledEmpty,
+  }
+  const paddingBottom = { paddingBottom: insets.bottom + 80 };
 
   useEffect(() => {
     setData(bookingsData ?? []);
@@ -117,7 +113,7 @@ const BookingsScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       void refetch();
-    }, [])
+    }, [tab])
   );
 
   return (
@@ -129,46 +125,30 @@ const BookingsScreen: React.FC = () => {
         <Text style={s.headerTitle}>Мои записи</Text>
         <View style={[s.countBadge, { backgroundColor: C.skyLight }]}>
           <Text style={[s.countTxt, { color: C.skyTop }]}>
-            {upcoming.length} активных
+            Запись {data.length}
           </Text>
         </View>
       </View>
-
       {/* Tabs */}
       <BookingTabs
         active={tab}
-        upcomingCount={upcoming.length}
-        completedCount={completed.length}
+        upcomingCount={0}
+        completedCount={0}
         onChange={setTab}
       />
-
-      {/* Hint */}
-      {tab === 'upcoming' && upcoming.length > 0 && (
+      {tab==='upcoming' &&
         <View style={s.hint}>
           <Text style={s.hintTxt}>← свайп влево для действий</Text>
-        </View>
-      )}
-
-      {/* List */}
-      {tab === 'upcoming' ? (
-        <FlatList
-          data={upcoming}
-          renderItem={renderUpcoming}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={UpcomingEmpty}
-          contentContainerStyle={[s.listContent, paddingBottom]}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <FlatList
-          data={completed}
-          renderItem={renderCompleted}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={CompletedEmpty}
-          contentContainerStyle={[s.listContent, paddingBottom]}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+       </View>
+      }
+      {isPending || isRefetching ? <ActivityIndicator color={'#94A3B8'} size={'large'}/> : <FlatList
+        data={data}
+        renderItem={tab === 'upcoming' ? renderList : renderCompleted}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={emptyContent[tab]}
+        contentContainerStyle={[s.listContent, paddingBottom]}
+        showsVerticalScrollIndicator={false}
+      />}
     </View>
   );
 };

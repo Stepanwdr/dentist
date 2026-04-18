@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { s } from '../BookingScreen.styles';
 
-export type AppointmentsTab = 'upcoming' | 'completed';
+export type AppointmentsTab = 'upcoming' | 'finished' | 'cancelled';
 
 interface AppointmentsTabsProps {
   active:         AppointmentsTab;
@@ -22,10 +22,16 @@ export const BookingTabs: React.FC<AppointmentsTabsProps> = ({
       onPress={() => onChange('upcoming')}
     />
     <TabButton
+      label="Отмененные"
+      count={completedCount}
+      active={active === 'cancelled'}
+      onPress={() => onChange('cancelled')}
+    />
+    <TabButton
       label="Завершённые"
       count={completedCount}
-      active={active === 'completed'}
-      onPress={() => onChange('completed')}
+      active={active === 'finished'}
+      onPress={() => onChange('finished')}
     />
   </View>
 );

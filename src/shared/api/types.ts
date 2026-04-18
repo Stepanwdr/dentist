@@ -54,7 +54,6 @@ export interface TimeSlotDTO {
   date: string; // YYYY-MM-DD
   startTime: string; // HH:mm:ss
   endTime: string; // HH:mm:ss
-  isBooked: boolean;
   notes?: string | null;
 }
 
@@ -64,7 +63,6 @@ export interface ListTimeSlotsParams {
   date?: string; // YYYY-MM-DD
   from?: string; // HH:mm or HH:mm:ss
   to?: string;   // HH:mm or HH:mm:ss
-  isBooked?: boolean;
 }
 
 export interface CreateTimeSlotBody {

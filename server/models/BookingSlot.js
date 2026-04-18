@@ -33,22 +33,16 @@ BookingSlot.init(
       type: DataTypes.TIME,
       allowNull: false,
     },
-    isBooked: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
     service: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     // 👇 НОВОЕ ПОЛЕ
     status: {
-      type: DataTypes.ENUM('pending', 'confirmed', 'canceled', 'finished'),
+      type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'finished'),
       allowNull: false,
       defaultValue: 'pending',
     },
-
     notes: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -68,6 +62,14 @@ BookingSlot.init(
         name: 'idx_time_slot_clinic_date',
         fields: ['clinicId', 'date'],
       },
+      {
+        name: 'idx_dentist_date_status',
+        fields: ['dentistId', 'date', 'status'],
+      },
+      {
+        name: 'idx_time_slot_status',
+        fields: ['status'],
+      }
     ],
   }
 );

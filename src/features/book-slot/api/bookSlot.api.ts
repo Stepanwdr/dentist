@@ -7,14 +7,15 @@ const BASE_URL = 'https://api.dentist.com/v1'; // ← замени
 
 // ─── Params / Response types ───────────────────────────
 export interface GetSlotsParams {
-  dentistId:   string;
-  date:       string;   // 'YYYY-MM-DD'
+  dentistId?:   string;
+  date?:       string;   // 'YYYY-MM-DD'
   serviceId?: string;
+  status?: string;
 }
 
 export interface BookSlotParams {
   dentistId:  number;
-  date:       string;
+  date?:       string;
   serviceId?: string;
   notes:      string;
   startTime:  string;
@@ -23,22 +24,8 @@ export interface BookSlotParams {
 }
 
 export interface BookSlotResponse extends ApiResponse {
- data: {
-   bookingId:  string;
-   status:     'confirmed' | 'pending';
-   date:       string;
-   slot:       TimeSlot;
-   dentistId:   string;
-   patientId:  string;
- }
+ slot: TimeSlot
 }
-export interface BookingsResponse extends ApiResponse {
- data: TimeSlot[]
-}
-
-// ─── fetchSlots ────────────────────────────────────────
-
-
 // ─── fetchAvailableDates ───────────────────────────────
 export async function fetchAvailableDates(
   dentistId: string,
@@ -67,7 +54,7 @@ export async function bookSlotRequest(params: BookSlotParams): Promise<BookSlotR
   try {
     const res = await baseApi.post(`/booking/slot`, {
       dentistId:  params.dentistId,
-      date:       params.date,
+      date:       params?.date,
       service_id: params?.serviceId,
       startTime:  params.startTime,
       endTime:    params.endTime,

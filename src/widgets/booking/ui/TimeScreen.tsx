@@ -15,9 +15,10 @@ export const TimeScreen: React.FC<{
   onNext:  (time: string) => void;
   onBack:  () => void;
   selectedDentist: Dentist;
-}> = ({ service, onNext, onBack ,selectedDentist }) => {
+  setLastBook: (bookSlot: TimeSlot) => void;
+}> = ({ service, onBack ,selectedDentist, setLastBook }) => {
 
-  const { mutate: createBook, isPending }= useBookSlot(() => onNext('' + selTime) )
+  const { mutate: createBook, isPending } = useBookSlot(setLastBook )
   const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [slot, setSlot] = useState<TimeSlot | null>(null);
@@ -25,7 +26,6 @@ export const TimeScreen: React.FC<{
   const [selMonth, setSelMonth] = useState(0);
   const [selDay, setSelDay]     = useState(1); // index in WEEK
   const [selTime, setSelTime]   = useState<string | null>(null);
-
   const handleBook= () => {
   const formatedDate= formatDateYMD(selectedDate || new Date()) //YYYY-MM-DD
     createBook({

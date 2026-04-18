@@ -18,7 +18,7 @@ export async function authWithGoogle(): Promise<GoogleAuthResult> {
       path: "auth/callback",
     });
 
-    const authUrl = `${API_BASE_URL}/auth/google?state=${encodeURIComponent(redirectUri)}`;
+    const authUrl = `http://cp5rdf-ip-217-76-10-15.tunnelmole.net/auth/google?state=${encodeURIComponent(redirectUri)}`;
 
     const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 

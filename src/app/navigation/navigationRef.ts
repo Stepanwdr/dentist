@@ -1,6 +1,6 @@
 
 import { createNavigationContainerRef } from "@react-navigation/native";
-import { TabParamList} from "./types";
+import { TabParamList } from "./types";
 
 export const navigationRef =
   createNavigationContainerRef<TabParamList>();

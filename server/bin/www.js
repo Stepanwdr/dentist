@@ -6,6 +6,7 @@
 import Debug from 'debug';
 import http from 'http';
 import app from '../app.js';
+import {startBookingStatusJob} from "../jobs/bookingStatus.job.js";
 
 const debug = Debug('dentapp:server');
 /**
@@ -20,6 +21,8 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+
+startBookingStatusJob();
 
 /**
  * Listen on provided port, on all network interfaces.

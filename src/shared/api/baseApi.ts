@@ -2,9 +2,9 @@ import axios, { AxiosError } from "axios";
 
 import Constants from "expo-constants";
 import { tokenStorage } from "@shared/lib/tokenStorage";
-import {API_BASE_URL} from "@shared/api/config";
 
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
+const API_BASE_URL=  `http://cp5rdf-ip-217-76-10-15.tunnelmole.net`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
     (error.response?.data as any)?.message || (error.response?.data)

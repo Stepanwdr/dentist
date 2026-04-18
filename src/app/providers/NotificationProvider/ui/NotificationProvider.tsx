@@ -10,6 +10,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
     // 🔔 когда приходит уведомление
     const receiveSub = Notifications.addNotificationReceivedListener(
       (notification) => {
+        console.log({notification})
       }
     );
 
@@ -51,7 +52,7 @@ function handleNavigation(data: any) {
       break;
 
     case "Profile":
-      navigate("Profile");
+      navigate("Profile",);
       break;
 
     default:

@@ -12,7 +12,7 @@ import {
   PatientInfoCard,
   SettingsCard,
 } from '@widgets/patient-profile';
-import { authQueryKeys, baseApi, useMeQuery } from "@shared/api";
+import {authQueryKeys, AuthUser, baseApi, useMeQuery} from "@shared/api";
 import {registerForPush} from "@shared/lib/registerForPush";
 import {useQueryClient} from "@tanstack/react-query";
 import {useFocusEffect} from "@react-navigation/native";
@@ -67,7 +67,7 @@ export const ProfilePage: React.FC = () => {
           )}
         </View>
 
-        <PatientHeader patient={state.patient} />
+        <PatientHeader patient={data || {} as AuthUser} />
         <PatientStats completedCount={completedCount} upcomingCount={upcomingCount} />
 
         <Text style={styles.sectionTitle}>Личные данные</Text>

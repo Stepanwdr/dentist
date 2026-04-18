@@ -6,14 +6,16 @@ import {useGetNextBooking} from "@entities/booking/model/booking.model";
 
 import {useFocusEffect} from "@react-navigation/native";
 import {BookStatus} from "@shared/ui/BookStatus";
+import {Button} from "@shared/ui";
 
+interface Props {
+  onNextBookCreate: () => void
+}
 
-
-const NextBookingCard: React.FC = () => {
+const NextBookingCard: React.FC<Props> = ({onNextBookCreate}) => {
   const { data, refetch } = useGetNextBooking()
   const slideUp = useRef(new Animated.Value(30)).current;
   const opacity  = useRef(new Animated.Value(0)).current;
-
 
   const { startTime, shortMonth, day, isToday } = useMemo(() => {
     if (!data?.startTime) return {};
@@ -45,28 +47,37 @@ const NextBookingCard: React.FC = () => {
       {/* Layer 1 — main card */}
       <View style={styles.cardLayer1}>
         {/* Left: icon + info */}
-        <View style={styles.cardIconWrap}>
-          <Image source={{ uri:data?.dentist?.avatar}} style={styles.image} />
+        {data === null ? <Button
+          label={'+ Создать следующий запись'}
+          onPress={onNextBookCreate}
+          style={{width:"100%"}}
+          variant={'success'}
+        /> :
+          <>
+          <View style={styles.cardIconWrap}>
+        <Image source={{uri: data?.dentist?.avatar}} style={styles.image}/>
+         </View>
+      <View style={styles.cardInfo}>
+        <Text style={styles.cardSpecialty}>{data?.dentist?.speciality}</Text>
+        <Text style={styles.cardDoctor}>{data?.dentist?.name}</Text>
+        <Text style={styles.cardProcedure}>{data?.service}</Text>
+        {/*<Text style={styles.cardRating}>★ {data?.dentist?.rating}</Text>*/}
+        <Text style={styles.phone}>{data?.dentist?.phone}</Text>
+      </View>
+      {/* Right: teal date + pink NEXT */}
+      <View style={styles.cardRight}>
+        <View style={styles.cardDateBlock}>
+          {isToday ? <Text style={styles.cardDateDay}>Сегодня</Text> :
+            <><Text style={styles.cardDateDay}>{day}</Text>
+              <Text style={styles.cardDateMonth}>{shortMonth}</Text>
+            </>
+          }
+          <Text style={styles.cardDateTime}>{startTime}</Text>
         </View>
-        <View style={styles.cardInfo}>
-          <Text style={styles.cardSpecialty}>{data?.dentist?.speciality}</Text>
-          <Text style={styles.cardDoctor}>{data?.dentist?.name}</Text>
-          <Text style={styles.cardProcedure}>{data?.service}</Text>
-          {/*<Text style={styles.cardRating}>★ {data?.dentist?.rating}</Text>*/}
-          <Text style={styles.phone}>{data?.dentist?.phone}</Text>
-        </View>
-        {/* Right: teal date + pink NEXT */}
-        <View style={styles.cardRight}>
-          <View style={styles.cardDateBlock}>
-            {isToday ? <Text style={styles.cardDateDay}>Сегодня</Text>:
-              <><Text style={styles.cardDateDay}>{day}</Text>
-                <Text style={styles.cardDateMonth}>{shortMonth}</Text>
-              </>
-            }
-            <Text style={styles.cardDateTime}>{startTime}</Text>
-          </View>
-            <BookStatus status={data?.status  || 'pending'}/>
-        </View>
+        <BookStatus status={data?.status || 'pending'}/>
+      </View>
+    </>
+}
       </View>
     </Animated.View>
   );

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
 } from 'react-native';
@@ -14,29 +14,37 @@ import {useRoute} from "@react-navigation/core";
 import {useGetDentists} from "@entities/dentist/model/useGetDentists";
 import {Dentist} from "@shared/types/dentist";
 import {useFocusEffect} from "@react-navigation/native";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {TabParamList} from "@app/navigation/types";
+import {TimeSlot} from "@shared/types/slot";
 
 
+interface Props {
+  navigation: NativeStackNavigationProp<TabParamList, 'AppointmentsTab'>;
+}
 // ─── Root: BookingFlow ────────────────────────────────────
-const BookingFlow: React.FC = () => {
+const BookingFlow: React.FC<Props> = ({navigation}) => {
   const route = useRoute<any>();
   const dentistId = route.params?.dentistId || '';
   const { data } = useGetDentists({search:""})
-
+ const [lastBook, setLastBook]=useState<TimeSlot | null>(null);
   const selectedDentist=data?.find((d) => d.id === dentistId) || data?.[0];
-  console.log({dentistId},selectedDentist)
   const [screen, setScreen] = useState<'services' | 'time' | 'success'>(
     dentistId ? 'time' : 'services' // 👈 если есть врач — сразу дальше
   );
-
   const [service, setService] = useState(SERVICES[0]);
   const [time, setTime] = useState('');
   const [day, setDay] = useState(WEEK[1]);
 
-  console.log(SERVICES[0],'dsds')
 
   useFocusEffect(
    useCallback(()=> setScreen('services'),[])
   )
+
+  useEffect(() => {
+    if (lastBook) setScreen('success');
+  }, [lastBook]);
+
 
   return (
     <>
@@ -50,15 +58,15 @@ const BookingFlow: React.FC = () => {
           service={service}
           onNext={(t) => { setTime(t); setDay(WEEK[1]); setScreen('success'); }}
           onBack={() => setScreen('services')}
+          setLastBook={setLastBook}
         />
       )}
 
       {screen === 'success' && (
         <SuccessScreen
-          service={service}
-          time={time}
-          day={day}
           onHome={() => setScreen('services')}
+          handleBooksNavigate={()=>navigation.navigate('AppointmentsTab')}
+          lastBook={lastBook}
         />
       )}
     </>

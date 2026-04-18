@@ -43,8 +43,7 @@ const EXCLUDE = [
   'GET:/notification/getOne',
   'POST:/notification/create',
   'PATCH:/notification/markAsRead',
-  'PATCH:/notification/markAllAsRead',
-  'GET:/booking/next',
+  git'PATCH:/notification/markAllAsRead',
 ];
 
 export default function (req, res, next) {
@@ -78,6 +77,7 @@ export default function (req, res, next) {
     if (!userId) {
       throw HttpError(401);
     }
+    console.log(userId)
     req.userId = userId;
     next();
   } catch (e) {

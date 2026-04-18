@@ -26,7 +26,7 @@ export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiRespons
     mutationKey: [...authQueryKeys.root, 'login'],
     mutationFn: async (body: LoginBody) => {
       const res = await authApi.login(body);
-       await tokenStorage.saveTokens(res.token,'')
+      await tokenStorage.saveTokens(res.token,'')
       return res as AuthResponse & ApiResponse;
     },
     onSuccess: async (data) => {
@@ -42,7 +42,6 @@ export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiRespons
 
 export function useRegisterMutation(onSuccess?: (payload: Partial<AuthResponse> & ApiResponse) => void) {
   const qc = useQueryClient();
-
   return useMutation({
     mutationKey: [...authQueryKeys.root, 'register'],
     mutationFn: async (body: RegisterBody) => {
@@ -51,7 +50,6 @@ export function useRegisterMutation(onSuccess?: (payload: Partial<AuthResponse> 
     },
     onSuccess: async (data) => {
       await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
-      console.log(data)
       onSuccess?.(data);
     },
   });

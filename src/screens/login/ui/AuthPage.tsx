@@ -18,6 +18,8 @@ import {LoginForm} from "@features/auth/ui/LoginForm";
 import {RegisterForm} from "@features/auth/ui/RegisterForm";
 import {LoginBody, RegisterBody, useLoginMutation, useRegisterMutation} from "@shared/api";
 import { FloatingTooth } from "@shared/ui/FloatingTooth";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import { TabParamList} from "@app/navigation/types";
 
 // ─── Анимированный декоративный зуб ──────────────────────────────────────────
 const ToothIllustration: React.FC = () => (
@@ -37,10 +39,10 @@ const Divider: React.FC = () => (
 
 // ─── Главный компонент ────────────────────────────────────────────────────────
 export const AuthPage: React.FC = () => {
-
   const [ mode, setMode ] = useState<'login' | 'register'>('login');
   const { mutate: loginMutate } = useLoginMutation()
-  const { mutate: registerMutate } = useRegisterMutation()
+  const { mutate: registerMutate } = useRegisterMutation(onSuccess)
+  const [loginData,setLoginData] = useState<LoginBody>({} as LoginBody)
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   function switchMode(next: 'login' | 'register') {
@@ -66,6 +68,11 @@ export const AuthPage: React.FC = () => {
 
   const handleRegister=(data: RegisterBody)=>{
     registerMutate(data)
+    setLoginData(data)
+  }
+
+  function onSuccess() {
+    loginMutate(loginData)
   }
 
   return (

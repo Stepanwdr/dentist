@@ -15,6 +15,7 @@ import { Colors } from '@shared/theme/colors';
 import { TabParamList } from './types';
 import { useI18n } from '@shared/i18n/core';
 import {useAuth} from "@features/auth/model/useAuth";
+import { navigationRef } from './navigationRef';
 import HomeScreen from "@screens/home/ui/HomeScreen";
 import BookingFlow from "@screens/booking/ui/BookingFlow";
 import { CustomTabBar } from "@widgets/CustomTabBar/CustomTabBar";
@@ -87,7 +88,7 @@ function RootNavigator() {
   if (loading) {
     return (
       <View style={styles.splash}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.textMuted} />
       </View>
     );
   }
@@ -98,7 +99,7 @@ function RootNavigator() {
 
 export function AppNavigator() {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <RootNavigator />
     </NavigationContainer>
   );

@@ -19,26 +19,26 @@ import { Dentist } from "./dentist";
 
 // shared/types/slot.ts
 
-export type bookStatus='pending'| 'confirmed'| 'canceled'| 'finished'
+export type bookStatus= 'pending' | 'confirmed'| 'canceled'| 'finished'
 
 export interface TimeSlot {
   id:         number;
   date:       string;        // 'YYYY-MM-DD'
   startTime:  string;        // '09:00:00'
   endTime:    string;        // '09:30:00'
-  isBooked:   boolean;
   disabled?:  boolean;
   disabledReason?: string;
   notes:      string | null;
   dentistId:  number;
   clinicId:   number | null;
   dentist:    Dentist | null;
-  clinic:     { id: number; name: string } | null;
+  clinic:     { id: number; name: string, address:string } | null;
   createdAt:  string;
   updatedAt:  string;
   duration:   number;
   status:   bookStatus;
   service: string
+  isBooked?:  boolean;
 }
 
 export interface TimelineDate {

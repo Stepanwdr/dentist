@@ -7,6 +7,7 @@ export interface Dentist {
   clinicId?: string;
   avatar?: string;
   phone: string;
+  address: string;
   clinic?: {
     id: string;
     name: string;
