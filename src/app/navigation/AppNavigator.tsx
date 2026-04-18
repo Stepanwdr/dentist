@@ -8,7 +8,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { DoctorsPage } from '@screens/doctors';
 import { BookingPage } from '@screens/booking';
 import { ConfirmationPage } from '@screens/confirmation';
-import { AppointmentsPage } from '@screens/appointments';
 import { ProfilePage } from '@screens/profile';
 import { AuthPage } from '@screens/login';
 
@@ -38,7 +37,7 @@ function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Welcome" component={WelcomeScreen} />
-      <AuthStack.Screen name="Auth" component={AuthPage} />
+      <AuthStack.Screen name="Auth" component={AuthPage}  />
     </AuthStack.Navigator>
   );
 }

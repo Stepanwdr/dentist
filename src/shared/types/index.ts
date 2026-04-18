@@ -51,3 +51,10 @@ export interface BookingDraft {
   date: string | null;
   time: string | null;
 }
+
+export interface PaginationParams {
+  page: number;
+  limit?: number;
+  total?:number
+  lastPage?:number
+}

@@ -12,39 +12,55 @@ BookingSlot.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    createdById: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+    },
+
+    confirmedById: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+    },
     date: {
-      // Дата слота (без времени)
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
     startTime: {
-      // Время начала (локальное время клиники/врача)
       type: DataTypes.TIME,
       allowNull: false,
     },
     endTime: {
-      // Время окончания
       type: DataTypes.TIME,
       allowNull: false,
     },
     isBooked: {
-      // Пометка, что слот уже занят (бронь/запись)
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
+    service: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // 👇 НОВОЕ ПОЛЕ
+    status: {
+      type: DataTypes.ENUM('pending', 'confirmed', 'canceled', 'finished'),
+      allowNull: false,
+      defaultValue: 'pending',
+    },
+
     notes: {
       type: DataTypes.STRING,
       allowNull: true,
     },
   },
+
   {
     sequelize,
     modelName: 'time_slot',
     tableName: 'time_slot',
     indexes: [
       {
-        // частый поиск по врачу и дате
         name: 'idx_time_slot_dentist_date',
         fields: ['dentistId', 'date'],
       },
@@ -59,7 +75,7 @@ BookingSlot.init(
 // Associations
 Users.hasMany(BookingSlot, {
   foreignKey: 'dentistId',
-  onDelete: 'cascade',
+  onDelete: 'set null',
   onUpdate: 'cascade',
   as: 'timeSlots',
 });
@@ -67,7 +83,7 @@ Users.hasMany(BookingSlot, {
 BookingSlot.belongsTo(Users, {
   foreignKey: 'dentistId',
   onDelete: 'cascade',
-  onUpdate: 'cascade',
+  onUpdate: 'set null',
   as: 'dentist',
 });
 
@@ -83,6 +99,16 @@ BookingSlot.belongsTo(Clinic, {
   onDelete: 'set null',
   onUpdate: 'cascade',
   as: 'clinic',
+});
+
+Users.hasMany(BookingSlot, {
+  foreignKey: 'patientId',
+  as: 'patientBookings',
+});
+
+BookingSlot.belongsTo(Users, {
+  foreignKey: 'patientId',
+  as: 'patient',
 });
 
 export default BookingSlot;

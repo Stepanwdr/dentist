@@ -32,7 +32,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-dentist-37300-firebase-adminsdk-fbsvc-2cb31eb687.json
 # typescript
 *.tsbuildinfo
 # generated native folders

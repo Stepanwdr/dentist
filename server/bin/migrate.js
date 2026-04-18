@@ -3,10 +3,10 @@ import {
 } from '../models/index.js';
 
 const models = {
-  Clinic,
   Users,
   BookingSlot,
-  Notifications
+  Notifications,
+  Clinic,
 };
 
 async function main() {
@@ -16,7 +16,6 @@ async function main() {
     // eslint-disable-next-line no-await-in-loop
     await models[i].sync({ alter: true });
   }
-
   // eslint-disable-next-line no-undef
   process.exit(0);
 }

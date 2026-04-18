@@ -14,7 +14,6 @@ export function useMeQuery(options?: { enabled?: boolean }) {
     queryKey: authQueryKeys.me(),
     queryFn: async () => {
       const res = await authApi.me();
-      console.log(res)
       return res.data as AuthUser;
     },
   });
@@ -43,6 +42,7 @@ export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiRespons
 
 export function useRegisterMutation(onSuccess?: (payload: Partial<AuthResponse> & ApiResponse) => void) {
   const qc = useQueryClient();
+
   return useMutation({
     mutationKey: [...authQueryKeys.root, 'register'],
     mutationFn: async (body: RegisterBody) => {

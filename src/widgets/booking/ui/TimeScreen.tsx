@@ -4,20 +4,19 @@ import {StatusBar, StyleSheet, Text, TouchableOpacity, View} from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
 import {shadow} from "@features/book-slot/lib";
-import {useEffect, useState} from "react";
+import { useState} from "react";
 import {useBookSlot} from "@features/book-slot/model/queries";
-import {useMeQuery} from "@shared/api";
 import BookSlot from "@features/book-slot/BookSlot";
-import {dateToSlot, formatDateYMD} from "@shared/lib/formatDate";
+import { formatDateYMD } from "@shared/lib/formatDate";
+import { Dentist } from "@shared/types/dentist";
 
 export const TimeScreen: React.FC<{
   service: typeof SERVICES[0];
   onNext:  (time: string) => void;
   onBack:  () => void;
-  dentistId:string
-}> = ({ service, onNext, onBack }) => {
+  selectedDentist: Dentist;
+}> = ({ service, onNext, onBack ,selectedDentist }) => {
 
-  const { data: user } = useMeQuery()
   const { mutate: createBook, isPending }= useBookSlot(() => onNext('' + selTime) )
   const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -27,16 +26,16 @@ export const TimeScreen: React.FC<{
   const [selDay, setSelDay]     = useState(1); // index in WEEK
   const [selTime, setSelTime]   = useState<string | null>(null);
 
-
   const handleBook= () => {
   const formatedDate= formatDateYMD(selectedDate || new Date()) //YYYY-MM-DD
     createBook({
-      dentistId: (user?.dentistId || user?.id) || -1,
+      dentistId: Number(selectedDentist?.id),
       date: formatedDate,
       serviceId: service.id,
       notes:"Зуб болит",
       startTime:slot?.startTime || '',
       endTime:slot?.endTime || '',
+      service: service.label
     })
   }
 
@@ -63,6 +62,7 @@ export const TimeScreen: React.FC<{
       <BookSlot
         onConfirm={handleSlotSelect}
         setSelTime={setSelTime}
+        dentistId={selectedDentist?.id}
       />
       {/* Sticky CTA */}
       <View style={[styles.timeCTAWrap, ]}>

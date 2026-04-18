@@ -1,4 +1,3 @@
-// src/widgets/services-list/ui/ServicesList.tsx
 import React from 'react';
 import { FlatList, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

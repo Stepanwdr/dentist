@@ -15,7 +15,7 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: 'a2',
     serviceId: '1',
-    dentistId: '4',
+    dentistId: '5',
     date: '2024-02-05',
     time: '14:30',
     status: 'completed',

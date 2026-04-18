@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/account', UsersController.myAccount);
 
 // router.post('/appointment', UsersAppointment.appointmentRegister);
-router.get('/dentist-list', UsersController.getDentistByClinic);
+router.get('/dentist-list', UsersController.getDentists);
 router.post('/push-token', UsersController.pushToken);
 router.get('/user-list', UsersController.getUserList);
 router.get('/clinic-users-list', UsersController.getClinicUsers);

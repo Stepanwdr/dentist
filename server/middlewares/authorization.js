@@ -39,6 +39,12 @@ const EXCLUDE = [
   'PUT:/clinic/clinic-voting',
   'DELETE:/users/delete-user',
   'DELETE/clinic/clinic-delete',
+  'GET:/notification/getAll',
+  'GET:/notification/getOne',
+  'POST:/notification/create',
+  'PATCH:/notification/markAsRead',
+  'PATCH:/notification/markAllAsRead',
+  'GET:/booking/next',
 ];
 
 export default function (req, res, next) {
@@ -49,6 +55,7 @@ export default function (req, res, next) {
     //   return;
     // }
     const { pathname } = url.parse(req.url);
+    console.log({pathname,method})
     const exclude = EXCLUDE.some((exc) => {
       if (exc.includes('*')) {
         return `${method}:${pathname}`.startsWith(exc.replace('*', ''));
@@ -66,7 +73,6 @@ export default function (req, res, next) {
       const data = jwt.verify(token, JWT_SECRET);
       userId = data.userId;
     } catch (e) {
-
       //
     }
     if (!userId) {

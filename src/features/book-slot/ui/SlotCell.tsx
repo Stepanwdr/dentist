@@ -5,38 +5,39 @@ export const SlotCell = memo<{
   slot: TimeSlot; selected: boolean; onPress: (s: TimeSlot) => void;
 }>(({ slot, selected, onPress }) => {
     const sc = useRef(new Animated.Value(1)).current;
+    const isDisabled = slot.isBooked || slot.disabled;
     const press = useCallback(() => {
-      if (slot.isBooked) return;
+      if (isDisabled) return;
       Animated.sequence([
         Animated.timing(sc, { toValue: 0.92, duration: 65, useNativeDriver: true }),
         Animated.spring(sc, { toValue: 1, useNativeDriver: true, tension: 220, friction: 10 }),
       ]).start();
       onPress(slot);
-    }, [slot, onPress]);
+    }, [slot, onPress, isDisabled]);
     return (
-      <TouchableOpacity onPress={press} activeOpacity={0.8} disabled={slot.isBooked} style={{ width: SLOT_W }}>
+      <TouchableOpacity onPress={press} activeOpacity={0.8} disabled={isDisabled} style={{ width: SLOT_W }}>
         <Animated.View style={[
           S.slot,
-          selected    && S.slotSel,
-          slot.isBooked && S.slotBooked,
+          selected && S.slotSel,
+          isDisabled && S.slotBooked,
           { transform: [{ scale: sc }] },
         ]}>
-          <View style={[S.radio, selected && S.radioSel, slot.isBooked && S.radioDis]}>
+          <View style={[S.radio, selected && S.radioSel, isDisabled && S.radioDis]}>
             {selected && <View style={S.radioDot} />}
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={[S.slotTime, selected && S.slotTimeSel, slot.isBooked && S.slotTimeDis]}>
+            <Text style={[S.slotTime, selected && S.slotTimeSel, isDisabled && S.slotTimeDis]}>
               {slot.startTime} – {slot.endTime}
             </Text>
-            <Text style={[S.slotDur, selected && S.slotDurSel, slot.isBooked && S.slotDurDis]}>
-              {slot.isBooked ? 'Занято' : `30 мин`}
+            <Text style={[S.slotDur, selected && S.slotDurSel, isDisabled && S.slotDurDis]}>
+              {slot.isBooked ? 'Занято' : slot.disabled ? slot.disabledReason ?? 'Прошло' : `30 мин`}
             </Text>
           </View>
         </Animated.View>
       </TouchableOpacity>
     );
   },
-  (p, n) => p.selected === n.selected && p.slot.isBooked === n.slot.isBooked);
+  (p, n) => p.selected === n.selected && p.slot.isBooked === n.slot.isBooked && p.slot.disabled === n.slot.disabled);
 
 
 import { bookingColors as C } from '@shared/theme/Booking.colors';

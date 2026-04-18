@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Animated, ScrollView, StatusBar, Text, TouchableOpacity, View,StyleSheet} from "react-native";
+import {Animated, ScrollView, StatusBar, Text, TouchableOpacity, View, StyleSheet, Image} from "react-native";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
 
 import { SERVICES } from "@entities/service";
 import {shadow} from "@features/book-slot/lib";
+import {Dentist} from "@shared/types/dentist";
 
-export const ServiceScreen: React.FC<{ onNext: (s: typeof SERVICES[0]) => void }> = ({ onNext }) => {
+export const ServiceScreen: React.FC<{ onNext: (s: typeof SERVICES[0]) => void, selectedDentist: Dentist }> = ({ onNext, selectedDentist }) => {
   const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState(SERVICES[0].id);
   const [showAll, setShowAll] = useState(false);
@@ -50,13 +51,20 @@ export const ServiceScreen: React.FC<{ onNext: (s: typeof SERVICES[0]) => void }
         showsVerticalScrollIndicator={false}
       >
         {/* Doctor card */}
+        <View>
+          <Text style={styles.sectionLabel}>Выберите врача</Text>
+        </View>
         <View style={styles.doctorCard}>
           <View style={styles.doctorAccent} />
-          <View style={styles.doctorAvatar}>
-            <Text style={styles.doctorInitials}>ДГ</Text>
+          {selectedDentist.avatar ? <View style={styles.imageContainer}>
+              <Image source={{ uri: selectedDentist?.avatar }} style={styles.image} resizeMode="cover" />
           </View>
+          :<View style={styles.doctorAvatar}>
+            <Text style={styles.doctorInitials}>ДГ</Text>
+          </View>}
           <View style={styles.doctorInfo}>
-            <Text style={styles.doctorName}>Дк. Давид Саакян</Text>
+            <Text style={styles.doctorName}>Дк. {selectedDentist?.name}</Text>
+            <Text style={styles.speciality}>{selectedDentist?.speciality}</Text>
           </View>
           <TouchableOpacity style={styles.doctorArrow} activeOpacity={0.8}>
             <Text style={styles.doctorArrowTxt}>›</Text>
@@ -80,9 +88,9 @@ export const ServiceScreen: React.FC<{ onNext: (s: typeof SERVICES[0]) => void }
               <Text style={[styles.serviceLabel, isSelected && styles.serviceLabelSelected]}>
                 {s.icon} {s.label}
               </Text>
-              <Text style={[styles.servicePrice, isSelected && { color: C.skyTop }]}>
-                {s.price}
-              </Text>
+              {/*<Text style={[styles.servicePrice, isSelected && { color: C.skyTop }]}>*/}
+              {/*  {s.price}*/}
+              {/*</Text>*/}
             </TouchableOpacity>
           );
         })}
@@ -104,7 +112,7 @@ export const ServiceScreen: React.FC<{ onNext: (s: typeof SERVICES[0]) => void }
           onPress={() => onNext(selectedService)}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaTxt}>Продолжить →</Text>
+          <Text disabled={!selectedDentist} style={styles.ctaTxt}>Продолжить →</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -159,6 +167,20 @@ export const styles = StyleSheet.create({
     position: 'absolute', left: 0, top: 0, bottom: 0,
     width: 4, backgroundColor: C.skyTop,
   },
+  imageContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 999,
+    overflow: 'hidden',
+    marginRight: 8
+  },
+  image: {
+    width: 70,      // делаем больше контейнера
+    height: 60,
+    position: 'absolute',
+    top: -5,        // двигаем вверх/вниз
+    left: -20,       // двигаем влево/вправо
+  },
   doctorAvatar: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: '#EFF6FF', borderWidth: 1.5, borderColor: '#BFDBFE',
@@ -166,7 +188,8 @@ export const styles = StyleSheet.create({
   },
   doctorInitials: { fontSize: 14, fontWeight: '800', color: C.skyBot },
   doctorInfo:     { flex: 1 },
-  doctorName:     { fontSize: 14, fontWeight: '800', color: C.text, letterSpacing: -0.2 },
+  doctorName:     { fontSize: 18, fontWeight: '800', color: C.text, letterSpacing: -0.2 },
+  speciality:     { fontSize: 14, fontWeight: '800', color: C.textMuted, letterSpacing: -0.2,paddingTop:4 },
   doctorArrow: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: C.skyTop,

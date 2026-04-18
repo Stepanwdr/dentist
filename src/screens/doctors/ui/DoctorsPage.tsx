@@ -37,7 +37,7 @@ type Props = {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background,marginTop:20 },
+  safe: { flex: 1, backgroundColor: Colors.background,marginTop:10 },
   pageTitle:{ fontSize:24, margin:16, color:'#4A90D9',marginTop:0 },
 });
 

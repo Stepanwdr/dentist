@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import {Ionicons} from "@expo/vector-icons";
 import {Colors} from "@shared/theme/colors";
+import {useAuth} from "@features/auth/model/useAuth";
+import {useMeQuery} from "@shared/api";
 
 const { width: SW } = Dimensions.get('window');
 
@@ -176,23 +178,19 @@ interface Props {
   insetTop:     number;
   headerO:      Animated.Value;
   headerY:      Animated.Value;
-  userName?:    string;
-  unreadCount?: number;
   hygieneScore?: number;
-  onBellPress?: () => void;
+  onBellPress: () => void;
 }
 
 export const HeaderCard: React.FC<Props> = ({
-                                         insetTop,
-                                         headerO,
-                                         headerY,
-                                         userName      = 'Александр',
-                                         unreadCount   = 3,
-                                         onBellPress,
-                                       }) => {
-
-  const [activeSlide, setActiveSlide] = useState(0);
-
+  insetTop,
+  headerO,
+  headerY,
+  onBellPress,
+}) => {
+  const { data } = useMeQuery()
+  const [ activeSlide, setActiveSlide] = useState(0);
+  const unreadCount = data?.unreadNotifications
   // slide width = card width - inner padding (24) - gap hint (peek)
   const cardW  = SW - 32;        // 16px margin each side
   const slideW = cardW - 24;     // inner horizontal padding 12*2
@@ -245,7 +243,7 @@ export const HeaderCard: React.FC<Props> = ({
         <View style={styles.topRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greeting}>
-              Привет, {userName} 👋
+              Привет, {data?.name} 👋
             </Text>
           </View>
 
@@ -253,7 +251,7 @@ export const HeaderCard: React.FC<Props> = ({
             {/* Avatar */}
             <View style={styles.avatarWrap}>
               <Text style={styles.avatarText}>
-                {userName.slice(0, 2).toUpperCase()}
+                {data?.name?.slice(0, 2).toUpperCase()}
               </Text>
               {/*<View style={styles.avatarOnline} />*/}
             </View>
@@ -266,10 +264,10 @@ export const HeaderCard: React.FC<Props> = ({
             >
               <AntDesign name={'bell'} size={22}  color={Colors.dangerLight} />
 
-              {unreadCount > 0 && (
+              {unreadCount && unreadCount > 0 && (
                 <View style={styles.notifBadge}>
                   <Text style={styles.notifBadgeText}>
-                    {unreadCount > 9 ? '9+' : unreadCount}
+                    {unreadCount > 99 ? '99+' : unreadCount}
                   </Text>
                 </View>
               )}
@@ -399,10 +397,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
     alignItems: 'center', justifyContent: 'center',
   },
-  notifIcon: { fontSize: 17, lineHeight: 22 },
+  notifIcon: { fontSize: 20, lineHeight: 22 },
   notifBadge: {
-    position: 'absolute', top: 4, right: 4,
-    minWidth: 15, height: 15, borderRadius: 8,
+    position: 'absolute', top: -10, right: -10,
+    minWidth: 25, height: 25, borderRadius: 999,
     backgroundColor: C.pink,
     borderWidth: 1.5, borderColor: C.skyTop,
     alignItems: 'center', justifyContent: 'center',
@@ -410,7 +408,7 @@ const styles = StyleSheet.create({
     ...mkShadow(C.pink, 0.50, 6, 2),
   },
   notifBadgeText: {
-    fontSize: 7.5, fontWeight: '900', color: '#fff', lineHeight: 11,
+    fontSize: 12, fontWeight: '900', color: '#fff', lineHeight: 11,
   },
 
   // ── Slider ────────────────────────────────────────────────

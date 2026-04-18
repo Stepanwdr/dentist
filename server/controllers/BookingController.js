@@ -54,6 +54,67 @@ class BookingController {
     }
   };
 
+  // ✅ GET /booking/next?dentistId=
+  static nextBooking = async (req, res, next) => {
+    try {
+      const now = new Date();
+
+      // текущая дата YYYY-MM-DD
+      const today = now.toISOString().slice(0, 10);
+      // текущее время HH:mm:ss
+      const currentTime = now.toTimeString().slice(0, 8);
+
+      const slot = await BookingSlot.findOne({
+        where: {
+          isBooked: true,
+
+          [Op.or]: [
+            // будущие даты
+            {
+              date: { [Op.gt]: today },
+            },
+
+            // сегодня, но время ещё впереди
+            {
+              date: today,
+              startTime: { [Op.gte]: currentTime },
+            },
+          ],
+        },
+
+        include: [
+          {
+            model: Users,
+            as: 'dentist',
+
+          },
+          {
+            model: Clinic,
+            as: 'clinic',
+            attributes: ['id', 'name'],
+          },
+        ],
+
+        order: [
+          ['date', 'ASC'],
+          ['startTime', 'ASC'],
+        ],
+      });
+
+      if (!slot) {
+        return res.json({
+          status: 'ok',
+          slot: null,
+        });
+      }
+      res.json({
+        status: 'ok',
+        slot,
+      });
+    } catch (e) {
+      next(e);
+    }
+  };
   // ✅ GET /available-dates?dentistId=&from=&to=
   // Возвращает массив дат у которых есть хотя бы 1 свободный слот
   // Используется для точек в горизонтальном календаре
@@ -96,8 +157,8 @@ class BookingController {
   // POST /slot
   static create = async (req, res, next) => {
     try {
-      const { dentistId, clinicId = null, date, startTime, endTime, notes = null } = req.body || {};
-
+      const { dentistId, clinicId = null, date, startTime, endTime, notes = null, service } = req.body || {};
+      console.log({service})
       if (!dentistId || !date || !startTime || !endTime) {
         return res.status(400).json({ status: 'error', message: 'dentistId, date, startTime, endTime are required' });
       }
@@ -118,7 +179,7 @@ class BookingController {
         return res.status(409).json({ status: 'error', message: 'Overlapping slot exists for this dentist and date' });
       }
 
-      const created = await BookingSlot.create({ dentistId, clinicId, date, startTime: s, endTime: e, notes,isBooked:true });
+      const created = await BookingSlot.create({ dentistId, clinicId, date, startTime: s, endTime: e, notes,isBooked:true,service });
       res.status(201).json({ status: 'ok', slot: created });
     } catch (e) {
       next(e);

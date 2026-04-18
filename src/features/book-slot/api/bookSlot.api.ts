@@ -19,6 +19,7 @@ export interface BookSlotParams {
   notes:      string;
   startTime:  string;
   endTime:    string;
+  service:    string;
 }
 
 export interface BookSlotResponse extends ApiResponse {
@@ -71,6 +72,7 @@ export async function bookSlotRequest(params: BookSlotParams): Promise<BookSlotR
       startTime:  params.startTime,
       endTime:    params.endTime,
       notes:      params.notes,
+      service:    params.service
     }) as BookSlotResponse;
     return res
   } catch (e) {

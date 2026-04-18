@@ -12,6 +12,7 @@ import { AppointmentsTab, BookingTabs} from "@widgets/booking/ui/BookingsScreen/
 import { CompletedRow } from "@widgets/booking/ui/BookingsScreen/ui/CompletedRow";
 import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
 import { useGetBookings } from "@entities/booking/model/booking.model";
+import {useFocusEffect} from "@react-navigation/native";
 
 // ─── Mock — замени на useGetBookings ──────────────────
 // const { data } = useGetBookings({ dentistId, date, isBooked: true });
@@ -19,7 +20,7 @@ import { useGetBookings } from "@entities/booking/model/booking.model";
 const BookingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
 
-  const { data:bookingsData } = useGetBookings({dentistId: '4', date: '2026-03-23',});
+  const { data:bookingsData,refetch } = useGetBookings({dentistId: '4', date: '2026-03-23',});
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
 
@@ -111,8 +112,14 @@ const BookingsScreen: React.FC = () => {
 
   useEffect(() => {
     setData(bookingsData ?? []);
-
   }, [bookingsData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refetch();
+    }, [])
+  );
+
   return (
     <View style={s.screen}>
       <StatusBar barStyle="dark-content" backgroundColor={C.white} />

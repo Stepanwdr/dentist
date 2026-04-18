@@ -2,8 +2,8 @@ import axios, { AxiosError } from "axios";
 
 import Constants from "expo-constants";
 import { tokenStorage } from "@shared/lib/tokenStorage";
+import {API_BASE_URL} from "@shared/api/config";
 
-const API_BASE_URL = "http://ozhao9-ip-217-76-13-74.tunnelmole.net";
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(

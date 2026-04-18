@@ -3,6 +3,7 @@ import users from "./users.js";
 import clinic from "./clinic.js";
 import booking from "./booking.js";
 import auth from "./auth.js";
+import notifications from "./notifications.js";
 
 const router = express.Router();
 
@@ -13,5 +14,5 @@ router.use("/auth", auth);
 router.use("/users", users);
 router.use("/clinic", clinic);
 router.use("/booking", booking);
-
+router.use("/notifications", notifications);
 export default router;

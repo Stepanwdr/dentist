@@ -11,49 +11,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { TabParamList } from "@app/navigation/types";
 import {shadow} from "@features/book-slot/lib";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
-
-const doctors = [
-  {
-    id: '1',
-    name: 'Dr. Arnold Chen',
-    spec: 'Ортопед',
-    rating: 4.9,
-    reviews: 124,
-    image: 'https://www.pinnacledentalgroupmi.com/wp-content/uploads/2023/11/general-dentistry-img.jpeg'
-  },
-  {
-    id: '2',
-    name: 'Dr. Marcus Vance',
-    spec: 'Хирург',
-    rating: 5.0,
-    reviews: 98,
-    image: 'https://t4.ftcdn.net/jpg/02/40/98/21/360_F_240982187_auR9cM9G0gGmXvh1RZJoBufjTKVIclC3.jpg',
-  },
-  {
-    id: '3',
-    name: 'Dr. Elena Rodriguez',
-    spec: 'Имплантолог',
-    rating: 4.8,
-    reviews: 210,
-    image: 'https://www.pinnacledentalgroupmi.com/wp-content/uploads/2023/11/FemaleDentist_1110x700.jpeg',
-  },
-  {
-    id: '4',
-    name: 'Dr. Arnold Chen',
-    spec: 'Терапевт',
-    rating: 4.9,
-    reviews: 124,
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4Taw2jOKl8OTdYdL6ZW4i5J79LimZrjhKkw&s'
-  },
-  {
-    id: '5',
-    name: 'Dr. Marcus Vance',
-    spec: 'Хирург',
-    rating: 5.0,
-    reviews: 98,
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjoQgcjD2kQjbcZ6zs3BzRhmu94HAN03tI2Q&s',
-  },
-];
+import {useGetDentists } from "@entities/dentist/model/useGetDentists";
+import { Dentist } from "@shared/types/dentist";
 
 const specialties = [
   { label: 'Все', value: 'All' },
@@ -69,34 +28,47 @@ type Props = {
 
 export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
   const [selected, setSelected] = useState('Все');
+  const { data } = useGetDentists({ search: '' })
 
   const filteredDoctors = useMemo(() => {
-    if (selected === 'Все') return doctors;
-    return doctors.filter((doc) => doc.spec === selected);
-  }, [selected]);
+    if (selected === 'Все') return data;
+    return data?.filter((doc) => doc.speciality === selected);
+  }, [selected,data]);
 
-  const renderDoctor = ({ item }) => (
+  const renderDoctor = ({ item }:{item:Dentist}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.avatar }} style={styles.image} />
 
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.spec}>{item.spec}</Text>
+      <Text style={styles.spec}>{item.speciality}</Text>
 
-      <Text style={styles.rating}>
-        ⭐ {item.rating} ({item.reviews})
-      </Text>
+      {/*<Text style={styles.rating}>*/}
+      {/*  ⭐ {item.rating} ({item.reviews})*/}
+      {/*</Text>*/}
 
       {/* BOOKING BUTTON */}
-      <TouchableOpacity
-        style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
-        onPress={() =>
-          navigation.navigate('BookingTab', {
-            screen: item.id,
-          })
-        }
-      >
-        <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Записаться</Text>
-      </TouchableOpacity>
+      <View style={styles.cardActions}>
+        <TouchableOpacity
+          style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
+          onPress={() =>
+            navigation.navigate('BookingTab', {
+              dentistId: item.id,
+            })
+          }
+        >
+          <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Записаться</Text>
+        </TouchableOpacity>
+        {!horizontal && <TouchableOpacity
+          style={[styles.bookBtn, !horizontal && styles.bookBtnMd]}
+          onPress={() =>
+            navigation.navigate('BookingTab', {
+              dentistId: item.id,
+            })
+          }
+        >
+          {<Text style={[styles.bookText, !horizontal && styles.bookTextMd, styles.bookText]}>Смотреть</Text>}
+        </TouchableOpacity>}
+      </View>
     </View>
   );
 
@@ -119,7 +91,7 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
   };
 
   return (
-    <View style={[styles.container,  !horizontal && {paddingRight:10}]}>
+    <View style={[styles.container, !horizontal && { paddingRight: 10}]}>
       {/* FILTER */}
       <FlatList
         data={specialties}
@@ -148,24 +120,23 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: {},
+  cardActions: {
+   flex: 1
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
     paddingHorizontal: 10,
   },
-
   title: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: '#4A9FF5',
-      marginBottom: 12,
-      letterSpacing: -0.3,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#4A9FF5',
+    marginBottom: 12,
+    letterSpacing: -0.3,
   },
-
   link: {
     fontSize: 12,
     color: '#3B82F6',
@@ -245,6 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     height: 30,
     textAlign:"center",
+    marginTop: 10,
   },
   bookTextMd: {
     color: '#fff',

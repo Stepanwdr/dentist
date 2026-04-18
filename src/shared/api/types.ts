@@ -22,6 +22,7 @@ export interface AuthUser {
   dentistId?:number
   birthDate: string;
   allergies: string;
+  unreadNotifications: number;
 }
 
 export interface LoginBody {
@@ -31,8 +32,8 @@ export interface LoginBody {
 
 export interface RegisterBody {
   name: string;
-  lname: string;
-  fname: string;
+  lname?: string;
+  fname?: string;
   email: string;
   password: string;
   phone: string;

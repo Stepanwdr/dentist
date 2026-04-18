@@ -27,8 +27,12 @@ const STEP_MIN    = 30;
 
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
-function generateDaySlots(date: string, apiSlots: TimeSlot[]): TimeSlot[] {
-  // Индекс реальных слотов по startTime для быстрого поиска O(1)
+function formatTime(date: Date) {
+  return date.toTimeString().slice(0, 8);
+}
+
+function generateDaySlots(date: string, apiSlots: TimeSlot[], today: string, currentTime: string): TimeSlot[] {
+  // Индекс реальных слотов по startTime для быстрого поиск O(1)
   const apiMap = new Map<string, TimeSlot>(
     apiSlots.map(s => [s.startTime, s])
   );
@@ -47,6 +51,17 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[]): TimeSlot[] {
     const endTime   = `${pad(endH)}:${pad(endM)}:00`;
 
     const existing = apiMap.get(startTime);
+    const threshold = new Date(`${date}T${currentTime}`);
+    threshold.setMinutes(threshold.getMinutes() + 40);
+    const thresholdTime = formatTime(threshold);
+
+    const disabled = date < today
+      || (date === today && startTime <= currentTime)
+      || (date === today && startTime < thresholdTime);
+    const disabledReason = date < today
+      || (date === today && startTime <= currentTime)
+      ? 'Прошло'
+      : 'Мало времени';
 
     result.push({
       // Если слот есть в API — берём его id и isBooked
@@ -56,6 +71,8 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[]): TimeSlot[] {
       startTime,
       endTime,
       isBooked:  existing?.isBooked  ?? false,
+      disabled,
+      disabledReason: disabled ? disabledReason : undefined,
       notes:     existing?.notes     ?? null,
       dentistId: existing?.dentistId ?? -1,
       clinicId:  existing?.clinicId  ?? null,
@@ -63,7 +80,9 @@ function generateDaySlots(date: string, apiSlots: TimeSlot[]): TimeSlot[] {
       clinic:    existing?.clinic    ?? null,
       createdAt: existing?.createdAt ?? '',
       updatedAt: existing?.updatedAt ?? '',
-      duration:  existing?.duration ?? -1
+      duration:  existing?.duration ?? -1,
+      service:   existing?.service   ?? '',
+      status:    existing?.status    ?? 'pending',
     });
 
     minutes += STEP_MIN;
@@ -82,7 +101,7 @@ type Row = SlotPair | HeaderRow;
 export interface TimeScreenProps {
   onBack?:    () => void;
   onConfirm?: (date: Date, slot: TimeSlot) => void;
-  dentistId?: number;
+  dentistId:  string;
   minYear?:   number;
   maxYear?:   number;
   setSelTime:(time:null)=>void;
@@ -92,19 +111,20 @@ export interface TimeScreenProps {
 // COMPONENT
 // ─────────────────────────────────────────────────────────
 const BookSlot: React.FC<TimeScreenProps> = ({
-                                               onBack,
-                                               onConfirm,
-                                               dentistId = 4,
-                                               minYear   = new Date().getFullYear(),
-                                               maxYear   = new Date().getFullYear() + 2,
-                                               setSelTime
-                                             }) => {
+   onBack,
+   onConfirm,
+   dentistId,
+   minYear   = new Date().getFullYear(),
+   maxYear   = new Date().getFullYear() + 2,
+   setSelTime,
+}) => {
   const insets = useSafeAreaInsets();
 
   const [date,         setDate]         = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 
-  const today  = useMemo(() => formatDateYMD(new Date()), []);
+  const today = formatDateYMD(new Date());
+  const currentTime = new Date().toTimeString().slice(0, 8);
   const future = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 90);
@@ -132,8 +152,8 @@ const BookSlot: React.FC<TimeScreenProps> = ({
 
   // ── Мержим: полная сетка 09:00–20:00 + статус из API ──
   const slots = useMemo(
-    () => generateDaySlots(formatDateYMD(date), apiSlots),
-    [date, apiSlots],
+    () => generateDaySlots(formatDateYMD(date), apiSlots, today, currentTime),
+    [date, apiSlots, today, currentTime],
   );
 
   // ── Handlers ──────────────────────────────────────────
@@ -143,8 +163,8 @@ const BookSlot: React.FC<TimeScreenProps> = ({
   }, []);
 
   const handleSlotPress = useCallback((slot: TimeSlot) => {
-    // Игнорируем занятые
-    if (slot.isBooked) return;
+    // Игнорируем занятые и прошедшие
+    if (slot.isBooked || slot.disabled) return;
     setSelectedSlot(slot);
     onConfirm?.(date, slot);
   }, [date, onConfirm]);
@@ -153,7 +173,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
 
   // ── FlatList rows ─────────────────────────────────────
   const rows = useMemo((): Row[] => {
-    const freeCount = slots.filter(s => !s.isBooked).length;
+    const freeCount = slots.filter(s => !s.isBooked && !s.disabled).length;
     const header: HeaderRow = { type: 'header', freeCount, loading };
 
     const pairs: SlotPair[] = [];
@@ -172,7 +192,6 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     setSelTime(null)
   }, [date]);
 
-  // ── renderItem ────────────────────────────────────────
   const renderItem = useCallback(({ item }: { item: Row }) => {
     if (item.type === 'header') {
       if (item.loading) {

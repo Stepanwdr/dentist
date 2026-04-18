@@ -14,17 +14,19 @@ import { Colors } from '@shared/theme/colors';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface RegisterFormValues {
-  name: string;
+  fname: string;
+  lname: string;
   email: string;
   phone: string;
   password: string;
 }
 
 interface RegisterFormErrors {
-  name?: string;
+  fname?: string;
   email?: string;
   phone?: string;
   password?: string;
+  lname?: string;
 }
 
 export interface RegisterFormProps {
@@ -140,7 +142,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   onSubmit,
 }) => {
   const [values, setValues] = useState<RegisterFormValues>({
-    name: '', email: '', phone: '', password: '',
+    fname: '', email: '', phone: '', password: '', lname:""
   });
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -163,12 +165,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   function validate(): boolean {
     const e: RegisterFormErrors = {};
 
-    if (!values.name.trim()) {
-      e.name = 'Введите имя';
-    } else if (values.name.trim().length < 2) {
-      e.name = 'Минимум 2 символа';
+    if (!values.fname.trim()) {
+      e.fname = 'Введите имя';
+    } else if (values.fname.trim().length < 2) {
+      e.fname = 'Минимум 2 символа';
     }
-
+    if (!values.fname.trim()) {
+      e.lname = 'Введите имя';
+    } else if (values.lname.trim().length < 2) {
+      e.lname = 'Минимум 2 символа';
+    }
     if (!values.email.trim()) {
       e.email = 'Введите email';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
@@ -202,14 +208,22 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       {/* Name */}
       <Field
         label="Имя"
-        value={values.name}
-        onChangeText={setField('name')}
-        placeholder="Иван Иванов"
+        value={values.fname}
+        onChangeText={setField('fname')}
+        placeholder="Иван"
         iconName="person-outline"
         autoCapitalize="words"
-        error={errors.name}
+        error={errors.fname}
       />
-
+      <Field
+        label="Фамилия"
+        value={values.lname}
+        onChangeText={setField('lname')}
+        placeholder="Иванов"
+        iconName="person-outline"
+        autoCapitalize="words"
+        error={errors.lname}
+      />
       {/* Email */}
       <Field
         label="Email"

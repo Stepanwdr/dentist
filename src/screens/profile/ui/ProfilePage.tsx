@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ import {
 import { authQueryKeys, baseApi, useMeQuery } from "@shared/api";
 import {registerForPush} from "@shared/lib/registerForPush";
 import {useQueryClient} from "@tanstack/react-query";
+import {useFocusEffect} from "@react-navigation/native";
 
 export const ProfilePage: React.FC = () => {
   const { state } = useBookingStore();
@@ -22,7 +23,6 @@ export const ProfilePage: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const { t } = useI18n();
   const qc = useQueryClient();
-
   const completedCount = state.appointments.filter(a => a.status === 'completed').length;
   const upcomingCount = state.appointments.filter(a => a.status === 'upcoming').length;
   const notifConfig= async () => {
@@ -33,15 +33,20 @@ export const ProfilePage: React.FC = () => {
     });
   }
 
-  const invalidate=async () => {
+  const invalidate= async () => {
     await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
   }
 
   useEffect(() => {
-    void invalidate()
-    void refetch()
     void notifConfig()
-  }, [data]);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void invalidate()
+      void refetch();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safe}>

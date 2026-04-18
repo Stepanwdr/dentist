@@ -37,7 +37,7 @@ interface slotsResponse extends ApiResponse {
 export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
   try {
     const q = new URLSearchParams({
-      doctor_id: params.dentistId,
+      dentistId: params.dentistId,
       date:      params.date,
       ...(params?.serviceId ? { service_id: params?.serviceId } : {}),
     });

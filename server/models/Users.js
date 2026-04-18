@@ -74,7 +74,7 @@ Users.init({
     allowNull: true,          // ← Google не даёт дату рождения
   },
   role: {
-    type: DataTypes.ENUM('admin', 'administrator', 'director', 'doctor', 'patient'),
+    type: DataTypes.ENUM('admin', 'administrator', 'director', 'dentist', 'patient'),
     allowNull: true,
     defaultValue: 'patient',  // ← по умолчанию пациент
   },
@@ -104,7 +104,7 @@ Users.init({
 Users.belongsTo(Clinic, {
   foreignKey: 'clinicId',
   onUpdate: 'cascade',
-  onDelete: 'cascade',
+  onDelete: 'set null',
   as: 'clinic',
 });
 

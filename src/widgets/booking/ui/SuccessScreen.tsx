@@ -12,7 +12,6 @@ export const SuccessScreen: React.FC<{
   time:    string;
   day:     typeof WEEK[0];
   onHome:  () => void;
-  dentistId: string
 }> = ({ service, time, day, onHome }) => {
   const insets   = useSafeAreaInsets();
   const [sheet, setSheet] = useState(false);

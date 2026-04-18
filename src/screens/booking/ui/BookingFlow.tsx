@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   StyleSheet,
 } from 'react-native';
@@ -11,13 +11,19 @@ import { ServiceScreen } from "@widgets/booking/ui/ServiceScreen";
 import { TimeScreen } from "@widgets/booking/ui/TimeScreen";
 import { shadow } from "@features/book-slot/lib";
 import {useRoute} from "@react-navigation/core";
+import {useGetDentists} from "@entities/dentist/model/useGetDentists";
+import {Dentist} from "@shared/types/dentist";
+import {useFocusEffect} from "@react-navigation/native";
 
 
 // ─── Root: BookingFlow ────────────────────────────────────
 const BookingFlow: React.FC = () => {
   const route = useRoute<any>();
   const dentistId = route.params?.dentistId || '';
+  const { data } = useGetDentists({search:""})
 
+  const selectedDentist=data?.find((d) => d.id === dentistId) || data?.[0];
+  console.log({dentistId},selectedDentist)
   const [screen, setScreen] = useState<'services' | 'time' | 'success'>(
     dentistId ? 'time' : 'services' // 👈 если есть врач — сразу дальше
   );
@@ -26,16 +32,22 @@ const BookingFlow: React.FC = () => {
   const [time, setTime] = useState('');
   const [day, setDay] = useState(WEEK[1]);
 
+  console.log(SERVICES[0],'dsds')
+
+  useFocusEffect(
+   useCallback(()=> setScreen('services'),[])
+  )
+
   return (
     <>
       {screen === 'services' && (
-        <ServiceScreen onNext={(s) => { setService(s); setScreen('time'); }} />
+        <ServiceScreen selectedDentist={selectedDentist  || {} as Dentist} onNext={(s) => { setService(s); setScreen('time'); }} />
       )}
 
       {screen === 'time' && (
         <TimeScreen
+          selectedDentist={selectedDentist || {} as Dentist}
           service={service}
-          dentistId={dentistId} // 👈 прокидываем дальше
           onNext={(t) => { setTime(t); setDay(WEEK[1]); setScreen('success'); }}
           onBack={() => setScreen('services')}
         />
@@ -46,7 +58,6 @@ const BookingFlow: React.FC = () => {
           service={service}
           time={time}
           day={day}
-          dentistId={dentistId}
           onHome={() => setScreen('services')}
         />
       )}

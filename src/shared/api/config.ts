@@ -7,5 +7,5 @@ import Constants from "expo-constants";
 export const API_BASE_URL =
   (typeof process !== 'undefined' && (process as any).env?.EXPO_PUBLIC_API_URL) ||
   (typeof process !== 'undefined' && (process as any).env?.API_URL) ||
-  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
+  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:6000`;
 

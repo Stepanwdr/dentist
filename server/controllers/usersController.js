@@ -4,19 +4,26 @@ import {
 import jwt from "jsonwebtoken";
 import {NotificationService} from "../services/notifications/NotificationService.js";
 const { JWT_SECRET  } = process.env;
-
+import Notification from "../models/Notification.js";
+import {Op} from "sequelize";
 class UsersController {
-
   static myAccount = async (req, res, next) => {
     try {
       const { authorization } = req.headers;
       const token = authorization.replace(/^Bearer /, '');
       const data = await jwt.verify(token, JWT_SECRET);
       const user = await Users.findByPk(data.userId);
+      const unreadNotifications = await Notification.count({
+        where: {
+          userId: user.id,
+          isRead: false,
+        },
+      });
       try {
         await NotificationService.send(data.userId,{
           title: "У вас запись через 2 часа",
           body: "У вас запись через 2 часа",
+          type:"booking",
           data: {
             screen: "Booking",
             bookingId: 123,
@@ -34,10 +41,9 @@ class UsersController {
         });
         return;
       }
-
       res.json({
         status: 'ok',
-        data: user,
+        data: {...user.toJSON(), unreadNotifications},
         loginService: req.loginService,
       });
     } catch (e) {
@@ -45,10 +51,9 @@ class UsersController {
     }
   };
 
-  static getDentistByClinic = async (req, res, next) => {
+  static getDentistList = async (req, res, next) => {
     try {
-      const { clinicId } = req.body;
-      console.log(clinicId);
+      const { clinicId= 1 } = req.body;
 
       const list = await Users.findAll({
         where: {},
@@ -95,13 +100,65 @@ class UsersController {
       next(e);
     }
   };
+// ✅ GET /users/dentists?clinicId=&search=
+  static getDentists = async (req, res, next) => {
+    try {
+      const { clinicId = 1, search } = req.query;
 
+      const where = {
+        role: 'dentist',
+      };
+      // 🔍 Поиск (name / lname / fname)
+      if (search) {
+        where[Op.or] = [
+          { name:  { [Op.iLike]: `%${search}%` } },
+          { lname: { [Op.iLike]: `%${search}%` } },
+          { fname: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const dentists = await Users.findAll({
+        where,
+
+        include: [
+          {
+            model: Clinic,
+            as: 'clinic',
+            required: !!clinicId,
+            ...(clinicId && {
+              where: { id: clinicId },
+            }),
+            attributes: ['id', 'name'],
+          },
+        ],
+
+        attributes: [
+          'id',
+          'name',
+          'lname',
+          'fname',
+          'speciality',
+          'clinicId',
+          'avatar', // если есть
+        ],
+
+        order: [
+          ['lname', 'ASC'],
+          ['name', 'ASC'],
+        ],
+      });
+
+      res.json({
+        status: 'ok',
+        dentists,
+      });
+    } catch (e) {
+      next(e);
+    }
+  };
   static getUserList = async (req, res, next) => {
     try {
-      //  const { clinicId } = req.body;
-      console.log({
-        UserHistory, Clinic, Users,
-      });
+
       const users = await Users.findAll({
         include: [{
           model: UserHistory,

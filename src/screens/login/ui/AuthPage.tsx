@@ -118,7 +118,7 @@ export const AuthPage: React.FC = () => {
               ))}
             </View>
             {mode === 'login' && (<LoginForm loading={false} onSubmit={handleLogin} serverError={''}/>)}
-             {mode === 'register' && (<RegisterForm loading={false} onSubmit={(data)=>handleRegister(data as RegisterBody)} serverError={''}/>)}
+             {mode === 'register' && (<RegisterForm loading={false} onSubmit={(data)=> handleRegister(data as RegisterBody)} serverError={''}/>)}
 
             {/* ── Phone flow ── */}
             <>

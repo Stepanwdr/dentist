@@ -90,7 +90,7 @@ export const SettingsCard: React.FC = () => (
         </View>
       ))}
     </View>
-    <View style={[styles.card, { marginTop: 12 }]}>
+    <View style={[styles.card, { marginTop: 12 ,marginBottom: 60}]}>
       {DANGER_SETTINGS.map(item => (
         <SettingRow key={item.label} item={item} />
       ))}

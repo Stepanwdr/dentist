@@ -33,6 +33,7 @@ export const BookingPage: React.FC<Props> = ({ navigation }) => {
   const selectedDay = days.find(d => d.key === selectedDateKey);
 
   function handleConfirm() {
+    console.log('a')
     if (!selectedDateKey || !selectedTime) {
       Alert.alert(t('alert.selectDateTime'));
       return;
