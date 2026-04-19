@@ -43,7 +43,7 @@ const EXCLUDE = [
   'GET:/notification/getOne',
   'POST:/notification/create',
   'PATCH:/notification/markAsRead',
-  git'PATCH:/notification/markAllAsRead',
+   'PATCH:/notification/markAllAsRead',
 ];
 
 export default function (req, res, next) {
