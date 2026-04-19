@@ -1,3 +1,5 @@
+// noinspection JSAnnotator
+
 import admin from "firebase-admin";
 import serviceAccount from "./dentist-37300-firebase-adminsdk-fbsvc-903e9220e8.json" assert { type: "json" };
 
