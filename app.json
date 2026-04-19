@@ -11,7 +11,7 @@
     "newArchEnabled": true,
     "owner": "stepan94",
     "plugins": [
-      "expo-notifications",
+      "expo-notifications"
     ],
     "splash": {
       "image": "./assets/splash-icon.png",
