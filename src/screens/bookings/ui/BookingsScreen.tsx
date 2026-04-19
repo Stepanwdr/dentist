@@ -13,10 +13,12 @@ import { CompletedRow } from "@widgets/booking/ui/BookingsScreen/ui/CompletedRow
 import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
 import { useGetBookings } from "@entities/booking/model/booking.model";
 import {useFocusEffect} from "@react-navigation/native";
+import {useChangeBookingStatus} from "@features/change-book-status/model";
 
 
 const BookingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
+  const {mutate:onCancelBook}=useChangeBookingStatus()
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
   const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || ''});
 
@@ -47,7 +49,7 @@ const BookingsScreen: React.FC = () => {
         {
           text:    'Отменить',
           style:   'destructive',
-          onPress: () => setData(prev => prev.filter(x => x.id !== item.id)),
+          onPress: () => onCancelBook({ status:'cancelled',id:item.id}),
         },
       ],
     );

@@ -7,11 +7,11 @@ import TimeSlots from "@shared/api/endpoints/timeSlots";
 
 // ─── Query key factory ────────────────────────────────
 export const bookingKeys = {
-  all:   ['bookings'] as const,
+  all:   (status?:bookStatus)=>['bookings',status] as const,
   slots: (dentistId: string, date: string) =>
-    [...bookingKeys.all, 'slots', dentistId, date] as const,
+    [...bookingKeys.all(), 'slots', dentistId, date] as const,
   next: () =>
-    [...bookingKeys.all, 'next'] as const,
+    [...bookingKeys.all(), 'next'] as const,
 };
 
 export interface GetAvailableDatesParams {
@@ -66,7 +66,7 @@ export function useGetBookings(
 export function useGetAvailableDates(params: GetAvailableDatesParams) {
   const { dentistId, from, to } = params;
   return useQuery<Set<string>, Error>({
-    queryKey: [...bookingKeys.all, 'available-dates', dentistId, from, to],
+    queryKey: [...bookingKeys.all(), 'available-dates', dentistId, from, to],
     queryFn:  async () => {
 
       const q   = new URLSearchParams({  dentistId, from, to });

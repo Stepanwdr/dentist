@@ -19,7 +19,7 @@ import { Dentist } from "./dentist";
 
 // shared/types/slot.ts
 
-export type bookStatus= 'pending' | 'confirmed'| 'canceled'| 'finished'
+export type bookStatus= 'pending' | 'confirmed'| 'cancelled'| 'finished'
 
 export interface TimeSlot {
   id:         number;

@@ -20,6 +20,8 @@ router.patch('/:id',             BookingController.update);
 // DELETE /booking/:id
 router.delete('/:id',            BookingController.remove);
 
+router.patch('/changeStatus/:id',            BookingController.changeStatus);
+
 router.get('/next', BookingController.nextBooking);
 
 export default router;

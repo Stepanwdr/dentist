@@ -33,13 +33,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
         handleNavigation(data);
       }
     });
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Look at that notification',
-        body: "I'm so proud of myself!",
-      },
-      trigger: null,
-    });
+
     setupNotifications();
     return () => {
       receiveSub.remove();

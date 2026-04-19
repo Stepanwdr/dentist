@@ -120,13 +120,15 @@ class BookingController {
       const now = new Date();
        const patientId = req.userId;
       // текущая дата YYYY-MM-DD
-      console.log(patientId)
       const today = now.toISOString().slice(0, 10);
       // текущее время HH:mm:ss
       const currentTime = now.toTimeString().slice(0, 8);
       const slot = await BookingSlot.findOne({
         where: {
           patientId,
+          status: {
+            [Op.in]: ['pending', 'confirmed'],
+          },
           [Op.or]: [
             // будущие даты
             {
@@ -372,6 +374,82 @@ class BookingController {
       if (!slot)         return res.status(404).json({ status: 'error', message: 'Slot not found' });
       await slot.destroy();
       res.json({ status: 'ok' });
+    } catch (e) {
+      next(e);
+    }
+  };
+  static changeStatus = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const userId = req.userId;
+      const allowedStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
+
+      if (!status || !allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid status value',
+        });
+      }
+
+      const slot = await BookingSlot.findByPk(id, {
+        where: {
+          patientId: userId,
+        },
+        include: [
+          { model: Users, as: 'dentist' },
+          { model: Users, as: 'patient' },
+        ],
+      });
+
+      if (!slot) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Slot not found',
+        });
+      }
+
+      // доступ (пациент или врач)
+      if (slot.patientId !== userId && slot.dentistId !== userId) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Access denied',
+        });
+      }
+
+      const transitions = {
+        pending: ['confirmed', 'cancelled'],
+        confirmed: ['completed', 'cancelled'],
+        cancelled: [],
+        completed: [],
+      };
+
+      if (!transitions[slot.status]?.includes(status)) {
+        return res.status(400).json({
+          status: 'error',
+          message: `Cannot change status from ${slot.status} to ${status}`,
+        });
+      }
+
+      // логика отмены — освобождаем слот
+      if (status !== 'cancelled') {
+        await slot.update({
+          status,
+          isBooked: false,
+          patientId: null,
+        });
+      } else {
+        await slot.update({ status });
+      }
+
+      // 🔔 отправка уведомления
+      // await sendBookingNotification(slot, status);
+
+      res.json({
+        status: 'ok',
+        slot,
+      });
+
     } catch (e) {
       next(e);
     }

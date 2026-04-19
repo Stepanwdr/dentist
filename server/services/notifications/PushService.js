@@ -1,39 +1,55 @@
-import { Expo } from "expo-server-sdk";
+import admin from "firebase-admin";
+import serviceAccount from "./dentist-37300-firebase-adminsdk-fbsvc-903e9220e8.json" assert { type: "json" };
 
-const expo = new Expo();
+// Инициализация Firebase (один раз!)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
 export class PushService {
   static async send(token, payload) {
-    let messages = [];
-    // Проверка токена на валидность
-    if (!Expo.isExpoPushToken(token)) {
-      console.error(`Токен ${token} невалиден`);
+    if (!token) {
+      console.error("Нет FCM токена");
       return;
     }
 
-    // Формируем структуру уведомления
-    messages.push({
-      to: token,
-      sound: 'default',
-      title: 'Уведомление от сервера',
-      body: token,
-      data: {  }, // Доп. данные для логики приложения
-    });
+    const message = {
+      token: token,
 
-    // Expo рекомендует отправлять сообщения пачками (chunks)
-    let chunks = expo.chunkPushNotifications(messages);
-    let tickets = [];
+      notification: {
+        title: payload?.title || "Уведомление",
+        body: payload?.body || "Новое сообщение",
+      },
 
-    for (let chunk of chunks) {
-      try {
-        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-        tickets.push(...ticketChunk);
-      } catch (error) {
-        console.error('Ошибка при отправке чанка:', error);
-      }
+      data: Object.entries(payload?.data || {}).reduce((acc, [k, v]) => {
+        acc[k] = String(v); // FCM требует строки
+        return acc;
+      }, {}),
+
+      android: {
+        priority: "high",
+        notification: {
+          channelId: "default",
+        },
+      },
+
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+            badge: 1,
+          },
+        },
+      },
+    };
+
+    try {
+      const response = await admin.messaging().send(message);
+      console.log("✅ Push отправлен:", response);
+    } catch (error) {
+      console.error("❌ Ошибка отправки push:", error);
     }
-
-    // (Опционально) Проверка статуса доставки через tickets
-    console.log('Уведомления отправлены, получено тикетов:', tickets.length,tickets);
   }
 }
