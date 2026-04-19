@@ -99,7 +99,7 @@ function RootNavigator() {
 
 export function AppNavigator() {
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer ref={navigationRef} >
       <RootNavigator />
     </NavigationContainer>
   );

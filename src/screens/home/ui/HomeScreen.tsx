@@ -28,7 +28,7 @@ interface IProps {
 
 const HomeScreen: React.FC<IProps> = ({navigation}) => {
   const insets = useSafeAreaInsets();
-  const {refetch} = useNotifications();
+  const {refetch} = useNotifications({page:1});
   const { refetch: refetchUseMe } = useMeQuery();
   const headerY = useRef(new Animated.Value(-20)).current;
   const headerO = useRef(new Animated.Value(0)).current;

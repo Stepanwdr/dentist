@@ -10,20 +10,21 @@ import {
 } from "./types";
 import {authQueryKeys } from "@shared/api";
 
-const QUERY_KEY = ["notifications"];
-
+export const notificationsKeys = {
+  all: (params?: GetNotificationsParams) => ['notifications', params] as const,
+};
 export const useNotifications = (params?: GetNotificationsParams) => {
   return useQuery<GetNotificationsResponse>({
-    queryKey: [...QUERY_KEY, params],
+    queryKey: notificationsKeys.all(params),
     queryFn: async () => {
-      return await notificationApi.getAll(params)
+      return await notificationApi.getAll(params) || []
     },
   });
 };
 
 export const useNotification = (id: number) => {
   return useQuery<Notification>({
-    queryKey: [...QUERY_KEY, id],
+    queryKey: [notificationsKeys.all, id],
     queryFn: async () => {
       const { data } = await notificationApi.getOne(id);
       return data;
@@ -40,7 +41,7 @@ export const useCreateNotification = () => {
       notificationApi.create(data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ });
     },
   });
 };
@@ -53,7 +54,7 @@ export const useMarkAsRead = () => {
       notificationApi.markAsRead(id),
 
     onSuccess: async() => {
-      await queryClient.invalidateQueries({ queryKey: [...QUERY_KEY], });
+      await queryClient.invalidateQueries({queryKey:notificationsKeys.all({})});
       authQueryKeys.me()
     },
   });
@@ -66,7 +67,7 @@ export const useMarkAllAsRead = () => {
     mutationFn: () => notificationApi.markAllAsRead(),
 
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: notificationsKeys.all({}) });
       authQueryKeys.me()
     },
   });
@@ -80,7 +81,7 @@ export const useDeleteNotification = () => {
       notificationApi.delete(id),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: notificationsKeys.all({}) });
     },
   });
 };

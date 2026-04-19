@@ -53,7 +53,7 @@ export interface BookingDraft {
 }
 
 export interface PaginationParams {
-  page: number;
+  page?: number;
   limit?: number;
   total?:number
   lastPage?:number

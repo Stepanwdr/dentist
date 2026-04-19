@@ -38,12 +38,13 @@ const EXCLUDE = [
   'PUT:/users/dentist-voting',
   'PUT:/clinic/clinic-voting',
   'DELETE:/users/delete-user',
-  'DELETE/clinic/clinic-delete',
+  'DELETE:/clinic/clinic-delete',
   'GET:/notification/getAll',
   'GET:/notification/getOne',
   'POST:/notification/create',
   'PATCH:/notification/markAsRead',
-   'PATCH:/notification/markAllAsRead',
+  'PATCH:/notification/markAllAsRead',
+  'GET:/notification/getAll',
 ];
 
 export default function (req, res, next) {

@@ -25,6 +25,7 @@ export const ProfilePage: React.FC = () => {
   const qc = useQueryClient();
   const completedCount = state.appointments.filter(a => a.status === 'completed').length;
   const upcomingCount = state.appointments.filter(a => a.status === 'upcoming').length;
+
   const notifConfig= async () => {
     const token = await registerForPush();
     await baseApi.post("/users/push-token", {
@@ -37,16 +38,13 @@ export const ProfilePage: React.FC = () => {
     await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
   }
 
-  useEffect(() => {
-    void notifConfig()
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       void invalidate()
       void refetch();
+      void notifConfig();
     }, [])
-  );
+  )
 
   return (
     <SafeAreaView style={styles.safe}>

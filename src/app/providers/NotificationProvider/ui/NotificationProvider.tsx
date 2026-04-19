@@ -2,6 +2,7 @@ import { PropsWithChildren, useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import { navigate } from "@app/navigation/navigationRef";
 import { useNotifications } from "../lib/useNotifications";
+import {setupNotifications} from "@app/providers/NotificationProvider/lib/setupNotifications";
 
 export const NotificationProvider = ({ children }: PropsWithChildren) => {
 
@@ -24,7 +25,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
         handleNavigation(data);
       });
 
-    // 🚀 если приложение было закрыто
+    // // 🚀 если приложение было закрыто
     Notifications.getLastNotificationResponseAsync().then((response) => {
       if (response) {
         const data = response.notification.request.content.data;
@@ -32,7 +33,14 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
         handleNavigation(data);
       }
     });
-
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Look at that notification',
+        body: "I'm so proud of myself!",
+      },
+      trigger: null,
+    });
+    setupNotifications();
     return () => {
       receiveSub.remove();
       responseSub.remove();
