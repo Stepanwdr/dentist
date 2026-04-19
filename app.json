@@ -12,7 +12,6 @@
     "owner": "stepan94",
     "plugins": [
       "expo-notifications",
-      "@react-native-firebase/app"
     ],
     "splash": {
       "image": "./assets/splash-icon.png",
