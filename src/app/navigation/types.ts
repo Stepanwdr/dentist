@@ -16,7 +16,7 @@ export type RootStackParamList = {
 export type TabParamList = {
   HomeTab: undefined;
   DoctorsTab: undefined;
-  BookingTab: { dentistId?: string } | undefined;
+  BookingTab: { dentistId?: number } | undefined;
   AppointmentsTab: undefined;
   ProfileTab: undefined;
   Doctors: { dentistId: string };

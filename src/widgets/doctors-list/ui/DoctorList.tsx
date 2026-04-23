@@ -75,7 +75,7 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
     </View>
   );
 
-  const renderFilter = ({ item }) => {
+  const renderFilter = ({ item }:{item: { label: string, value: string }}) => {
     const isActive = item.label === selected;
 
     return (
@@ -112,7 +112,7 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
         key={horizontal ? 'horizontal' : 'grid'} // 👈 важно!
         numColumns={horizontal ? 1 : 2}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={renderDoctor}
         contentContainerStyle={{ gap: 8, paddingVertical: 12 }}
         columnWrapperStyle={!horizontal ? { gap: 8, paddingHorizontal: 12 } : undefined}

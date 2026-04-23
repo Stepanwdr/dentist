@@ -12,8 +12,8 @@ import { TabParamList} from '@app/navigation/types';
 import {FULL_SERVICES} from "@entities/service/model/mockData";
 
 type Props = {
-  navigation: NativeStackNavigationProp<TabParamList, 'DoctorsTab'>;
-  route: RouteProp<TabParamList, 'DoctorsTab'>;
+  navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
+  route: RouteProp<TabParamList, 'HomeTab'>;
 };
 
  const DoctorsPage: React.FC<Props> = ({navigation}) => {
