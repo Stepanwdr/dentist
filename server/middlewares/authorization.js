@@ -8,6 +8,7 @@ const EXCLUDE = [
   'POST:/auth/login',
   'POST:/auth/register',
   'POST:/auth/google',
+  'POST:/auth/refresh',
   'POST:/auth/register-doctor',
   'POST:/clinic/clinic-register',
   'POST:/users/appointment',

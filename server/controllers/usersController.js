@@ -26,7 +26,7 @@ class UsersController {
           body: "У вас запись через 2 часа",
           type: "booking",
           data: {
-            screen: "Booking",
+            screen: "AppointmentsTab",
             bookingId: 123,
           },
         });

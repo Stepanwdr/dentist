@@ -6,7 +6,6 @@ import { bookingColors as C } from "@shared/theme/Booking.colors";
 
 import { SuccessScreen } from "@widgets/booking/ui/SuccessScreen";
 import { SERVICES } from "@entities/service";
-import { WEEK } from "@entities/service/model/mockData";
 import { ServiceScreen } from "@widgets/booking/ui/ServiceScreen";
 import { TimeScreen } from "@widgets/booking/ui/TimeScreen";
 import { shadow } from "@features/book-slot/lib";
@@ -27,16 +26,13 @@ const BookingFlow: React.FC<Props> = ({navigation}) => {
   const route = useRoute<any>();
   const dentistId = route.params?.dentistId || '';
   const { data } = useGetDentists({search:""})
- const [lastBook, setLastBook]=useState<TimeSlot | null>(null);
-  const selectedDentist=data?.find((d) => d.id === dentistId) || data?.[0];
+  const [lastBook, setLastBook]=useState<TimeSlot | null>(null);
+  const [selectedDentist, setSelectedDentist] = useState<Dentist | null>(null);
+  const [filteredDentists, setFilteredDentists]=useState<Dentist[]>([]);
   const [screen, setScreen] = useState<'services' | 'time' | 'success'>(
     dentistId ? 'time' : 'services' // 👈 если есть врач — сразу дальше
   );
   const [service, setService] = useState(SERVICES[0]);
-  const [time, setTime] = useState('');
-  const [day, setDay] = useState(WEEK[1]);
-
-
   useFocusEffect(
    useCallback(()=> setScreen('services'),[])
   )
@@ -45,18 +41,42 @@ const BookingFlow: React.FC<Props> = ({navigation}) => {
     if (lastBook) setScreen('success');
   }, [lastBook]);
 
+  useEffect(() => {
+    if (!data?.length) return;
+
+    if (dentistId) {
+      const dentist = data.find((d) => d.id === dentistId);
+
+      if (dentist) {
+        setSelectedDentist(dentist);
+        setFilteredDentists([dentist]);
+      } else {
+        // fallback если id не найден
+        setSelectedDentist(null);
+        setFilteredDentists([]);
+      }
+    } else {
+      setFilteredDentists(data);
+      setSelectedDentist(data[0]);
+    }
+  }, [data, dentistId]);
 
   return (
     <>
       {screen === 'services' && (
-        <ServiceScreen selectedDentist={selectedDentist  || {} as Dentist} onNext={(s) => { setService(s); setScreen('time'); }} />
+        <ServiceScreen
+          dentists={filteredDentists || []}
+          selectedDentist={selectedDentist || {} as Dentist}
+          onSelectDentist={setSelectedDentist}
+          onNext={(s) => { setService(s); setScreen('time'); }}
+        />
       )}
 
       {screen === 'time' && (
         <TimeScreen
           selectedDentist={selectedDentist || {} as Dentist}
           service={service}
-          onNext={(t) => { setTime(t); setDay(WEEK[1]); setScreen('success'); }}
+          onNext={() => setScreen('success') }
           onBack={() => setScreen('services')}
           setLastBook={setLastBook}
         />

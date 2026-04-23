@@ -1,5 +1,5 @@
 import {
-  Users, Clinic,  BookingSlot, Notifications,
+  Users, Clinic,  BookingSlot, Notifications, ScheduleBlock, RefreshTokens
 } from '../models/index.js';
 
 const models = {
@@ -7,6 +7,8 @@ const models = {
   BookingSlot,
   Notifications,
   Clinic,
+  ScheduleBlock,
+  RefreshTokens
 };
 
 async function main() {

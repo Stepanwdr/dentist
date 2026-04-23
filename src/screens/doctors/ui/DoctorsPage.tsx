@@ -7,13 +7,13 @@ import { Colors } from '@shared/theme/colors';
 import { Doctor, Service } from '@shared/types';
 import { DOCTORS } from '@entities/doctor';
 import { useBookingActions } from '@features/booking';
-import {DoctorList, DoctorsList} from '@widgets/doctors-list';
+import {DoctorList} from '@widgets/doctors-list';
 import { TabParamList} from '@app/navigation/types';
 import {FULL_SERVICES} from "@entities/service/model/mockData";
 
 type Props = {
-  navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
-  route: RouteProp<TabParamList, 'HomeTab'>;
+  navigation: NativeStackNavigationProp<TabParamList, 'DoctorsTab'>;
+  route: RouteProp<TabParamList, 'DoctorsTab'>;
 };
 
  const DoctorsPage: React.FC<Props> = ({navigation}) => {

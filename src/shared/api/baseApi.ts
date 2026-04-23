@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 import { tokenStorage } from "@shared/lib/tokenStorage";
 
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
-const API_BASE_URL=  `http://3ymxg2-ip-217-76-14-129.tunnelmole.net`;
+const API_BASE_URL =  `http://ngyg7x-ip-217-76-14-129.tunnelmole.net`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
     (error.response?.data as any)?.message || (error.response?.data)
@@ -42,7 +42,6 @@ const processQueue = (error: any, token: string | null = null) => {
 
 api.interceptors.request.use(async (config) => {
   const token = await tokenStorage.getAccessToken();
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -75,7 +74,6 @@ api.interceptors.response.use(
 
     try {
       const refreshToken = await tokenStorage.getRefreshToken();
-
       const res = await axios.post(
         `${API_BASE_URL}/auth/refresh`,
         {

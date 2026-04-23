@@ -1,5 +1,5 @@
 export interface Dentist {
-  id: string;
+  id: number;
   name: string;
   lname: string;
   fname: string;

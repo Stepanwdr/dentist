@@ -15,7 +15,6 @@ export const SuccessScreen: React.FC<{
 }> = ({  onHome, handleBooksNavigate, lastBook }) => {
   const insets   = useSafeAreaInsets();
   const [sheet, setSheet] = useState(false);
-  console.log(lastBook,'lastBook')
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
 

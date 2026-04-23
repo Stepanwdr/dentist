@@ -26,12 +26,12 @@ export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiRespons
     mutationKey: [...authQueryKeys.root, 'login'],
     mutationFn: async (body: LoginBody) => {
       const res = await authApi.login(body);
-      await tokenStorage.saveTokens(res.token,'')
+      await tokenStorage.saveTokens(res.accessToken,res.refreshToken)
       return res as AuthResponse & ApiResponse;
     },
     onSuccess: async (data) => {
       await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
-      await login(data.token,data?.user)
+      await login(data.accessToken,data.refreshToken,data?.user)
       onSuccess?.(data);
     },
     onError: (err) => {

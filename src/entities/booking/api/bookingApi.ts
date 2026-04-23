@@ -39,10 +39,11 @@ export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
     const q = new URLSearchParams({
       dentistId: params?.dentistId || '',
       date:      params?.date || '',
+      isBusySlots: params.isBusySlots ? 'true' : '',
      ...(params?.status ? { status: params?.status } : {}),
     })
 
-    console.log({q,params})
+    console.log({q})
     const res  = await baseApi.get(`booking/bookings?${q}`) as slotsResponse;
 
     return res.slots as TimeSlot[];

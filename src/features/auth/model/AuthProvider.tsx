@@ -6,7 +6,7 @@ type AuthContextType = {
   user: AuthUser | null;
   token: string | null;
   loading: boolean;
-  login: (token: string, user: AuthUser) => Promise<void>;
+  login: (token: string,refresh:string, user: AuthUser) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const init = async () => {
       const savedToken = await tokenStorage.getAccessToken();
-
+      const savedRefreshToken = await tokenStorage.getRefreshToken();
       if (savedToken) {
         setToken(savedToken);
 
@@ -43,11 +43,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 
-  const login = async (token: string, user: AuthUser) => {
+  const login = async (token: string,refresh:string, user: AuthUser) => {
     setToken(token);
     setUser(user);
 
-    await tokenStorage.saveTokens(token, '' );
+    await tokenStorage.saveTokens(token, refresh );
   };
 
   const logout = async () => {

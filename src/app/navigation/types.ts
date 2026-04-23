@@ -1,6 +1,5 @@
-import {NavigatorScreenParams} from "@react-navigation/native";
 export type BookingStackParamList = {
-  Services: undefined;
+  Services: { dentistId?: string };
   Time: { dentistId?: string };
   Success: undefined;
 };
@@ -17,7 +16,7 @@ export type RootStackParamList = {
 export type TabParamList = {
   HomeTab: undefined;
   DoctorsTab: undefined;
-  BookingTab: NavigatorScreenParams<BookingStackParamList>;
+  BookingTab: { dentistId?: string } | undefined;
   AppointmentsTab: undefined;
   ProfileTab: undefined;
   Doctors: { dentistId: string };

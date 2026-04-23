@@ -117,7 +117,7 @@ export const s = StyleSheet.create({
     paddingVertical:   3,
     borderRadius:      7,
   },
-  pillTxt: { fontSize: 16, fontWeight: '700' },
+  pillTxt: { fontSize: 16, fontWeight: '700', textAlign:"right" },
   chevron: { fontSize: 18, color: C.border, marginLeft: 4 },
 
   // ── Rebook ──

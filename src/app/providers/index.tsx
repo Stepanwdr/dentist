@@ -23,7 +23,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => (
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <BookingProvider>
-            <NotificationProvider>
+            <NotificationProvider >
             {children}
               <Toast/>
             </NotificationProvider>

@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { BookingSlot, Users, Clinic } from '../models/index.js';
+import {BookingSlot, Users, Clinic, ScheduleBlock} from '../models/index.js';
 
 // ─── Helpers ──────────────────────────────────────────
 function toHMS(value) {
@@ -20,20 +20,32 @@ function isValidDateOnly(str) {
 }
 
 async function hasOverlap({ dentistId, date, startTime, endTime, excludeId = null }) {
+  const hasBlock = await ScheduleBlock.count({
+    where: {
+      dentistId,
+      date,
+      startTime: { [Op.lt]: endTime },
+      endTime:   { [Op.gt]: startTime },
+    },
+  });
   const where = {
     dentistId,
     date,
     startTime: { [Op.lt]: endTime },
     endTime:   { [Op.gt]: startTime },
+    status: {
+      [Op.in]: ['pending', 'confirmed'],
+    },
   };
+
   if (excludeId) where.id = { [Op.ne]: excludeId };
   const cnt = await BookingSlot.count({ where });
-  return cnt > 0;
+  return cnt > 0 || hasBlock > 0;
 }
 
 class BookingController {
 
-  // GET /bookings?dentistId=&date=&isBooked=&from=&to=
+  // GET /bookings?dentistId=&date=&from=&to=
   static list = async (req, res, next) => {
     try {
       const {
@@ -45,6 +57,7 @@ class BookingController {
         page = 1,
         limit = 100,
         status,
+        isBusySlots = false,
       } = req.query;
       const now = new Date();
       const userId = req.userId;
@@ -56,7 +69,7 @@ class BookingController {
       const where = {};
       if (dentistId) where.dentistId = Number(dentistId);
       if (date)  where.date  = date;
-
+      if(status) where.patientId = Number(userId);
       if (from) {
         where.startTime = {
           ...(where.startTime || {}),
@@ -71,23 +84,46 @@ class BookingController {
         };
       }
 
-      if (!date && status === 'upcoming') {
+      if (status === 'upcoming') {
+        where.status = {
+          [Op.in]: ['pending', 'confirmed'],
+        };
+
         where[Op.or] = [
           {
-            status: "pending",
-            date: { [Op.gt]: today }, // будущие дни
+            date: { [Op.gt]: today },
           },
           {
             date: today,
-            startTime: { [Op.gte]: currentTime }, // только будущие сегодня
+            startTime: { [Op.gte]: currentTime },
           },
         ];
       }
+      if (status==='finished') {
+        where.status = status;
+      }
+      if (status==='cancelled') {
+        where.status = status;
+      }
 
-      if(status && status !== 'upcoming') where.status = status;
       if(status){
         where.patientId = req.userId;
+        where[Op.or] = [
+          {
+            date: { [Op.gt]: today },
+          },
+          {
+            date: today,
+            startTime: { [Op.gte]: currentTime },
+          },
+        ];
       }
+      if(Boolean(isBusySlots)){
+        where.status = {
+          [Op.in]: ['pending', 'confirmed'],
+        };
+      }
+      console.log(where)
       const { rows: slots, count } = await BookingSlot.findAndCountAll({
         where,
         include: [
@@ -114,15 +150,18 @@ class BookingController {
     }
   };
 
+
   // ✅ GET /booking/next?dentistId=
   static nextBooking = async (req, res, next) => {
     try {
       const now = new Date();
        const patientId = req.userId;
+      console.log({patientId})
       // текущая дата YYYY-MM-DD
       const today = now.toISOString().slice(0, 10);
       // текущее время HH:mm:ss
       const currentTime = now.toTimeString().slice(0, 8);
+      console.log({currentTime})
       const slot = await BookingSlot.findOne({
         where: {
           patientId,
@@ -134,7 +173,6 @@ class BookingController {
             {
               date: { [Op.gt]: today },
             },
-
             // сегодня, но время ещё впереди
             {
               date: today,
@@ -160,7 +198,7 @@ class BookingController {
           ['startTime', 'ASC'],
         ],
       });
-
+      console.log(163,slot && slot.toJSON())
       if (!slot) {
         return res.json({
           status: 'ok',
@@ -218,7 +256,7 @@ class BookingController {
     try {
       const { dentistId, date, startTime, endTime, notes = null, service } = req.body || {};
       const userId = req.userId
-      console.log({userId})
+
       if (!dentistId || !date || !startTime || !endTime) {
         return res.status(400).json({ status: 'error', message: 'dentistId, date, startTime, endTime are required' });
       }
@@ -378,6 +416,8 @@ class BookingController {
       next(e);
     }
   };
+
+  // PATCH /:id
   static changeStatus = async (req, res, next) => {
     try {
       const { id } = req.params;

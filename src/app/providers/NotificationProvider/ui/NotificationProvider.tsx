@@ -1,11 +1,29 @@
-import { PropsWithChildren, useEffect } from "react";
+import {FC, useEffect} from "react";
 import * as Notifications from "expo-notifications";
 import { navigate } from "@app/navigation/navigationRef";
 import { useNotifications } from "../lib/useNotifications";
 import {setupNotifications} from "@app/providers/NotificationProvider/lib/setupNotifications";
 
-export const NotificationProvider = ({ children }: PropsWithChildren) => {
+interface Props {
+  children: React.ReactNode;
+}
+export const NotificationProvider:FC<Props> = ({ children } ) => {
+  function handleNavigation(data: any) {
+    if (!data?.screen) return;
 
+    switch (data.screen) {
+      case "AppointmentsTab":
+        navigate("AppointmentsTab");
+        break;
+
+      case "Profile":
+       navigate("ProfileTab");
+        break;
+
+      default:
+        console.log("Unknown screen:", data.screen);
+    }
+  }
   useNotifications()
   useEffect(() => {
     // 🔔 когда приходит уведомление
@@ -44,20 +62,3 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
   return children;
 };
 
-// 🔀 универсальный роутинг
-function handleNavigation(data: any) {
-  if (!data?.screen) return;
-
-  switch (data.screen) {
-    case "Booking":
-      navigate("Booking", { id: data.bookingId });
-      break;
-
-    case "Profile":
-      navigate("Profile",);
-      break;
-
-    default:
-      console.log("Unknown screen:", data.screen);
-  }
-}

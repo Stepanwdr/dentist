@@ -35,6 +35,11 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
     return data?.filter((doc) => doc.speciality === selected);
   }, [selected,data]);
 
+
+  const handleView = (item:Dentist)=>{
+
+  }
+
   const renderDoctor = ({ item }:{item:Dentist}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
       <Image source={{ uri: item.avatar }} style={styles.image} />
@@ -50,24 +55,22 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
-          onPress={() =>
+          onPress={() =>{
             navigation.navigate('BookingTab', {
-              dentistId: item.id,
+              dentistId: item.id
             })
+          }
+
           }
         >
           <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Записаться</Text>
         </TouchableOpacity>
-        {!horizontal && <TouchableOpacity
-          style={[styles.bookBtn, !horizontal && styles.bookBtnMd]}
-          onPress={() =>
-            navigation.navigate('BookingTab', {
-              dentistId: item.id,
-            })
-          }
-        >
-          {<Text style={[styles.bookText, !horizontal && styles.bookTextMd, styles.bookText]}>Смотреть</Text>}
-        </TouchableOpacity>}
+        {/*{!horizontal && <TouchableOpacity*/}
+        {/*  style={[styles.bookBtn, !horizontal && styles.bookBtnMd]}*/}
+        {/*  onPress={() =>handleView(item) }*/}
+        {/*>*/}
+        {/*  {<Text style={[styles.bookText, !horizontal && styles.bookTextMd, styles.bookText]}>Смотреть</Text>}*/}
+        {/*</TouchableOpacity>}*/}
       </View>
     </View>
   );
@@ -211,7 +214,6 @@ const styles = StyleSheet.create({
   },
 
   bookBtnMd: {
-    marginTop: 20,
     backgroundColor: '#4A9FF5',
     borderRadius: 16,
     height: 30,

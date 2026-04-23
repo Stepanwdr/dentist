@@ -19,20 +19,43 @@ const dateColor = (date: string) => {
   if (days <= 30) return '#FF4D7D';
   return '#4DD9AC';
 };
+const timeLeft = (date: string, startTime: string) => {
+  // date: "2026-04-10"
+  // startTime: "14:30" или "14:30:00"
 
+  const dateTime = new Date(`${date}T${startTime}`);
+  const diff = dateTime.getTime() - Date.now();
+
+  if (diff <= 0) return 'Прошло';
+
+  const totalMinutes = Math.floor(diff / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  if (days > 0) {
+    return `${days} օրից`;
+  }
+
+  if (hours > 0) {
+    return `${hours} ժ ${minutes} ր`;
+  }
+
+  return `${minutes} ր`;
+};
 const daysLeft = (date: string) =>
-  Math.ceil((new Date(date).getTime() - Date.now()) / 86_400_000);
+  Math.ceil((new Date(`${date} 10:00:00`).getTime() - Date.now()) / 86_400_000);
 
 interface SwipeRowProps {
   item:         TimeSlot;
-  onReschedule: (item: TimeSlot) => void;
+  onView:       (item: TimeSlot) => void;
   onEdit:       (item: TimeSlot) => void;
   onCancel:     (item: TimeSlot) => void;
 }
 
 export const SwipeRow: React.FC<SwipeRowProps> = ({
-                                                    item, onReschedule, onEdit, onCancel,
-                                                  }) => {
+   item, onView, onEdit, onCancel,
+}) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen     = useRef(false);
 
@@ -77,12 +100,12 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
       <View style={s.actions}>
         <TouchableOpacity
           style={[s.action, { backgroundColor: '#4DD9AC' }]}
-          onPress={() => { close(); onReschedule(item); }}
+          onPress={() => { close(); onView(item); }}
         >
           <Text style={s.actionIcon}>
-            <Ionicons name="calendar" color="white" size={20} />
+            <Ionicons name="eye" color="white" size={20} />
           </Text>
-          <Text style={s.actionLbl}>Перенос</Text>
+          <Text style={s.actionLbl}>Смотреть</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[s.action, { backgroundColor: Colors.primary }]}
@@ -122,9 +145,9 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
                 <Text style={s.doctorName}>{item.dentist?.name ?? '—'}</Text>
                 <View style={{ flex: 1}}>
                   <View style={[s.pill, { backgroundColor: color + '22' }]}>
-                    <Text style={[s.pillTxt, { color }]}>До визита {days} дня</Text>
+                    <Text style={[s.pillTxt, { color }]}>{days ? `${days} օրից` : `Մնաց ${timeLeft(item.date,item.startTime)}`}</Text>
                   </View>
-                  <View style={{ position:'absolute',top:30, right:0 }}>
+                  <View style={{ position:'absolute', top:30, right:0 }}>
                     <BookStatus status={item.status} />
                   </View>
                 </View>

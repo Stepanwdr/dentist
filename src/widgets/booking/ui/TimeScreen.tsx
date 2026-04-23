@@ -26,6 +26,8 @@ export const TimeScreen: React.FC<{
   const [selMonth, setSelMonth] = useState(0);
   const [selDay, setSelDay]     = useState(1); // index in WEEK
   const [selTime, setSelTime]   = useState<string | null>(null);
+
+
   const handleBook= () => {
   const formatedDate= formatDateYMD(selectedDate || new Date()) //YYYY-MM-DD
     createBook({
@@ -48,7 +50,6 @@ export const TimeScreen: React.FC<{
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor={C.white} />
-
       <View style={[styles.timeHeader, { paddingTop: insets.top + 6 }]}>
         <TouchableOpacity onPress={onBack} activeOpacity={0.7} style={styles.backBtn}>
           <Text style={styles.backTxt}>‹</Text>
@@ -65,7 +66,7 @@ export const TimeScreen: React.FC<{
         dentistId={selectedDentist?.id}
       />
       {/* Sticky CTA */}
-      <View style={[styles.timeCTAWrap, ]}>
+      <View style={[styles.timeCTAWrap]}>
         <TouchableOpacity
           style={[styles.ctaBtn,( !selTime || isPending )  && styles.ctaBtnDisabled]}
           onPress={() => selTime && handleBook()}

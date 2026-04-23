@@ -25,17 +25,18 @@ export function useGetBookings(
    dentistId?:  string,
    serviceId?: string,
    status?: bookStatus | 'upcoming'
+   isBusySlots?: boolean
   }
 ) {
-  const { dentistId ='', serviceId, date='', status=''} = params;
+  const { dentistId ='', serviceId, date='', status='', isBusySlots = false} = params;
   return useQuery<TimeSlot[], Error>({
-    queryKey: bookingKeys.slots(dentistId,date),
+    queryKey: ['bookings', params],
     queryFn:  async () => {
       // if (USE_MOCK) {
       //   await new Promise(r => setTimeout(r, 280));
       //   return mockSlots(new Date(params.date), dentistId);
       // }
-      const data= await fetchSlots({date, serviceId, status, dentistId });
+      const data= await fetchSlots({date, serviceId, status, dentistId, isBusySlots });
 
 
       return data.map((s: any): TimeSlot => ({
@@ -87,7 +88,7 @@ export function useGetNextBooking() {
     queryFn: async () => {
       const res = await baseApi.get(
         `/booking/next`
-      ) as TimeSlot;
+      ) as {slot: TimeSlot};
 
       return res.slot
     },

@@ -11,6 +11,7 @@ export interface GetSlotsParams {
   date?:       string;   // 'YYYY-MM-DD'
   serviceId?: string;
   status?: string;
+  isBusySlots?: boolean;
 }
 
 export interface BookSlotParams {

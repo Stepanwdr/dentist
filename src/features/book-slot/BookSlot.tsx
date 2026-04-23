@@ -147,8 +147,8 @@ const BookSlot: React.FC<TimeScreenProps> = ({
   } = useGetBookings({
     date:      formatDateYMD(date),
     dentistId: String(dentistId),
+    isBusySlots : true
   });
-
   // ── Мержим: полная сетка 09:00–20:00 + статус из API ──
   const slots = useMemo(
     () => generateDaySlots(formatDateYMD(date), apiSlots, today, currentTime),
@@ -189,6 +189,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
 
   useEffect(() => {
     setSelTime(null)
+    refetch()
   }, [date]);
 
   const renderItem = useCallback(({ item }: { item: Row }) => {

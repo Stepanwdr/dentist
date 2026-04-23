@@ -4,18 +4,21 @@ import {bookingKeys} from "@entities/booking/model/booking.model";
 import {bookStatus} from "@shared/types/slot";
 import Toast from "react-native-toast-message";
 
-export const useChangeBookingStatus = () => {
+export const useChangeBookingStatus = (successCb:()=>void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }:{id:number,status:bookStatus}) => changeBookingStatus(id, status),
+    mutationFn: ({ id, status }:{id:number,status:bookStatus,dentistId:number}) => changeBookingStatus(id, status),
 
-    onSuccess: async() => {
+    onSuccess: async(res) => {
+      console.log( )
       Toast.show({
         type:  'success',
         text1: 'Запись удачно отменен!',
       });
-      await queryClient.invalidateQueries({queryKey:['notifications']});
+       successCb()
+       await queryClient.invalidateQueries({queryKey:['notifications']});
     },
   });
 };
+// {status:"upcoming",dentistId:res?.slot.dentistId }

@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   View, Text, FlatList,
-  Alert, StatusBar, ActivityIndicator,
+  Alert, StatusBar, ActivityIndicator, Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,23 +14,57 @@ import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
 import { useGetBookings } from "@entities/booking/model/booking.model";
 import {useFocusEffect} from "@react-navigation/native";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
+import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
+import {tokenStorage} from "@shared/lib/tokenStorage";
 
 
 const BookingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
-  const {mutate:onCancelBook}=useChangeBookingStatus()
-  const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
-  const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || ''});
 
+  const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
+  const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || '' });
+  const { mutate: onCancelBook } = useChangeBookingStatus(refetch)
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
+  const [bookId,setBookId]=useState<number | null>(null);
+  const [sheet, setSheet] = useState(false);
+  const selectedBook = bookingsData?.find(booking => booking.id === bookId) || {} as TimeSlot;
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
+
+  const { startTime, shortMonth, day, isToday } = useMemo(() => {
+    if (!selectedBook?.startTime) return {};
+
+    const date = new Date(selectedBook.date);
+    const today = new Date();
+    return {
+      startTime: selectedBook.startTime,
+      shortMonth: date.toLocaleString('en', { month: 'short' }), // May
+      day: date.getDate(), // 24
+      isToday: date.getDate() === today.getDate()
+    };
+  }, [selectedBook]);
+
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1, useNativeDriver: true,
+        tension: 55, friction: 7, delay: 200,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1, duration: 500, delay: 100, useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Auto-open sheet after 800ms
+    const t = setTimeout(() => bookId ? setSheet(true):setSheet(false), 10);
+    return () => clearTimeout(t);
+  }, [bookId]);
 
 
   // ── Handlers ──────────────────────────────────────
-  const handleReschedule = useCallback((item: TimeSlot) => {
-    Alert.alert('Перенос записи', `${item.dentist?.name} · ${item.date}`, [
-      { text: 'Отмена',   style: 'cancel' },
-      { text: 'Перенести', onPress: () => {} },
-    ]);
+  const handleView = useCallback((item: TimeSlot) => {
+    setBookId(item.id)
   }, []);
 
   const handleEdit = useCallback((item: TimeSlot) => {
@@ -49,7 +83,7 @@ const BookingsScreen: React.FC = () => {
         {
           text:    'Отменить',
           style:   'destructive',
-          onPress: () => onCancelBook({ status:'cancelled',id:item.id}),
+          onPress: () => onCancelBook({ status:'cancelled',id:item.id, dentistId: Number(item.dentistId)}),
         },
       ],
     );
@@ -66,11 +100,11 @@ const BookingsScreen: React.FC = () => {
   const renderList = useCallback(({ item }: { item: TimeSlot }) => (
     <SwipeRow
       item={item}
-      onReschedule={handleReschedule}
+      onView={handleView}
       onEdit={handleEdit}
       onCancel={handleCancel}
     />
-  ), [handleReschedule, handleEdit, handleCancel]);
+  ), [handleView, handleEdit, handleCancel]);
 
   const renderCompleted = useCallback(({ item }: { item: TimeSlot }) => (
     <CompletedRow item={item} />
@@ -151,6 +185,17 @@ const BookingsScreen: React.FC = () => {
         contentContainerStyle={[s.listContent, paddingBottom]}
         showsVerticalScrollIndicator={false}
       />}
+      <BottomSheetDetail
+        visible={sheet}
+        booked={selectedBook}
+        handleBooksNavigate={()=>{}}
+        onClose={()=> setBookId(null)}
+        startTime={startTime ||''}
+        shortMonth={shortMonth ||''}
+        day={String(day)}
+        isToday={isToday}
+      />
+      
     </View>
   );
 };
