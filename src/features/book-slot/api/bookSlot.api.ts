@@ -24,6 +24,10 @@ export interface BookSlotParams {
   service:    string;
 }
 
+export interface EditBookParams extends BookSlotParams {
+  id: number;
+}
+
 export interface BookSlotResponse extends ApiResponse {
  slot: TimeSlot
 }
@@ -65,6 +69,24 @@ export async function bookSlotRequest(params: BookSlotParams): Promise<BookSlotR
     return res
   } catch (e) {
     console.error('[bookSlot.api] bookSlotRequest:', e);
+    throw e;
+  }
+}
+
+export async function editBookRequest(params: EditBookParams): Promise<BookSlotResponse> {
+  try {
+    const res = await baseApi.patch(`/booking/${params.id}`, {
+      dentistId:  params.dentistId,
+      date:       params?.date,
+      service_id: params?.serviceId,
+      startTime:  params.startTime,
+      endTime:    params.endTime,
+      notes:      params.notes,
+      service:    params.service
+    }) as BookSlotResponse;
+    return res
+  } catch (e) {
+    console.error('[bookSlot.api] editBookRequest:', e);
     throw e;
   }
 }

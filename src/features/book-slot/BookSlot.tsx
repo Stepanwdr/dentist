@@ -16,6 +16,7 @@ import {
   useGetAvailableDates,
 } from '@entities/booking/model/booking.model';
 import { formatDateYMD } from '@shared/lib/formatDate';
+import {useRoute} from "@react-navigation/core";
 
 // ─────────────────────────────────────────────────────────
 // GENERATE ALL SLOTS 09:00 – 20:00 (каждые 30 мин)
@@ -101,7 +102,7 @@ type Row = SlotPair | HeaderRow;
 export interface TimeScreenProps {
   onBack?:    () => void;
   onConfirm?: (date: Date, slot: TimeSlot) => void;
-  dentistId:  string;
+  dentistId:  number;
   minYear?:   number;
   maxYear?:   number;
   setSelTime:(time:null)=>void;
@@ -119,7 +120,8 @@ const BookSlot: React.FC<TimeScreenProps> = ({
                                                setSelTime,
                                              }) => {
   const insets = useSafeAreaInsets();
-
+  const route = useRoute<any>();
+  const bookForEdit = route.params?.book;
   const [date,         setDate]         = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 
@@ -157,9 +159,10 @@ const BookSlot: React.FC<TimeScreenProps> = ({
 
   // ── Handlers ──────────────────────────────────────────
   const handleDateChange = useCallback((d: Date) => {
+
     setDate(d);
     setSelectedSlot(null);
-  }, []);
+  }, [bookForEdit]);
 
   const handleSlotPress = useCallback((slot: TimeSlot) => {
     // Игнорируем занятые и прошедшие
@@ -191,6 +194,16 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     setSelTime(null)
     refetch()
   }, [date]);
+
+  useEffect(() => {
+    if (!bookForEdit) return;
+
+    // 1. ставим дату
+    const bookDate = new Date(bookForEdit.date);
+    setDate(bookDate);
+
+  }, [bookForEdit]);
+
 
   const renderItem = useCallback(({ item }: { item: Row }) => {
     if (item.type === 'header') {
@@ -268,7 +281,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
           </TouchableOpacity>
           : <View style={S.backBtn} />
         }
-        <Text style={S.topTitle}>Записаться</Text>
+        <Text style={S.topTitle}>{bookForEdit ? 'Редактировать' : 'Записаться'}</Text>
         <View style={S.backBtn} />
       </View>
 

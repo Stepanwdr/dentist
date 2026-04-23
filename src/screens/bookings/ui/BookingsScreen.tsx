@@ -16,9 +16,14 @@ import {useFocusEffect} from "@react-navigation/native";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
 import {tokenStorage} from "@shared/lib/tokenStorage";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {TabParamList} from "@app/navigation/types";
 
+interface Props {
+  navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
 
-const BookingsScreen: React.FC = () => {
+}
+const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
 
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
@@ -70,7 +75,10 @@ const BookingsScreen: React.FC = () => {
   const handleEdit = useCallback((item: TimeSlot) => {
     Alert.alert('Изменить запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
       { text: 'Отмена',    style: 'cancel' },
-      { text: 'Сохранить', onPress: () => {} },
+      { text: 'Да', onPress: () => navigation.navigate('BookingTab', {
+          dentistId: item.dentistId,
+          book: item,
+        }) },
     ]);
   }, []);
 

@@ -1,3 +1,5 @@
+import {TimeSlot} from "@shared/types/slot";
+
 export type BookingStackParamList = {
   Services: { dentistId?: string };
   Time: { dentistId?: string };
@@ -16,7 +18,7 @@ export type RootStackParamList = {
 export type TabParamList = {
   HomeTab: undefined;
   DoctorsTab: undefined;
-  BookingTab: { dentistId?: number } | undefined;
+  BookingTab: { dentistId?: string | number, book?:TimeSlot } | undefined;
   AppointmentsTab: undefined;
   ProfileTab: undefined;
   Doctors: { dentistId: string };

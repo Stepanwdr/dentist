@@ -4,11 +4,12 @@ import {StatusBar, StyleSheet, Text, TouchableOpacity, View} from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
 import {shadow} from "@features/book-slot/lib";
-import { useState} from "react";
-import {useBookSlot} from "@features/book-slot/model/queries";
+import {useState} from "react";
+import {useBookSlot, useEditBook} from "@features/book-slot/model/queries";
 import BookSlot from "@features/book-slot/BookSlot";
 import { formatDateYMD } from "@shared/lib/formatDate";
 import { Dentist } from "@shared/types/dentist";
+import {useRoute} from "@react-navigation/core";
 
 export const TimeScreen: React.FC<{
   service: typeof SERVICES[0];
@@ -17,28 +18,42 @@ export const TimeScreen: React.FC<{
   selectedDentist: Dentist;
   setLastBook: (bookSlot: TimeSlot) => void;
 }> = ({ service, onBack ,selectedDentist, setLastBook }) => {
-
+  const route = useRoute<any>();
+  const bookForEdit = route.params?.book;
   const { mutate: createBook, isPending } = useBookSlot(setLastBook )
+  const { mutate: editBook, isPending: isPendingEditbook } = useEditBook(setLastBook )
   const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [slot, setSlot] = useState<TimeSlot | null>(null);
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
-  const [selMonth, setSelMonth] = useState(0);
-  const [selDay, setSelDay]     = useState(1); // index in WEEK
   const [selTime, setSelTime]   = useState<string | null>(null);
 
-
   const handleBook= () => {
+
   const formatedDate= formatDateYMD(selectedDate || new Date()) //YYYY-MM-DD
-    createBook({
-      dentistId: Number(selectedDentist?.id),
-      date: formatedDate,
-      serviceId: service.id,
-      notes:"Зуб болит",
-      startTime:slot?.startTime || '',
-      endTime:slot?.endTime || '',
-      service: service.label
-    })
+
+    if(bookForEdit){
+      void editBook({
+        dentistId: Number(selectedDentist?.id),
+        date: formatedDate,
+        serviceId: service.id,
+        notes: "Зуб болит",
+        startTime:slot?.startTime || '',
+        endTime:slot?.endTime || '',
+        service: service.label,
+        id: Number(bookForEdit?.id),
+      })
+    }else{
+      createBook({
+        dentistId: Number(selectedDentist?.id),
+        date: formatedDate,
+        serviceId: service.id,
+        notes:"Зуб болит",
+        startTime:slot?.startTime || '',
+        endTime:slot?.endTime || '',
+        service: service.label
+      })
+    }
+
   }
 
   const handleSlotSelect=(date:Date,slot:TimeSlot)=>{
@@ -63,13 +78,14 @@ export const TimeScreen: React.FC<{
       <BookSlot
         onConfirm={handleSlotSelect}
         setSelTime={setSelTime}
-        dentistId={selectedDentist?.id}
+        dentistId={Number(selectedDentist?.id)}
       />
       {/* Sticky CTA */}
       <View style={[styles.timeCTAWrap]}>
         <TouchableOpacity
-          style={[styles.ctaBtn,( !selTime || isPending )  && styles.ctaBtnDisabled]}
+          style={[styles.ctaBtn,( !selTime || isPending || isPendingEditbook )  && styles.ctaBtnDisabled]}
           onPress={() => selTime && handleBook()}
+          disabled={!selTime || isPending || isPendingEditbook}
           activeOpacity={0.85}
         >
           <Text style={styles.ctaTxt}>

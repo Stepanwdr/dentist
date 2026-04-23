@@ -367,29 +367,41 @@ class BookingController {
   static update = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { date, startTime, endTime, notes } = req.body || {};
+      const { date, startTime, endTime, notes, dentistId, service } = req.body || {};
+      const userId = req.userId;
 
       const slot = await BookingSlot.findByPk(id);
       if (!slot)        return res.status(404).json({ status: 'error', message: 'Slot not found' });
-      if (slot.isBooked) return res.status(409).json({ status: 'error', message: 'Booked slot cannot be changed' });
+      if (slot.patientId !== userId && slot.dentistId !== userId) {
+        return res.status(403).json({ status: 'error', message: 'Forbidden' });
+      }
 
       const patch = {};
       let newDate  = slot.date;
       let newStart = slot.startTime;
       let newEnd   = slot.endTime;
+      let newDentistId = slot.dentistId;
 
       if (notes     !== undefined) patch.notes = notes;
+      if (service   !== undefined) patch.service = service;
       if (date      !== undefined) {
         if (!isValidDateOnly(date)) return res.status(400).json({ status: 'error', message: 'Invalid date format' });
         newDate = date;
       }
       if (startTime !== undefined) newStart = toHMS(startTime);
       if (endTime   !== undefined) newEnd   = toHMS(endTime);
+      if (dentistId !== undefined) {
+        const dentist = await Users.findByPk(dentistId);
+        if (!dentist) return res.status(404).json({ status: 'error', message: 'Dentist not found' });
+        newDentistId = Number(dentistId);
+        patch.dentistId = newDentistId;
+        patch.clinicId = dentist.toJSON().clinicId;
+      }
 
       if (newStart >= newEnd) {
         return res.status(400).json({ status: 'error', message: 'startTime must be earlier than endTime' });
       }
-      if (await hasOverlap({ dentistId: slot.dentistId, date: newDate, startTime: newStart, endTime: newEnd, excludeId: slot.id })) {
+      if (await hasOverlap({ dentistId: newDentistId, date: newDate, startTime: newStart, endTime: newEnd, excludeId: slot.id })) {
         return res.status(409).json({ status: 'error', message: 'Время записи занят, выберите другою...' });
       }
 
@@ -398,6 +410,20 @@ class BookingController {
       patch.endTime   = newEnd;
 
       await slot.update(patch);
+      await slot.reload({
+        include: [
+          {
+            model: Users,
+            as: 'dentist',
+            attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
+          },
+          {
+            model: Clinic,
+            as: 'clinic',
+            attributes: ['id', 'name', 'address', 'lat', 'long']
+          }
+        ]
+      });
       res.json({ status: 'ok', slot });
     } catch (e) {
       next(e);
