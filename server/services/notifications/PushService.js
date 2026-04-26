@@ -1,9 +1,10 @@
 import admin from "firebase-admin";
+import fs from "fs";
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
+const serviceAccount = JSON.parse(
+  fs.readFileSync(new URL("./serviceAccount.json", import.meta.url))
+);
 console.log({serviceAccount})
-serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
-
 
 // Инициализация Firebase (один раз!)
 if (!admin.apps.length) {
