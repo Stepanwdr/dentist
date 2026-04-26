@@ -2,10 +2,10 @@ import admin from "firebase-admin";
 import fs from "fs";
 
 const serviceAccount = JSON.parse(
-  fs.readFileSync(new URL("./serviceAccount.json", import.meta.url))
+  fs.readFileSync(new URL("./dentist-37300-firebase-adminsdk-fbsvc-badcdf3a93.json", import.meta.url))
 );
-console.log(serviceAccount.private_key);
-// Инициализация Firebase (один раз!)
+
+
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
