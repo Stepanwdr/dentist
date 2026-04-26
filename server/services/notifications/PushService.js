@@ -1,6 +1,3 @@
-// noinspection JSAnnotator
-import fs from "fs";
-
 import admin from "firebase-admin";
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
