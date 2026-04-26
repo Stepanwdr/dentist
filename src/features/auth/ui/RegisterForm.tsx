@@ -19,6 +19,9 @@ export interface RegisterFormValues {
   email: string;
   phone: string;
   password: string;
+  // roles: patient (default) or doctor
+  // Will be serialized to API payload as part of RegisterBody
+  role?: string;
 }
 
 interface RegisterFormErrors {
@@ -142,8 +145,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   onSubmit,
 }) => {
   const [values, setValues] = useState<RegisterFormValues>({
-    fname: '', email: '', phone: '', password: '', lname:""
-  });
+    fname: '', email: '', phone: '', password: '', lname:"", role: 'patient'
+  } as any);
+  const [role, setRole] = useState<'patient'|'dentist'>('patient');
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
 
@@ -199,11 +203,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   }
 
   function handleSubmit() {
-    if (validate()) onSubmit(values);
+    if (validate()) {
+      const payload: RegisterFormValues = { ...values, role };
+      onSubmit(payload);
+    }
   }
 
   return (
     <View>
+      {/* Role selector */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 6 }}>
+        <TouchableOpacity
+          onPress={() => setRole('patient')}
+          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, backgroundColor: role === 'patient' ? Colors.primary : Colors.background, marginRight: 8,}}
+        >
+          <Text style={{ color: role === 'patient' ? Colors.surface : Colors.text, width:'100%' }}>Пациент</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setRole('dentist')}
+          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, backgroundColor: role === 'dentist' ? Colors.primary : Colors.background }}
+        >
+          <Text style={{ color: role === 'dentist' ? Colors.surface : Colors.text }}>Доктор</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Name */}
       <Field

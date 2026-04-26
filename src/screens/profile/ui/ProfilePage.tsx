@@ -66,7 +66,7 @@ export const ProfilePage: React.FC = () => {
         </View>
 
         <PatientHeader patient={data || {} as AuthUser} />
-        <PatientStats completedCount={completedCount} upcomingCount={upcomingCount} />
+        {/*<PatientStats completedCount={completedCount} upcomingCount={upcomingCount} />*/}
 
         <Text style={styles.sectionTitle}>Личные данные</Text>
         {editing ? (

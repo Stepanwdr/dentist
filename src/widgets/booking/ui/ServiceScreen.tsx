@@ -18,7 +18,7 @@ import { bookingColors as C } from "@shared/theme/Booking.colors";
 
 type Props = {
   onNext: (s: typeof SERVICES[0]) => void;
-  selectedDentist: Dentist;
+  selectedDentist: Dentist | null;
   dentists: Dentist[];
   onSelectDentist: (dentist: Dentist) => void;
 };

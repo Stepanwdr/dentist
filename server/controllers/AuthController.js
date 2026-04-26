@@ -11,7 +11,7 @@ const { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID } = process.env;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // Конфиг токенов
-const ACCESS_TOKEN_EXPIRES = '15m';
+const ACCESS_TOKEN_EXPIRES = '180m';
 const REFRESH_TOKEN_EXPIRES = '7d';
 const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000;
 

@@ -4,15 +4,15 @@ import { DayChip } from "./DayChip";
 import {DAY_G, DAY_W} from "@features/book-slot/lib";
 import { bookingColors as C } from '@shared/theme/Booking.colors';
 import { MonthYearPills } from "./MonthYearPills";
-const isSameDay = (a: Date, b: Date) => dk(a) === dk(b);
+import { toDayKey, normalizeDate } from '@shared/utils/date';
+const isSameDay = (a: Date, b: Date) => toDayKey(a) === toDayKey(b);
 
 function monthDates(y: number, m: number): Date[] {
   const n = new Date(y, m + 1, 0).getDate();
   return Array.from({ length: n }, (_, i) => new Date(y, m, i + 1));
 }
-const dk  = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const isToday   = (d: Date) => dk(d) === dk(new Date());
+// Local-day helpers moved to date.ts
+
 
 export const CalendarSection = memo<{
   selectedDate:  Date;
@@ -21,9 +21,9 @@ export const CalendarSection = memo<{
   minYear:       number;
   maxYear:       number;
 }>(({ selectedDate, available, onDateChange, minYear, maxYear }) => {
-    const today   = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+    const today   = useMemo(() => normalizeDate(new Date()), []);
     const scrollRef = useRef<ScrollView>(null);
-    const selKey    = dk(selectedDate);
+    const selKey    = toDayKey(selectedDate);
 
     const days = useMemo(
       () => monthDates(selectedDate.getFullYear(), selectedDate.getMonth()),
@@ -73,8 +73,8 @@ export const CalendarSection = memo<{
           key={`${selectedDate.getFullYear()}-${selectedDate.getMonth()}`}
         >
           {days.map(d => {
-            const key  = dk(d);
-            const past = d < today && !isToday(d);
+      const key  = toDayKey(d);
+      const past = toDayKey(d) < toDayKey(today);
             return (
               <DayChip
                 key={key}

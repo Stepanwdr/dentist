@@ -60,13 +60,12 @@ const BookingFlow: React.FC<Props> = ({navigation}) => {
       setSelectedDentist(data[0]);
     }
   }, [data, dentistId]);
-
   return (
     <>
       {screen === 'services' && (
         <ServiceScreen
           dentists={filteredDentists || []}
-          selectedDentist={selectedDentist || {} as Dentist}
+          selectedDentist={selectedDentist}
           onSelectDentist={setSelectedDentist}
           onNext={(s) => { setService(s); setScreen('time'); }}
         />
@@ -74,7 +73,7 @@ const BookingFlow: React.FC<Props> = ({navigation}) => {
 
       {screen === 'time' && (
         <TimeScreen
-          selectedDentist={selectedDentist || {} as Dentist}
+          selectedDentist={selectedDentist}
           service={service}
           onNext={() => setScreen('success') }
           onBack={() => setScreen('services')}

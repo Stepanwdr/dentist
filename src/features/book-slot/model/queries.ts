@@ -18,7 +18,7 @@ export function useBookSlot(onSuccess?: (payload: TimeSlot)=> void ){
         Toast.show({
           type:  'success',
           text1: 'Запись создана!',
-          text2: `${params.date}`,
+          text2: `${data.slot.date}`,
         });
         await queryClient.invalidateQueries({
           queryKey:bookingKeys.all(),
@@ -43,7 +43,7 @@ export function useBookSlot(onSuccess?: (payload: TimeSlot)=> void ){
       Toast.show({
         type:  'success',
         text1: 'Запись создана!',
-        text2: `${params.date}`,
+        text2: `${_data.slot.date}`,
       });
       queryClient.invalidateQueries({
         queryKey:bookingKeys.all(),
@@ -59,13 +59,13 @@ export function useEditBook(onSuccess?: (payload: TimeSlot)=> void ){
     mutationFn: async (params) => {
       return editBookRequest(params)
     },
-    onSettled:async(data,error,params) => {
+    onSettled:async(data,error) => {
       if (data) {
         onSuccess?.(data?.slot);
         Toast.show({
           type:  'success',
           text1: 'Запись обновлена!',
-          text2: `${params.date}`,
+          text2: `${data.slot.date}`,
         });
         await queryClient.invalidateQueries({
           queryKey: bookingKeys.all()
@@ -78,7 +78,7 @@ export function useEditBook(onSuccess?: (payload: TimeSlot)=> void ){
           type:  'error',
           text1: error.message,
         });
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey:bookingKeys.all(),
         });
       }

@@ -1,16 +1,17 @@
-import React, {useEffect, useRef} from "react";
-import {Animated, Dimensions, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {ReactNode, useEffect, useRef} from "react";
+import {Animated, Dimensions, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View,ActivityIndicator} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
 const {  height: SH } = Dimensions.get('window');
 import {shadow} from "@features/book-slot/lib";
 import {TimeSlot} from "@shared/types/slot";
+import {BookStatus} from "@shared/ui/BookStatus";
 
 export const BottomSheetDetail: React.FC<{
   visible:  boolean;
   booked:  TimeSlot | null;
   onClose:  () => void;
-  handleBooksNavigate:  () => void;
+  handleBooksNavigate?:  () => void;
   startTime: string;
   shortMonth: string;
   day: string;
@@ -27,10 +28,12 @@ export const BottomSheetDetail: React.FC<{
 
   const insets = useSafeAreaInsets();
 
-  const ROW = (icon: string, label: string, value: string) => (
+  const ROW = (icon: string, label: string, value: ReactNode) => (
     <View style={styles.sheetRow}>
-      <Text style={styles.sheetRowLabel}>{icon} {label}</Text>
-      <Text style={styles.sheetRowValue}>{value}</Text>
+      {booked ? <>
+        <Text style={styles.sheetRowLabel}>{icon} {label}</Text>
+        <Text style={styles.sheetRowValue}>{value}</Text>
+      </> : <ActivityIndicator/>}
     </View>
   );
 
@@ -56,7 +59,7 @@ export const BottomSheetDetail: React.FC<{
             {/*<Text style={styles.sheetDoctorRating}>★ 4.9 · 12 лет опыта</Text>*/}
           </View>
           <View style={styles.sheetCheckCircle}>
-            <Text style={{ fontSize: 14, color: '#059669' }}>✓</Text>
+            <BookStatus status={booked?.status || 'pending'}/>
           </View>
         </View>
 
@@ -69,14 +72,12 @@ export const BottomSheetDetail: React.FC<{
         {ROW('📱', 'Телефон', String(booked?.dentist?.phone))}
         <View style={styles.sheetDivider} />
         {ROW('🏥', 'Адрес', String(booked?.clinic?.address))}
-        <View style={styles.sheetDivider} />
-
         {/* Actions */}
-        <View style={styles.sheetActions}>
+        {handleBooksNavigate && <View style={styles.sheetActions}>
           <TouchableOpacity style={styles.sheetBtnPrimary} onPress={handleBooksNavigate} activeOpacity={0.85}>
             <Text style={styles.sheetBtnTxt}>Смотреть список</Text>
           </TouchableOpacity>
-        </View>
+        </View>}
       </Animated.View>
     </Modal>
   );
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   sheetDoctorName:  { fontSize: 14, fontWeight: '800', color: C.text },
   sheetDoctorRating:{ fontSize: 11, color: C.teal, marginTop: 2 },
   sheetCheckCircle: {
-    width: 30, height: 30, borderRadius: 15,
+    width: 100, height: 30, borderRadius: 15,
     backgroundColor: '#ECFDF5', alignItems: 'center', justifyContent: 'center',
   },
   sheetDivider: { height: 1, backgroundColor: C.border, marginVertical: 4 },

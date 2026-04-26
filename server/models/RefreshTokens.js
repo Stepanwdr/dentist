@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../services/sequelize.js';
 
-export const RefreshToken = sequelize.define('RefreshToken', {
+ const RefreshToken = sequelize.define('RefreshToken', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

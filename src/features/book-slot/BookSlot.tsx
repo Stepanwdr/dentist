@@ -17,6 +17,7 @@ import {
 } from '@entities/booking/model/booking.model';
 import { formatDateYMD } from '@shared/lib/formatDate';
 import {useRoute} from "@react-navigation/core";
+import {toDayKey, normalizeDate, fromDayKey} from '@shared/utils/date';
 
 // ─────────────────────────────────────────────────────────
 // GENERATE ALL SLOTS 09:00 – 20:00 (каждые 30 мин)
@@ -101,11 +102,12 @@ type Row = SlotPair | HeaderRow;
 
 export interface TimeScreenProps {
   onBack?:    () => void;
-  onConfirm?: (date: Date, slot: TimeSlot) => void;
-  dentistId:  number;
+  onConfirm?: (date: string, slot: TimeSlot) => void;
+  dentistId:  number | null;
   minYear?:   number;
   maxYear?:   number;
   setSelTime:(time:null)=>void;
+  selectedDate:string
 }
 
 // ─────────────────────────────────────────────────────────
@@ -122,23 +124,20 @@ const BookSlot: React.FC<TimeScreenProps> = ({
   const insets = useSafeAreaInsets();
   const route = useRoute<any>();
   const bookForEdit = route.params?.book;
-  const [date,         setDate]         = useState<Date>(new Date());
+  const [date,         setDate]         = useState<Date>(normalizeDate(new Date()));
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-
-  const today = formatDateYMD(new Date());
+  const todayKey = toDayKey(normalizeDate(new Date()));
   const currentTime = new Date().toTimeString().slice(0, 8);
-  const future = useMemo(() => {
+  const futureKey = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 90);
-    return formatDateYMD(d);
+    return toDayKey(normalizeDate(d));
   }, []);
-  // ── Доступные даты (точки в календаре) ───────────────
   const { data: available = new Set<string>() } = useGetAvailableDates({
-    dentistId: String(dentistId),
-    from: today,
-    to:   future,
+    dentistId: dentistId,
+    from: todayKey,
+    to:   futureKey,
   });
-
   // ── Слоты из API (только реально созданные в БД) ─────
   const {
     data:      apiSlots = [],
@@ -148,18 +147,17 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     refetch,
   } = useGetBookings({
     date:      formatDateYMD(date),
-    dentistId: String(dentistId),
+    dentistId: dentistId || 0,
     isBusySlots : true
   });
   // ── Мержим: полная сетка 09:00–20:00 + статус из API ──
   const slots = useMemo(
-    () => generateDaySlots(formatDateYMD(date), apiSlots, today, currentTime),
-    [date, apiSlots, today, currentTime],
+    () => generateDaySlots(formatDateYMD(date), apiSlots, todayKey, currentTime),
+    [date, apiSlots, todayKey, currentTime],
   );
-
+  console.log({slots})
   // ── Handlers ──────────────────────────────────────────
   const handleDateChange = useCallback((d: Date) => {
-
     setDate(d);
     setSelectedSlot(null);
   }, [bookForEdit]);
@@ -168,7 +166,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     // Игнорируем занятые и прошедшие
     if (slot.isBooked || slot.disabled) return;
     setSelectedSlot(slot);
-    onConfirm?.(date, slot);
+    onConfirm?.(slot.date, slot);
   }, [date, onConfirm]);
 
   const selectedSlotId = selectedSlot?.id ?? null;
@@ -192,14 +190,13 @@ const BookSlot: React.FC<TimeScreenProps> = ({
 
   useEffect(() => {
     setSelTime(null)
-    refetch()
+    void refetch()
   }, [date]);
 
   useEffect(() => {
     if (!bookForEdit) return;
-
     // 1. ставим дату
-    const bookDate = new Date(bookForEdit.date);
+    const bookDate = normalizeDate(new Date(bookForEdit.date));
     setDate(bookDate);
 
   }, [bookForEdit]);

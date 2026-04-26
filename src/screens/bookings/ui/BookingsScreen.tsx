@@ -11,11 +11,10 @@ import { s }                  from '@widgets/booking/ui/BookingsScreen/BookingSc
 import { AppointmentsTab, BookingTabs} from "@widgets/booking/ui/BookingsScreen/ui/BookingTabs";
 import { CompletedRow } from "@widgets/booking/ui/BookingsScreen/ui/CompletedRow";
 import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
-import { useGetBookings } from "@entities/booking/model/booking.model";
+import { useGetBooking, useGetBookings } from "@entities/booking/model/booking.model";
 import {useFocusEffect} from "@react-navigation/native";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
-import {tokenStorage} from "@shared/lib/tokenStorage";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {TabParamList} from "@app/navigation/types";
 
@@ -32,7 +31,8 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
   const [bookId,setBookId]=useState<number | null>(null);
   const [sheet, setSheet] = useState(false);
-  const selectedBook = bookingsData?.find(booking => booking.id === bookId) || {} as TimeSlot;
+  const { data: selectedBookData } = useGetBooking(bookId || undefined);
+  const selectedBook = selectedBookData || {} as TimeSlot;
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
 
@@ -196,7 +196,6 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
       <BottomSheetDetail
         visible={sheet}
         booked={selectedBook}
-        handleBooksNavigate={()=>{}}
         onClose={()=> setBookId(null)}
         startTime={startTime ||''}
         shortMonth={shortMonth ||''}

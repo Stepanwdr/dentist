@@ -2,16 +2,15 @@ import React, {memo, useCallback, useMemo, useRef} from "react";
 import {Animated, Text, TouchableOpacity, View,StyleSheet} from "react-native";
 import { bookingColors as C } from '@shared/theme/Booking.colors';
 import {DAY_W, DAYS_SHORT, shadow} from "@features/book-slot/lib";
+import { toDayKey, normalizeDate } from '@shared/utils/date';
 
 export const DayChip = memo<{
   date: Date; selected: boolean; hasDot: boolean;
   disabled: boolean; onPress: (d: Date) => void;
 }>(({ date, selected, hasDot, disabled, onPress }) => {
   const sc    = useRef(new Animated.Value(1)).current;
-  const dk  = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const isToday   = (d: Date) => dk(d) === dk(new Date());
-  const today   = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+  const todayKey = useMemo(() => toDayKey(new Date()), []);
+  const isToday = toDayKey(date) === todayKey;
 
   const press = useCallback(() => {
     if (disabled) return;
@@ -19,7 +18,7 @@ export const DayChip = memo<{
       Animated.timing(sc, { toValue: 0.86, duration: 70, useNativeDriver: true }),
       Animated.spring(sc, { toValue: 1, useNativeDriver: true, tension: 220, friction: 10 }),
     ]).start();
-    onPress(date);
+    onPress(normalizeDate(date));
   }, [disabled, date, onPress]);
 
   return (
@@ -27,14 +26,14 @@ export const DayChip = memo<{
       <Animated.View style={[
         S.chip,
         selected          && S.chipSel,
-        today && !selected && S.chipToday,
+        isToday && !selected && S.chipToday,
         disabled          && S.chipDis,
         { transform: [{ scale: sc }] },
       ]}>
-        <Text style={[S.chipDay, selected && S.chipDaySel, today && !selected && S.chipDayToday, disabled && S.chipDayDis]}>
+        <Text style={[S.chipDay, selected && S.chipDaySel, isToday && !selected && S.chipDayToday, disabled && S.chipDayDis]}>
           {DAYS_SHORT[date.getDay()]}
         </Text>
-        <Text style={[S.chipNum, selected && S.chipNumSel, today && !selected && S.chipNumToday, disabled && S.chipNumDis]}>
+        <Text style={[S.chipNum, selected && S.chipNumSel, isToday && !selected && S.chipNumToday, disabled && S.chipNumDis]}>
           {date.getDate()}
         </Text>
         <View style={S.dotWrap}>

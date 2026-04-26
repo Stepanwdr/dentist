@@ -18,7 +18,7 @@ export interface AuthUser {
   email: string;
   clinicId?: number
   phone?: string;
-  role?: 'admin' | 'administrator' | 'director' | 'doctor' | 'patient' | string;
+  role?: 'admin' | 'administrator' | 'director' | 'dentist' | 'patient' | string;
   dentistId?:number
   birthDate: string;
   allergies: string;
@@ -39,6 +39,8 @@ export interface RegisterBody {
   phone: string;
   birthDate: string; // ISO or YYYY-MM-DD
   gender?: 'male' | 'female';
+  // Role of the user being registered: 'patient' or 'doctor' (dentist)
+  role?: string;
 }
 
 export interface AuthResponse {

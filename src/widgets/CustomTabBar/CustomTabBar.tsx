@@ -11,21 +11,19 @@ const C = {
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const ICONS: Record<string, { active: IconName; inactive: IconName; label: string }> = {
-  HomeTab:         { active: 'home',     inactive: 'home-outline',     label: 'Главная'   },
-  BookingTab:      { active: 'calendar', inactive: 'calendar-outline', label: 'Записаться' },
-  AppointmentsTab: { active: 'list',     inactive: 'list-outline',     label: 'Мои записи' },
-  DoctorsTab:      { active: 'medkit',   inactive: 'medkit-outline',   label: 'Врачи'   },
-  ProfileTab:      { active: 'person',   inactive: 'person-outline',   label: 'Профиль'   },
-};
 
-export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export type Icons = Record<string, { active: IconName; inactive: IconName; label: string }>
+
+interface CustomTabBarProps extends BottomTabBarProps{
+  icons: Icons
+}
+export function CustomTabBar({ state, descriptors, navigation, icons }: CustomTabBarProps) {
   return (
     <View style={s.wrap}>
       <View style={s.bar}>
         {state.routes.map((route, index) => {
           const focused = state.index === index;
-          const icon    = ICONS[route.name];
+          const icon    = icons[route.name];
 
           const onPress = () => {
             const event = navigation.emit({

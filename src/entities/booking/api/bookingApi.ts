@@ -34,6 +34,10 @@ export function dateToSlot(date: Date): Pick<GetSlotsParams, 'date'> & {
 interface slotsResponse extends ApiResponse {
   slots: TimeSlot[]
 }
+
+interface slotResponse extends ApiResponse {
+  slot: TimeSlot
+}
 export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
   try {
     const q = new URLSearchParams({
@@ -51,6 +55,16 @@ export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
 
   } catch (e) {
     console.error('[bookSlot.api] fetchSlots:', e);
+    throw e;
+  }
+}
+
+export async function fetchBookingById(id: number | string): Promise<TimeSlot> {
+  try {
+    const res  = await baseApi.get(`booking/${id}`) as slotResponse;
+    return res.slot as TimeSlot;
+  } catch (e) {
+    console.error('[bookingApi] fetchBookingById:', e);
     throw e;
   }
 }

@@ -152,6 +152,43 @@ class BookingController {
 
 
   // ✅ GET /booking/next?dentistId=
+  static getOne = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.userId;
+
+      const slot = await BookingSlot.findByPk(id, {
+        include: [
+          {
+            model: Users,
+            as: 'dentist',
+            attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
+          },
+          {
+            model: Clinic,
+            as: 'clinic',
+            attributes: ['id', 'name', 'address', 'lat', 'long']
+          }
+        ]
+      });
+
+      if (!slot) {
+        return res.status(404).json({ status: 'error', message: 'Slot not found' });
+      }
+
+      if (slot.patientId !== userId && slot.dentistId !== userId) {
+        return res.status(403).json({ status: 'error', message: 'Forbidden' });
+      }
+
+      res.json({
+        status: 'ok',
+        slot,
+      });
+    } catch (e) {
+      next(e);
+    }
+  };
+
   static nextBooking = async (req, res, next) => {
     try {
       const now = new Date();

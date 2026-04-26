@@ -1,15 +1,13 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 
 import { DoctorsPage } from '@screens/doctors';
-import { BookingPage } from '@screens/booking';
-import { ConfirmationPage } from '@screens/confirmation';
 import { ProfilePage } from '@screens/profile';
 import { AuthPage } from '@screens/login';
+import DentistTabs from '@app/navigation/dentist/DentistTabs';
 
 import { Colors } from '@shared/theme/colors';
 import { TabParamList } from './types';
@@ -18,20 +16,19 @@ import {useAuth} from "@features/auth/model/useAuth";
 import { navigationRef } from './navigationRef';
 import HomeScreen from "@screens/home/ui/HomeScreen";
 import BookingFlow from "@screens/booking/ui/BookingFlow";
-import { CustomTabBar } from "@widgets/CustomTabBar/CustomTabBar";
+import {CustomTabBar, Icons} from "@widgets/CustomTabBar/CustomTabBar";
 import BookingsScreen from "../../screens/bookings/ui/BookingsScreen";
 import WelcomeScreen from "@screens/welcome/WelcomeScreen";
 
-const Stack = createNativeStackNavigator<TabParamList>();
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator<TabParamList>();
 
-const STACK_OPTIONS = {
-  headerStyle: { backgroundColor: Colors.surface },
-  headerTintColor: Colors.text,
-  headerTitleStyle: { fontWeight: '600' as const, fontSize: 17 },
-  headerShadowVisible: false,
-  contentStyle: { backgroundColor: Colors.background },
+const patientIcons: Icons = {
+  HomeTab:         { active: 'home',     inactive: 'home-outline',     label: 'Главная'   },
+  BookingTab:      { active: 'calendar', inactive: 'calendar-outline', label: 'Записаться' },
+  AppointmentsTab: { active: 'list',     inactive: 'list-outline',     label: 'Мои записи' },
+  DoctorsTab:      { active: 'medkit',   inactive: 'medkit-outline',   label: 'Врачи'   },
+  ProfileTab:      { active: 'person',   inactive: 'person-outline',   label: 'Профиль'   },
 };
 
 function AuthNavigator() {
@@ -43,26 +40,11 @@ function AuthNavigator() {
   );
 }
 
-// function BookingStack() {
-//   const { t } = useI18n();
-//   return (
-//     <Stack.Navigator screenOptions={STACK_OPTIONS}>
-//       <Stack.Screen name="Services"     component={HomeScreen}       options={{ headerShown: false }} />
-//       <Stack.Screen name="Doctors"      component={DoctorsPage}      options={{ title: t('title.doctors') }} />
-//       <Stack.Screen name="Booking"      component={BookingPage}      options={{ title: t('title.booking') }} />
-//       <Stack.Screen name="Confirmation" component={ConfirmationPage} options={{ headerShown: false }} />
-//     </Stack.Navigator>
-//   );
-// }
-
-
-type TabIconName = React.ComponentProps<typeof Ionicons>['name'];
-
-function MainTabs() {
+function PatientTabs() {
   const { t } = useI18n();
   return (
     <Tab.Navigator
-       tabBar={(props) => <CustomTabBar {...props} />}
+       tabBar={(props) => <CustomTabBar icons={patientIcons} {...props} />}
        screenOptions={{
          headerShown: false,
        }}
@@ -84,7 +66,7 @@ function MainTabs() {
 // ── Auth Guard ────────────────────────────────────────────────────────────────
 
 function RootNavigator() {
-  const {token, loading  } = useAuth(); // ← используем твой контекст
+  const {token, loading, user} = useAuth(); // ← используем твой контекст
   if (loading) {
     return (
       <View style={styles.splash}>
@@ -93,8 +75,20 @@ function RootNavigator() {
     );
   }
 
-  // токена нет → только AuthPage
-  return token ? <MainTabs /> : <AuthNavigator />;
+  // Если есть токен, определяем flow по роли пользователя
+  // Роль доктора/ dentist определяется через user.role или presence dentistId
+  const isDentist = !!(user && user.role === 'dentist');
+  const isPatient = !!(user && user.role === 'patient');
+  // Если есть админская роль, можно добавить отдельный flow позже
+  if (token && isDentist) {
+    return <DentistTabs />;
+  }
+
+  if (token && isPatient) {
+    return <PatientTabs />;
+  }
+
+  return  <AuthNavigator/>;
 }
 
 export function AppNavigator() {

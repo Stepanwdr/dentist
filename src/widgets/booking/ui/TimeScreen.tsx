@@ -7,7 +7,6 @@ import {shadow} from "@features/book-slot/lib";
 import {useState} from "react";
 import {useBookSlot, useEditBook} from "@features/book-slot/model/queries";
 import BookSlot from "@features/book-slot/BookSlot";
-import { formatDateYMD } from "@shared/lib/formatDate";
 import { Dentist } from "@shared/types/dentist";
 import {useRoute} from "@react-navigation/core";
 
@@ -15,7 +14,7 @@ export const TimeScreen: React.FC<{
   service: typeof SERVICES[0];
   onNext:  (time: string) => void;
   onBack:  () => void;
-  selectedDentist: Dentist;
+  selectedDentist: Dentist | null;
   setLastBook: (bookSlot: TimeSlot) => void;
 }> = ({ service, onBack ,selectedDentist, setLastBook }) => {
   const route = useRoute<any>();
@@ -23,18 +22,16 @@ export const TimeScreen: React.FC<{
   const { mutate: createBook, isPending } = useBookSlot(setLastBook )
   const { mutate: editBook, isPending: isPendingEditbook } = useEditBook(setLastBook )
   const insets = useSafeAreaInsets();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [slot, setSlot] = useState<TimeSlot | null>(null);
   const [selTime, setSelTime]   = useState<string | null>(null);
 
   const handleBook= () => {
 
-  const formatedDate= formatDateYMD(selectedDate || new Date()) //YYYY-MM-DD
-
     if(bookForEdit){
       void editBook({
         dentistId: Number(selectedDentist?.id),
-        date: formatedDate,
+        date: selectedDate,
         serviceId: service.id,
         notes: "Зуб болит",
         startTime:slot?.startTime || '',
@@ -45,7 +42,7 @@ export const TimeScreen: React.FC<{
     }else{
       createBook({
         dentistId: Number(selectedDentist?.id),
-        date: formatedDate,
+        date: selectedDate,
         serviceId: service.id,
         notes:"Зуб болит",
         startTime:slot?.startTime || '',
@@ -56,12 +53,11 @@ export const TimeScreen: React.FC<{
 
   }
 
-  const handleSlotSelect=(date:Date,slot:TimeSlot)=>{
-    setSelTime(`${slot.startTime} - ${slot.endTime}`)
-    setSelectedDate(date)
-    setSlot(slot)
-  }
-
+  const handleSlotSelect = (date: string, slot: TimeSlot) => {
+    setSelTime(`${slot.startTime} - ${slot.endTime}`);
+    setSelectedDate(date);
+    setSlot(slot);
+  };
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor={C.white} />
@@ -78,7 +74,8 @@ export const TimeScreen: React.FC<{
       <BookSlot
         onConfirm={handleSlotSelect}
         setSelTime={setSelTime}
-        dentistId={Number(selectedDentist?.id)}
+        dentistId={selectedDentist?.id || 0}
+        selectedDate={selectedDate}
       />
       {/* Sticky CTA */}
       <View style={[styles.timeCTAWrap]}>
