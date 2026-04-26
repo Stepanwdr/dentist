@@ -31,7 +31,7 @@ export const ProfilePage: React.FC = () => {
     console.log({token});
     await baseApi.post("/users/push-token", {
       pushToken: token,
-      userId:data?.id || 5
+      userId:data?.id
     });
   }
 
