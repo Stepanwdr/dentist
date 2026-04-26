@@ -3,7 +3,12 @@ import {
 } from '../models/index.js';
 
 const models = {
-  Users
+  Clinic,
+  Users,
+  BookingSlot,
+  Notifications,
+  ScheduleBlock,
+  RefreshTokens
 };
 
 async function main() {
