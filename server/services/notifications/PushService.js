@@ -1,8 +1,11 @@
 // noinspection JSAnnotator
+import fs from "fs";
 
 import admin from "firebase-admin";
-import serviceAccount from "./dentist-37300-firebase-adminsdk-fbsvc-903e9220e8.json" assert { type: "json" };
 
+const serviceAccount = JSON.parse(
+  fs.readFileSync(new URL("./dentist-37300-firebase-adminsdk-fbsvc-903e9220e8.json", import.meta.url))
+);
 // Инициализация Firebase (один раз!)
 if (!admin.apps.length) {
   admin.initializeApp({

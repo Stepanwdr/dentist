@@ -1,6 +1,7 @@
 const ALLOW_ORIGINS = [
   'http://localhost:3000',
   '127.0.0.1:8081',
+  "https://den.deliverydepartment.am"
 ];
 
 export default function headers(req, res, next) {
