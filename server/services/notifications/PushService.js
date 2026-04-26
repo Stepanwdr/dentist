@@ -4,8 +4,7 @@ import fs from "fs";
 const serviceAccount = JSON.parse(
   fs.readFileSync(new URL("./serviceAccount.json", import.meta.url))
 );
-console.log({serviceAccount})
-
+console.log(serviceAccount.private_key);
 // Инициализация Firebase (один раз!)
 if (!admin.apps.length) {
   admin.initializeApp({
