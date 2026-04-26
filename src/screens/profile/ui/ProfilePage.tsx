@@ -28,9 +28,10 @@ export const ProfilePage: React.FC = () => {
 
   const notifConfig= async () => {
     const token = await registerForPush();
+    console.log({token});
     await baseApi.post("/users/push-token", {
       pushToken: token,
-      userId:data?.id
+      userId: 5
     });
   }
 
