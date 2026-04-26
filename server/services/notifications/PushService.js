@@ -3,12 +3,12 @@ import fs from "fs";
 
 import admin from "firebase-admin";
 
-const serviceAccount = JSON.parse(
-  fs.readFileSync(
-    new URL("./dentist-37300-firebase-adminsdk.json", import.meta.url),
-    "utf-8"
-  )
-);
+const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 // Инициализация Firebase (один раз!)
 if (!admin.apps.length) {
   admin.initializeApp({
