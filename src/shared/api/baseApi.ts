@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 import { tokenStorage } from "@shared/lib/tokenStorage";
 
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
-const API_BASE_URL =  `http://dent.deliverydepartment.am`;
+const API_BASE_URL =  `https://dent.deliverydepartment.am`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
     (error.response?.data as any)?.message || (error.response?.data)

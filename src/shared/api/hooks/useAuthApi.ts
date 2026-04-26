@@ -26,6 +26,7 @@ export function useLoginMutation(onSuccess?: (payload: AuthResponse & ApiRespons
     mutationKey: [...authQueryKeys.root, 'login'],
     mutationFn: async (body: LoginBody) => {
       const res = await authApi.login(body);
+      console.log(res)
       await tokenStorage.saveTokens(res.accessToken,res.refreshToken)
       return res as AuthResponse & ApiResponse;
     },
