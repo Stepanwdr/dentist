@@ -54,8 +54,8 @@ export const BottomSheetDetail: React.FC<{
             <Text style={styles.sheetAvatarTxt}>ДГ</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.sheetAvatarLabel}>{booked?.dentist?.speciality}</Text>
-            <Text style={styles.sheetDoctorName}>{booked?.dentist?.name}</Text>
+            {!booked?.patient && <Text style={styles.sheetAvatarLabel}>{booked?.dentist?.speciality}</Text>}
+            <Text style={styles.sheetDoctorName}>{booked?.patient?.name || booked?.dentist?.name}</Text>
             {/*<Text style={styles.sheetDoctorRating}>★ 4.9 · 12 лет опыта</Text>*/}
           </View>
           <View style={styles.sheetCheckCircle}>
@@ -69,9 +69,9 @@ export const BottomSheetDetail: React.FC<{
         <View style={styles.sheetDivider} />
         {ROW('🦷', 'Услуга', booked?.service || '')}
         <View style={styles.sheetDivider} />
-        {ROW('📱', 'Телефон', String(booked?.dentist?.phone))}
+        {ROW('📱', 'Телефон', String(booked?.patient?.phone || booked?.dentist?.phone))}
         <View style={styles.sheetDivider} />
-        {ROW('🏥', 'Адрес', String(booked?.clinic?.address))}
+        {!booked?.patient && ROW('🏥', 'Адрес', String(booked?.clinic?.address))}
         {/* Actions */}
         {handleBooksNavigate && <View style={styles.sheetActions}>
           <TouchableOpacity style={styles.sheetBtnPrimary} onPress={handleBooksNavigate} activeOpacity={0.85}>

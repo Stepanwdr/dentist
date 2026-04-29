@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { changeBookingStatus } from "../api";
-import {bookingKeys} from "@entities/booking/model/booking.model";
 import {bookStatus} from "@shared/types/slot";
 import Toast from "react-native-toast-message";
 
@@ -8,7 +7,7 @@ export const useChangeBookingStatus = (successCb:()=>void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }:{id:number,status:bookStatus,dentistId:number}) => changeBookingStatus(id, status),
+    mutationFn: ({ id, status }:{id:number,status:bookStatus}) => changeBookingStatus(id, status),
 
     onSuccess: async(res) => {
       console.log( )
@@ -21,4 +20,3 @@ export const useChangeBookingStatus = (successCb:()=>void) => {
     },
   });
 };
-// {status:"upcoming",dentistId:res?.slot.dentistId }

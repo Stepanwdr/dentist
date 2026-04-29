@@ -50,7 +50,6 @@ class BookingController {
     try {
       const {
         dentistId,
-        clinicId = 1,
         date,
         from,
         to,
@@ -59,17 +58,24 @@ class BookingController {
         status,
         isBusySlots = false,
       } = req.query;
+
       const now = new Date();
-      const userId = req.userId;
       const today = now.toISOString().slice(0, 10);
-      const safeLimit = Math.min(parseInt(limit, 10) || 100, 200);
-      const offset = (parseInt(page, 10) - 1) * safeLimit;
       const currentTime = now.toTimeString().slice(0, 8);
 
+      const userId = req.userId;
+      const role = req.role;
+
+      const safeLimit = Math.min(parseInt(limit, 10) || 100, 200);
+      const offset = (parseInt(page, 10) - 1) * safeLimit;
+
       const where = {};
-      if (dentistId) where.dentistId = Number(dentistId);
-      if (date)  where.date  = date;
-      if(status) where.patientId = Number(userId);
+
+      // ============================================
+      // 🔹 БАЗА
+      // ============================================
+      if (date) where.date = date;
+
       if (from) {
         where.startTime = {
           ...(where.startTime || {}),
@@ -84,56 +90,75 @@ class BookingController {
         };
       }
 
-      if (status === 'upcoming') {
+      // ============================================
+      // 🦷 DENTIST
+      // ============================================
+      if (role === 'dentist') {
+        where.dentistId = userId;
+
+        if (status === 'upcoming') {
+          where.status = { [Op.in]: ['pending', 'confirmed'] };
+
+          where[Op.or] = [
+            { date: { [Op.gt]: today } },
+            { date: today, startTime: { [Op.gte]: currentTime } },
+          ];
+        }
+        if (status === 'pending' ) {
+          where.status = status;
+          where[Op.or] = [
+            { date: { [Op.gt]: today } },
+            { date: today, startTime: { [Op.gte]: currentTime } },
+          ];
+        }
+        if (status === 'finished' || status === 'cancelled') {
+          where.status = status;
+        }
+      }
+
+      // ============================================
+      // 👤 PATIENT
+      // ============================================
+      if (role === 'patient') {
+        if (status) {
+          where.patientId = userId;
+
+          where[Op.or] = [
+            { date: { [Op.gt]: today } },
+            { date: today, startTime: { [Op.gte]: currentTime } },
+          ];
+
+          if (status === 'upcoming') {
+            where.status = { [Op.in]: ['pending', 'confirmed'] };
+          }
+
+          if (status === 'finished' || status === 'cancelled') {
+            where.status = status;
+          }
+        }
+      }
+
+      // ============================================
+      // ⚡ BUSY SLOTS
+      // ============================================
+      if (Boolean(isBusySlots)) {
         where.status = {
           [Op.in]: ['pending', 'confirmed'],
         };
-
-        where[Op.or] = [
-          {
-            date: { [Op.gt]: today },
-          },
-          {
-            date: today,
-            startTime: { [Op.gte]: currentTime },
-          },
-        ];
-      }
-      if (status==='finished') {
-        where.status = status;
-      }
-      if (status==='cancelled') {
-        where.status = status;
       }
 
-      if(status){
-        where.patientId = req.userId;
-        where[Op.or] = [
-          {
-            date: { [Op.gt]: today },
-          },
-          {
-            date: today,
-            startTime: { [Op.gte]: currentTime },
-          },
-        ];
-      }
-      if(Boolean(isBusySlots)){
-        where.status = {
-          [Op.in]: ['pending', 'confirmed'],
-        };
-      }
-      console.log(where)
       const { rows: slots, count } = await BookingSlot.findAndCountAll({
         where,
         include: [
-          { model: Users, as: 'dentist' },
-          { model: Clinic, as: 'clinic' },
+          { model: Clinic, as: 'clinic', attributes: ['id', 'name', 'address', 'lat', 'long']},
+          { model: Users, as: 'dentist',   attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']},
+          ...(role !== 'patient' ? [{ model: Users, as: 'patient' }] : []),
         ],
         order: [['date', 'ASC'], ['startTime', 'ASC']],
         limit: safeLimit,
         offset,
       });
+
       res.json({
         status: 'ok',
         pagination: {
@@ -150,12 +175,12 @@ class BookingController {
     }
   };
 
-
   // ✅ GET /booking/next?dentistId=
   static getOne = async (req, res, next) => {
     try {
       const { id } = req.params;
       const userId = req.userId;
+      const role = req.role;
 
       const slot = await BookingSlot.findByPk(id, {
         include: [
@@ -164,6 +189,7 @@ class BookingController {
             as: 'dentist',
             attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
           },
+          ...(role !== 'patient' ? [{ model: Users, as: 'patient' }] : []),
           {
             model: Clinic,
             as: 'clinic',
@@ -192,32 +218,39 @@ class BookingController {
   static nextBooking = async (req, res, next) => {
     try {
       const now = new Date();
-       const patientId = req.userId;
-      console.log({patientId})
+       const id = req.userId;
+       const role=req.role;
       // текущая дата YYYY-MM-DD
       const today = now.toISOString().slice(0, 10);
       // текущее время HH:mm:ss
-      const currentTime = now.toTimeString().slice(0, 8);
-      console.log({currentTime})
-      const slot = await BookingSlot.findOne({
-        where: {
-          patientId,
-          status: {
-            [Op.in]: ['pending', 'confirmed'],
-          },
-          [Op.or]: [
-            // будущие даты
-            {
-              date: { [Op.gt]: today },
-            },
-            // сегодня, но время ещё впереди
-            {
-              date: today,
-              startTime: { [Op.gte]: currentTime },
-            },
-          ],
-        },
+      const currentTime = now.toTimeString().slice(0, 8)
 
+      const where = {
+        status: {
+          [Op.in]: ['pending', 'confirmed'],
+        },
+        [Op.or]: [
+          // будущие даты
+          {
+            date: { [Op.gt]: today },
+          },
+          // сегодня, но время ещё впереди
+          {
+            date: today,
+            startTime: { [Op.gte]: currentTime },
+          },
+        ],
+      }
+
+      if(role === 'dentist') {
+        where.dentistId = id
+      }
+
+      if(role === 'patientId') {
+        where.patientId = id
+      }
+      const slot = await BookingSlot.findOne({
+        where,
         include: [
           {
             model: Users,
@@ -228,6 +261,10 @@ class BookingController {
             model: Clinic,
             as: 'clinic',
           },
+          {
+            model: Users,
+            as: 'patient',
+          },
         ],
 
         order: [
@@ -235,7 +272,6 @@ class BookingController {
           ['startTime', 'ASC'],
         ],
       });
-      console.log(163,slot && slot.toJSON())
       if (!slot) {
         return res.json({
           status: 'ok',
@@ -291,9 +327,9 @@ class BookingController {
   // POST /slot
   static create = async (req, res, next) => {
     try {
-      const { dentistId, date, startTime, endTime, notes = null, service } = req.body || {};
+      const { dentistId, date, startTime, endTime, notes = null, service,patientId } = req.body || {};
       const userId = req.userId
-
+     const role = req.role
       if (!dentistId || !date || !startTime || !endTime) {
         return res.status(400).json({ status: 'error', message: 'dentistId, date, startTime, endTime are required' });
       }
@@ -314,22 +350,25 @@ class BookingController {
         return res.status(409).json({ status: 'error', message: 'Это время записа занято, выбирайте другое время!' });
       }
      const dentistClinic = dentist.toJSON().clinicId;
-      const created = await BookingSlot.create({ dentistId, clinicId: dentistClinic, date, startTime: s, endTime: e, notes,isBooked:true,service, createdById: userId, patientId:userId });
+      const pId= role === 'dentist' ? patientId : userId
+      const created = await BookingSlot.create({ dentistId, clinicId: dentistClinic, date, startTime: s, endTime: e, notes,isBooked:true,service, createdById: userId ,patientId:pId});
 
       await created.reload({
         include: [
+          {
+            model: Clinic,
+            as: 'clinic',
+            attributes: ['id', 'name', 'address', 'lat', 'long']
+          },
           {
             model: Users,
             as: 'dentist',
             attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
           },
-          {
-            model: Clinic,
-            as: 'clinic',
-            attributes: ['id', 'name', 'address', 'lat', 'long']
-          }
+          { model: Users, as: 'patient', attributes: ['id', 'name']}
         ]
       });
+
       res.status(201).json({ status: 'ok', slot: created });
     } catch (e) {
       next(e);

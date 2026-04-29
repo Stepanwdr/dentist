@@ -155,7 +155,6 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     () => generateDaySlots(formatDateYMD(date), apiSlots, todayKey, currentTime),
     [date, apiSlots, todayKey, currentTime],
   );
-  console.log({slots})
   // ── Handlers ──────────────────────────────────────────
   const handleDateChange = useCallback((d: Date) => {
     setDate(d);

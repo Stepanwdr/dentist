@@ -1,5 +1,5 @@
 import {
-  Users, Clinic,  BookingSlot, Notifications, ScheduleBlock, RefreshTokens
+  Clinic,Users,BookingSlot, Notifications, ScheduleBlock, RefreshTokens
 } from '../models/index.js';
 
 const models = {

@@ -16,7 +16,6 @@ BookingSlot.init(
       type: DataTypes.BIGINT.UNSIGNED,
       allowNull: true,
     },
-
     confirmedById: {
       type: DataTypes.BIGINT.UNSIGNED,
       allowNull: true,
@@ -45,6 +44,18 @@ BookingSlot.init(
     },
     notes: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    patientId: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+    },
+    clinicId: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+    },
+    dentistId: {
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: true,
     },
   },

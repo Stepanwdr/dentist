@@ -37,13 +37,7 @@ export interface Appointment {
   doctorName: string;
 }
 
-export interface Patient {
-  name: string;
-  phone: string;
-  email: string;
-  birthDate: string;
-  allergies: string;
-}
+
 
 export interface BookingDraft {
   service: Service | null;

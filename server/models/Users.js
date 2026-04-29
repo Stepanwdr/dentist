@@ -11,9 +11,13 @@ class Users extends Model {
 
 Users.init({
   id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.BIGINT.UNSIGNED,
     autoIncrement: true,
     primaryKey: true,
+  },
+  clinicId: {
+    type: DataTypes.BIGINT.UNSIGNED,
+    allowNull: true,
   },
   name: {
     type: DataTypes.STRING,

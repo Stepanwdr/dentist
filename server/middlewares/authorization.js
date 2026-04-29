@@ -72,17 +72,20 @@ export default function (req, res, next) {
     const { authorization = '' } = req.headers;
     const token = authorization.replace(/^Bearer /, '');
     let userId;
+    let role
     try {
       const data = jwt.verify(token, JWT_SECRET);
       userId = data.userId;
+      role= data.role
     } catch (e) {
       //
     }
     if (!userId) {
       throw HttpError(401);
     }
-    console.log({userId},'withAuth')
+    console.log({userId,role},'withAuth')
     req.userId = userId;
+    req.role = role;
     next();
   } catch (e) {
     next(e);

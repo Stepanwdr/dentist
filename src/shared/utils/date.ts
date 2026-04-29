@@ -28,3 +28,28 @@ export function normalizeDate(date: Date): Date {
   d.setHours(0, 0, 0, 0);
   return d;
 }
+
+export const timeLeft = (date: string, startTime: string) => {
+  // date: "2026-04-10"
+  // startTime: "14:30" или "14:30:00"
+
+  const dateTime = new Date(`${date}T${startTime}`);
+  const diff = dateTime.getTime() - Date.now();
+
+  if (diff <= 0) return 'Прошло';
+
+  const totalMinutes = Math.floor(diff / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  if (days > 0) {
+    return `${days} օրից`;
+  }
+
+  if (hours > 0) {
+    return `${hours} ժ ${minutes} ր`;
+  }
+
+  return `${minutes} ր`;
+};

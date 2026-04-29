@@ -21,7 +21,7 @@ const DATA = [
 export default function PatientsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>DentistPro</Text>
+      <Text style={styles.title}>Пациенты</Text>
 
       <FlatList
         data={DATA}

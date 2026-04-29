@@ -1,7 +1,7 @@
 // src/shared/api/types.ts
 
 export type ApiStatus = 'ok' | 'error' | 'success' | 'fail';
-
+export type userRole = 'admin' | 'administrator' | 'director' | 'dentist' | 'patient' | string;
 export interface ApiResponse<T = any> {
   status: ApiStatus;
   message?: string;
@@ -23,6 +23,7 @@ export interface AuthUser {
   birthDate: string;
   allergies: string;
   unreadNotifications: number;
+  avatar: string;
 }
 
 export interface LoginBody {
@@ -40,7 +41,7 @@ export interface RegisterBody {
   birthDate: string; // ISO or YYYY-MM-DD
   gender?: 'male' | 'female';
   // Role of the user being registered: 'patient' or 'doctor' (dentist)
-  role?: string;
+  role?: userRole;
 }
 
 export interface AuthResponse {

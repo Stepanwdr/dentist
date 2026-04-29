@@ -16,10 +16,9 @@ const REFRESH_TOKEN_EXPIRES = '7d';
 const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000;
 
 class AuthController {
-
-  static generateTokens(userId) {
+  static generateTokens(userId,role) {
     const accessToken = jwt.sign(
-      { userId, type: 'access' },
+      { userId,role, type: 'access' },
       JWT_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRES }
     );
@@ -88,7 +87,7 @@ class AuthController {
         gender,
       });
 
-      const { accessToken, refreshToken } = AuthController.generateTokens(user.id);
+      const { accessToken, refreshToken } = AuthController.generateTokens(user.id,user.role);
       await AuthController.saveRefreshToken(user.id, refreshToken);
 
       res.json({
@@ -154,7 +153,7 @@ class AuthController {
         status: 'ok',
         accessToken,
         refreshToken,
-        user: { id: user.id, email: user.email, role: user.role },
+        user: { id: user.id, email: user.email},
       });
     } catch (e) {
       next(e);
@@ -175,7 +174,7 @@ class AuthController {
         throw HttpError(422, 'Such user does not exist');
       }
 
-      const { accessToken, refreshToken } = AuthController.generateTokens(user.id);
+      const { accessToken, refreshToken } = AuthController.generateTokens(user.id,user.role);
       await AuthController.saveRefreshToken(user.id, refreshToken);
 
       res.json({
@@ -186,7 +185,7 @@ class AuthController {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role
+          role: user.role,
         },
       });
     } catch (e) {

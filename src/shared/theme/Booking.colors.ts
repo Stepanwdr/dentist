@@ -13,4 +13,6 @@ export const bookingColors = {
   green:     '#22C55E',
   sky:      '#4A9FF5',
   skyLight: '#EFF6FF',
+  danger:     '#FFB956',
+  success:     '#72FACB',
 };

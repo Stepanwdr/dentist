@@ -8,6 +8,7 @@ import { s } from '../BookingScreen.styles';
 import {Ionicons} from "@expo/vector-icons";
 import {Colors} from "@shared/theme/colors";
 import {BookStatus} from "@shared/ui/BookStatus";
+import { timeLeft } from "@shared/utils/date";
 
 const ACTION_W   = 70;
 const ACTIONS_W  = ACTION_W * 3;
@@ -19,30 +20,7 @@ const dateColor = (date: string) => {
   if (days <= 30) return '#FF4D7D';
   return '#4DD9AC';
 };
-const timeLeft = (date: string, startTime: string) => {
-  // date: "2026-04-10"
-  // startTime: "14:30" или "14:30:00"
 
-  const dateTime = new Date(`${date}T${startTime}`);
-  const diff = dateTime.getTime() - Date.now();
-
-  if (diff <= 0) return 'Прошло';
-
-  const totalMinutes = Math.floor(diff / 60000);
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
-
-  if (days > 0) {
-    return `${days} օրից`;
-  }
-
-  if (hours > 0) {
-    return `${hours} ժ ${minutes} ր`;
-  }
-
-  return `${minutes} ր`;
-};
 const daysLeft = (date: string) =>
   Math.ceil((new Date(`${date} 10:00:00`).getTime() - Date.now()) / 86_400_000);
 
@@ -51,10 +29,12 @@ interface SwipeRowProps {
   onView:       (item: TimeSlot) => void;
   onEdit:       (item: TimeSlot) => void;
   onCancel:     (item: TimeSlot) => void;
+  onConfirm?:   (item: TimeSlot) => void;
+  isDentist?: boolean;
 }
 
 export const SwipeRow: React.FC<SwipeRowProps> = ({
-   item, onView, onEdit, onCancel,
+   item, onView, onEdit, onCancel,onConfirm, isDentist
 }) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen     = useRef(false);
@@ -93,11 +73,20 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
   const day   = new Date(item.date).getDate();
   const mon   = new Date(item.date)
     .toLocaleString('ru', { month: 'short' }).toUpperCase();
-
+  console.log(item)
   return (
     <View style={s.swipeWrap}>
       {/* Actions */}
       <View style={s.actions}>
+        {onConfirm && <TouchableOpacity
+          style={[s.action, {backgroundColor: '#FF4D7D'}]}
+          onPress={() => {
+            close();
+            onConfirm(item);
+          }}
+        >
+          <Text style={s.actionLbl}>Подтвердить</Text>
+        </TouchableOpacity>}
         <TouchableOpacity
           style={[s.action, { backgroundColor: '#4DD9AC' }]}
           onPress={() => { close(); onView(item); }}
@@ -123,6 +112,7 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
           <Text style={s.actionIcon}>✕</Text>
           <Text style={s.actionLbl}>Отмена</Text>
         </TouchableOpacity>
+
       </View>
 
       {/* Card */}
@@ -142,7 +132,7 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
             {/* Info */}
             <View style={{ flex: 1 }}>
               <View style={[s.cardRow, { marginBottom: 2 }]}>
-                <Text style={s.doctorName}>{item.dentist?.name ?? '—'}</Text>
+                <Text style={s.doctorName}>{isDentist ? item?.patient?.name || '—'  : item.dentist?.name ||  '—'}</Text>
                 <View style={{ flex: 1}}>
                   <View style={[s.pill, { backgroundColor: color + '22' }]}>
                     <Text style={[s.pillTxt, { color }]}>{days ? `${days} օրից` : `Մնաց ${timeLeft(item.date,item.startTime)}`}</Text>
@@ -152,7 +142,7 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
                   </View>
                 </View>
               </View>
-              <Text style={{color:'#30292a'}}>{item.dentist?.speciality ?? '—'}</Text>
+              {!isDentist && <Text style={{color: '#30292a'}}>{item.dentist?.speciality ?? '—'}</Text>}
               <Text style={s.serviceTxt}>
                 {item.startTime} – {item.endTime}
               </Text>

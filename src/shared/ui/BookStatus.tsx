@@ -4,7 +4,7 @@ import { bookStatus } from "@shared/types/slot";
 const STATUS_STYLES: Record<bookStatus, { bg: string; color: string; label: string }> = {
   pending:   { bg: '#FEF3C7', color: '#92400E', label: 'В ожидании' },
   confirmed: { bg: '#DCFCE7', color: '#166534', label: 'Подтверждено' },
-  canceled:  { bg: '#FECACA', color: '#991B1B', label: 'Отменено' },
+  cancelled:  { bg: '#FECACA', color: '#991B1B', label: 'Отменено' },
   finished:  { bg: '#DBEAFE', color: '#3730A3', label: 'Завершено' },
 };
 

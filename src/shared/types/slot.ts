@@ -16,6 +16,7 @@
 // }
 
 import { Dentist } from "./dentist";
+import { Patient } from "./patient";
 
 // shared/types/slot.ts
 
@@ -39,6 +40,7 @@ export interface TimeSlot {
   status:   bookStatus;
   service: string
   isBooked?:  boolean;
+  patient?: Patient;
 }
 
 export interface TimelineDate {

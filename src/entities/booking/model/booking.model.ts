@@ -35,29 +35,8 @@ export function useGetBookings(
   return useQuery<TimeSlot[], Error>({
     queryKey: ['bookings', params],
     queryFn:  async () => {
-      // if (USE_MOCK) {
-      //   await new Promise(r => setTimeout(r, 280));
-      //   return mockSlots(new Date(params.date), dentistId);
-      // }
-      const data= await fetchSlots({date, serviceId, status, dentistId:String(dentistId), isBusySlots });
 
-      return data.map((s: any): TimeSlot => ({
-        id:        s.id,
-        startTime: s.startTime,   // '09:00:00'
-        endTime:   s.endTime,     // '09:30:00'
-        date:      s.date,        // '2026-03-22'
-        notes:     s.notes,
-        dentistId: s.dentistId,
-        clinicId:  s.clinicId,
-        dentist:   s.dentist,
-        clinic:    s.clinic,
-        createdAt: s.createdAt,
-        updatedAt: s.updatedAt,
-        duration:  s.duration,
-        status:    s.status,
-        service:   s.service,
-        isBooked:  s.isBooked,
-      }));
+      return await fetchSlots({date, serviceId, status, dentistId:String(dentistId), isBusySlots });
     },
       staleTime:            30_000,
       gcTime:               5 * 60_000,

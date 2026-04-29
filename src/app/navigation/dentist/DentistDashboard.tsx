@@ -1,20 +1,19 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
 import { useAuth } from '@features/auth/model/useAuth';
 import { Colors } from '@shared/theme/colors';
-import {SafeAreaView} from "react-native-safe-area-context";
-import { TextInput } from 'react-native';
+
 
 type Props = {
   navigation: any;
 };
 
-import { Appointment } from '@shared/types';
-import { AppointmentCard } from '@entities/appointment/ui/AppointmentCard';
-import { DashboardStats } from './ui/dashboard/DashboardStats';
-import { RecentActivityList } from './ui/dashboard/RecentActivityList';
+import { BookingStats } from './ui/dashboard/BookingStats';
+import { DashboardOverview } from './ui/dashboard/DashboardOverview';
+import { QueueList } from './ui/dashboard/QueueList';
+import {NextBookCard} from "@app/navigation/dentist/ui/dashboard/NextBookCard";
 
-export const DentistDashboardScreen: React.FC<Props> = ({ navigation }) => {
+export const DentistDashboard: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const dentistName = useMemo(() => user?.name ?? 'Доктор', [user]);
   const [query, setQuery] = useState('');
@@ -26,16 +25,30 @@ export const DentistDashboardScreen: React.FC<Props> = ({ navigation }) => {
     { id: 'r3', name: 'Elena Rodriguez', badges: ['New Patient'], lastVisit: 'None', upcoming: '' },
   ];
 
-  return (
-    <SafeAreaView style={styles.safe}>
+  const queueItems = [
+    { id: 'q1', name: 'Marcus Knight', time: '11:00' },
+    { id: 'q2', name: 'Julian Rossi', time: '11:15' },
+  ];
 
-    </SafeAreaView>
+  return (
+    <View style={styles.safe}>
+      <DashboardOverview doctorName={dentistName} greeting={'Привет ДР.'} />
+      <BookingStats totalCompleted={1284} totalWait={18} totalConfirmed={2} />
+      <Text style={styles.title}>
+       Следующий запись
+      </Text>
+      <NextBookCard/>
+      <Text style={styles.title}>
+        В очередь
+      </Text>
+      <QueueList items={queueItems as any} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  title: { fontSize: 24, fontWeight: '700', margin: 16, color: '#4A90D9' },
+  safe: { flex: 1, backgroundColor: Colors.background,marginTop:30,padding:16, },
+  title: { fontSize: 18, fontWeight: '700', margin: 16, color: '#4A90D9' },
   searchRow: { paddingHorizontal: 16, paddingVertical: 6 },
   searchInput: {
     height: 40,
@@ -46,6 +59,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   cardRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 16 },
+  section: {  },
   card: {
     flex: 1,
     backgroundColor: Colors.surface,
@@ -60,4 +74,19 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 14, color: Colors.textMuted, marginBottom: 6 },
   cardSub: { fontSize: 16, fontWeight: '700', color: Colors.text },
   cardSubtitle: { fontSize: 12, color: Colors.textMuted },
+  // Next card block styles (layout below the queue)
+  nextCard: {
+    marginTop: 8,
+    marginHorizontal: 16,
+    padding: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  nextTitle: { fontSize: 14, color: Colors.textMuted, marginBottom: 4 },
+  nextText: { fontSize: 16, fontWeight: '700', color: Colors.text },
 });

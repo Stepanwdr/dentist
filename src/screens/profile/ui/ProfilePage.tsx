@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback,useState} from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,6 @@ import { useBookingStore } from '@features/booking';
 import { ProfileForm } from '@features/profile-edit';
 import {
   PatientHeader,
-  PatientStats,
   PatientInfoCard,
   SettingsCard,
 } from '@widgets/patient-profile';
@@ -23,12 +22,9 @@ export const ProfilePage: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const { t } = useI18n();
   const qc = useQueryClient();
-  const completedCount = state.appointments.filter(a => a.status === 'completed').length;
-  const upcomingCount = state.appointments.filter(a => a.status === 'upcoming').length;
 
   const notifConfig= async () => {
     const token = await registerForPush();
-    console.log({token});
     await baseApi.post("/users/push-token", {
       pushToken: token,
       userId:data?.id
@@ -50,7 +46,6 @@ export const ProfilePage: React.FC = () => {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{t('profile.title')}</Text>

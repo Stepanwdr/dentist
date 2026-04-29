@@ -4,11 +4,9 @@ import {
   Alert, StatusBar, ActivityIndicator, Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { TimeSlot }           from '@shared/types/slot';
 import { bookingColors as C } from '@shared/theme/Booking.colors';
 import { s }                  from '@widgets/booking/ui/BookingsScreen/BookingScreen.styles';
-import { AppointmentsTab, BookingTabs} from "@widgets/booking/ui/BookingsScreen/ui/BookingTabs";
 import { CompletedRow } from "@widgets/booking/ui/BookingsScreen/ui/CompletedRow";
 import { SwipeRow } from "@widgets/booking/ui/BookingsScreen/ui/SwipeRow";
 import { useGetBooking, useGetBookings } from "@entities/booking/model/booking.model";
@@ -17,14 +15,40 @@ import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {TabParamList} from "@app/navigation/types";
+import {Tabs} from "@shared/ui/Tabs";
+import {useAuth} from "@features/auth/model/useAuth";
+
+
+export type AppointmentsTab =
+  | 'upcoming'
+  | 'finished'
+  | 'cancelled'
+  | 'pending'
+
+
+const tabs:{ label:string,value:AppointmentsTab}[] = [
+  { label: 'Предстоящие', value: 'upcoming' },
+  { label: 'Отмененные', value: 'cancelled' },
+  { label: 'Завершённые', value: 'finished' },
+];
+
+const dentistTabs:{ label:string,value:AppointmentsTab}[] = [
+  { label: 'Предстоящие', value: 'upcoming' },
+  { label: 'В ожидании', value: 'pending' },
+  { label: 'Отмененные', value: 'cancelled' },
+  { label: 'Завершённые', value: 'finished' },
+];
+
+
 
 interface Props {
   navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
-
 }
+
 const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
-
+  const {user}=useAuth()
+  const isDentist = user?.role === "dentist";
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
   const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || '' });
   const { mutate: onCancelBook } = useChangeBookingStatus(refetch)
@@ -82,6 +106,18 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
     ]);
   }, []);
 
+  const handleConfirm = useCallback((item: TimeSlot) => {
+    Alert.alert('Принять запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
+      { text: 'Принять',    style: 'destructive' },
+      { text: 'Да', onPress: () => navigation.navigate('BookingTab', {
+          dentistId: item.dentistId,
+          book: item,
+        }) },
+    ]);
+  }, []);
+
+
+
   const handleCancel = useCallback((item: TimeSlot) => {
     Alert.alert(
       'Отменить запись?',
@@ -91,7 +127,7 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
         {
           text:    'Отменить',
           style:   'destructive',
-          onPress: () => onCancelBook({ status:'cancelled',id:item.id, dentistId: Number(item.dentistId)}),
+          onPress: () => onCancelBook({ status:'cancelled',id:item.id }),
         },
       ],
     );
@@ -111,6 +147,8 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
       onView={handleView}
       onEdit={handleEdit}
       onCancel={handleCancel}
+      onConfirm={handleConfirm}
+      isDentist={isDentist}
     />
   ), [handleView, handleEdit, handleCancel]);
 
@@ -143,12 +181,20 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
     </View>
   ), []);
 
+  const PendingEmpty = useCallback(() => (
+    <View style={s.emptyWrap}>
+      <Text style={s.emptyIcon}>📋</Text>
+      <Text style={s.emptyTitle}>Нет записи в ожидании</Text>
+    </View>
+  ), []);
+
   const emptyContent = {
     upcoming: UpcomingEmpty,
     finished: FinishedEmpty,
     cancelled: CancelledEmpty,
+    pending: PendingEmpty,
   }
-  const paddingBottom = { paddingBottom: insets.bottom + 80 };
+  const paddingBottom = { paddingBottom: insets.bottom + 100 };
 
   useEffect(() => {
     setData(bookingsData ?? []);
@@ -166,7 +212,7 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
 
       {/* Header */}
       <View style={[s.header, { paddingTop: insets.top + 10 }]}>
-        <Text style={s.headerTitle}>Мои записи</Text>
+        <Text style={s.headerTitle}>{isDentist ? "Записи" : "Мои записи"}</Text>
         <View style={[s.countBadge, { backgroundColor: C.skyLight }]}>
           <Text style={[s.countTxt, { color: C.skyTop }]}>
             Запись {data.length}
@@ -174,25 +220,26 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
         </View>
       </View>
       {/* Tabs */}
-      <BookingTabs
+      <Tabs<AppointmentsTab>
         active={tab}
-        upcomingCount={0}
-        completedCount={0}
         onChange={setTab}
+        tabs={isDentist ? dentistTabs : tabs}
       />
-      {tab==='upcoming' &&
-        <View style={s.hint}>
-          <Text style={s.hintTxt}>← свайп влево для действий</Text>
+     {tab==='upcoming' &&
+       <View style={s.hint}>
+         <Text style={s.hintTxt}>← свайп влево для действий</Text>
        </View>
-      }
-      {isPending || isRefetching ? <ActivityIndicator color={'#94A3B8'} size={'large'}/> : <FlatList
-        data={data}
-        renderItem={tab === 'upcoming' ? renderList : renderCompleted}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={emptyContent[tab]}
-        contentContainerStyle={[s.listContent, paddingBottom]}
-        showsVerticalScrollIndicator={false}
-      />}
+     }
+     {isPending || isRefetching ? <ActivityIndicator color={'#94A3B8'} size={'large'}/> :
+       <FlatList
+         data={data}
+         renderItem={tab === 'upcoming' || tab==='pending' ? renderList : renderCompleted}
+         keyExtractor={keyExtractor}
+         ListEmptyComponent={emptyContent[tab]}
+         contentContainerStyle={[s.listContent, paddingBottom]}
+       />}
+
+
       <BottomSheetDetail
         visible={sheet}
         booked={selectedBook}

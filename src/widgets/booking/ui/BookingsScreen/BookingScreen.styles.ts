@@ -11,7 +11,7 @@ const sh = (color = '#000', op = 0.10, r = 10, y = 4) =>
   }) ?? {};
 
 export const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: C.white },
+  screen: { backgroundColor: C.white,paddingBottom:180 },
 
   // ── Header ──
   header: {
@@ -61,7 +61,7 @@ export const s = StyleSheet.create({
   tabCountTxtActive: { color: '#fff' },
 
   // ── Hint ──
-  hint:    { paddingHorizontal: 16, paddingBottom: 4 },
+  hint:    { paddingHorizontal: 16, paddingBottom: 4,marginBottom:"auto" },
   hintTxt: { fontSize: 11, color: C.textMuted },
 
   // ── List ──
