@@ -46,6 +46,7 @@ const EXCLUDE = [
   'PATCH:/notification/markAsRead',
   'PATCH:/notification/markAllAsRead',
   'PATCH:/booking/changeStatus',
+  'PATCH:/booking/confirm',
   'GET:/booking',
   'GET:/notification/getAll',
 ];

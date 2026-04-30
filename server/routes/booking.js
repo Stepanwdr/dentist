@@ -13,6 +13,7 @@ router.post('/slots', BookingController.createBatch);
 
 router.patch('/:id', BookingController.update);
 router.patch('/changeStatus/:id', BookingController.changeStatus);
+router.patch('/confirm/:id', BookingController.confirm);
 
 router.delete('/:id', BookingController.remove);
 

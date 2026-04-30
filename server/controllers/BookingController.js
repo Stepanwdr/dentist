@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
-import {BookingSlot, Users, Clinic, ScheduleBlock} from '../models/index.js';
+import {BookingSlot, Users, Clinic, ScheduleBlock, Notifications} from '../models/index.js';
+import {NotificationService} from "../services/notifications/NotificationService.js";
 
 // ─── Helpers ──────────────────────────────────────────
 function toHMS(value) {
@@ -17,6 +18,32 @@ function getLocalDate() {
 }
 function isValidDateOnly(str) {
   return /^\d{4}-\d{2}-\d{2}$/.test(str);
+}
+
+// Send notification to patient about booking confirmation
+async function notifyPatient(slot) {
+  if (!slot || !slot.patientId) return;
+  const message = `Ваш визит на ${slot.date} в ${slot.startTime} подтверждён.`;
+  try {
+    await Notifications.create({
+      userId: slot.patientId,
+      type: 'booking_confirmed',
+      message,
+      data: { slotId: slot.id }
+    });
+  } catch (e1) {
+    try {
+      // попытка на альтернативное имя поля, если такое существует
+      await Notifications.create({
+        recipientId: slot.patientId,
+        type: 'booking_confirmed',
+        message,
+        data: { slotId: slot.id }
+      });
+    } catch (e2) {
+      // игнорируем, если уведомление не может быть отправлено
+    }
+  }
 }
 
 async function hasOverlap({ dentistId, date, startTime, endTime, excludeId = null }) {
@@ -246,7 +273,7 @@ class BookingController {
         where.dentistId = id
       }
 
-      if(role === 'patientId') {
+      if(role === 'patient') {
         where.patientId = id
       }
       const slot = await BookingSlot.findOne({
@@ -272,6 +299,7 @@ class BookingController {
           ['startTime', 'ASC'],
         ],
       });
+
       if (!slot) {
         return res.json({
           status: 'ok',
@@ -282,6 +310,58 @@ class BookingController {
         status: 'ok',
         slot,
       });
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  // CONFIRM: POST /bookings/:id/confirm or PATCH /bookings/:id/confirm
+  static confirm = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.userId;
+
+      const slot = await BookingSlot.findByPk(id, {
+        include: [
+          { model: Users, as: 'dentist' },
+          { model: Users, as: 'patient' },
+          { model: Clinic, as: 'clinic' },
+        ],
+      });
+
+      if (!slot) {
+        return res.status(404).json({ status: 'error', message: 'Slot not found' });
+      }
+
+      // Разрешено только участникам перевода на статус CONFIRMED: пациент, илиdentist
+      if (slot.patientId !== userId && slot.dentistId !== userId) {
+        return res.status(403).json({ status: 'error', message: 'Forbidden' });
+      }
+
+      if (slot.status !== 'pending') {
+        return res.status(400).json({ status: 'error', message: `Cannot confirm slot with status ${slot.status}` });
+      }
+
+      await slot.update({ status: 'confirmed', confirmedById: userId });
+      // reload to ensure associated data up-to-date
+      await slot.reload({ include: [ { model: Users, as: 'dentist' }, { model: Users, as: 'patient' }, { model: Clinic, as: 'clinic' } ] });
+
+      // Notify patient about confirmation
+      try {
+        await NotificationService.send(userId,slot?.patient?.id,{
+          title: `Запись в ${slot.startTime} подтвердeн!`,
+          body: `Др ${slot.dentist.name} подтвердил ваш запись!`,
+          type: "booking_confirm",
+          data: {
+            screen: "Bookings",
+            bookingId: slot.id,
+          },
+        });
+      } catch (e) {
+        console.log(e,'sasas')
+      }
+
+      res.json({ status: 'ok', slot });
     } catch (e) {
       next(e);
     }
@@ -365,7 +445,7 @@ class BookingController {
             as: 'dentist',
             attributes: ['id', 'name', 'lname', 'fname', 'speciality', 'clinicId', 'phone', 'avatar']
           },
-          { model: Users, as: 'patient', attributes: ['id', 'name']}
+          ...(role !== 'patient' ? [{ model: Users, as: 'patient' }] : []),
         ]
       });
 

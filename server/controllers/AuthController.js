@@ -85,6 +85,7 @@ class AuthController {
         role,
         speciality,
         gender,
+        clinicId:1
       });
 
       const { accessToken, refreshToken } = AuthController.generateTokens(user.id,user.role);
