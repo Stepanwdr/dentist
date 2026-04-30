@@ -9,6 +9,7 @@ import {
   ScheduleBlockListParams,
   UpdateScheduleBlockPayload,
 } from "./types";
+import Toast from "react-native-toast-message";
 
 export const scheduleBlockKeys = {
   all: () => ["schedule-blocks"] as const,
@@ -31,9 +32,14 @@ export function useCreateScheduleBlock() {
 
   return useMutation<ScheduleBlockResponse, Error, CreateScheduleBlockPayload>({
     mutationFn: async (body) => {
+
       return await scheduleBlockApi.create(body);
     },
     onSuccess: async () => {
+      Toast.show({
+        type:  'success',
+        text1: 'Время записи закрыт!',
+      });
       await queryClient.invalidateQueries({ queryKey: scheduleBlockKeys.all() });
     },
   });
@@ -60,6 +66,10 @@ export function useDeleteScheduleBlock() {
       return await scheduleBlockApi.delete(id);
     },
     onSuccess: async () => {
+      Toast.show({
+        type:  'success',
+        text1: 'Время записи открыт!',
+      });
       await queryClient.invalidateQueries({ queryKey: scheduleBlockKeys.all() });
     },
   });

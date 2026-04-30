@@ -15,6 +15,7 @@ import {
   useGetBookings,
   useGetAvailableDates,
 } from '@entities/booking/model/booking.model';
+import { useScheduleBlocks } from "@entities/schedule-block";
 import { formatDateYMD } from '@shared/lib/formatDate';
 import {useRoute} from "@react-navigation/core";
 import {toDayKey, normalizeDate, fromDayKey} from '@shared/utils/date';
@@ -83,10 +84,20 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     dentistId: dentistId || 0,
     isBusySlots : true
   });
+  const { data: blocksData } = useScheduleBlocks({
+    dentistId: dentistId || 0,
+    date: formatDateYMD(date),
+  });
   // ── Мержим: полная сетка 09:00–20:00 + статус из API ──
   const slots = useMemo(
-    () => generateDaySlots(formatDateYMD(date), apiSlots?.slots || [], todayKey, currentTime),
-    [date, apiSlots, todayKey, currentTime],
+    () => generateDaySlots(
+      formatDateYMD(date),
+      apiSlots?.slots || [],
+      todayKey,
+      currentTime,
+      blocksData?.blocks || [],
+    ),
+    [date, apiSlots, todayKey, currentTime, blocksData?.blocks],
   );
   // ── Handlers ──────────────────────────────────────────
   const handleDateChange = useCallback((d: Date) => {

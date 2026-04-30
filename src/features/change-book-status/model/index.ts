@@ -10,7 +10,6 @@ export const useChangeBookingStatus = (successCb:()=>void) => {
     mutationFn: ({ id, status }:{id:number,status:bookStatus}) => changeBookingStatus(id, status),
 
     onSuccess: async(res) => {
-      console.log( )
       Toast.show({
         type:  'success',
         text1: 'Запись удачно отменен!',
