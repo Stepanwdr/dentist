@@ -31,7 +31,6 @@ export function useGetBookings(
   }
 ) {
   const { dentistId = '', serviceId, date='', status='', isBusySlots = false} = params;
-  console.log({params},'32', {dentistId})
   return useQuery<TimeSlot[], Error>({
     queryKey: ['bookings', params],
     queryFn:  async () => {

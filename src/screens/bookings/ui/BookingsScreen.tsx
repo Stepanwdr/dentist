@@ -17,6 +17,8 @@ import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {TabParamList} from "@app/navigation/types";
 import {Tabs} from "@shared/ui/Tabs";
 import {useAuth} from "@features/auth/model/useAuth";
+import {useConfirmBookStatus} from "@features/confirm-book/model";
+import {useRoute} from "@react-navigation/core";
 
 
 export type AppointmentsTab =
@@ -42,18 +44,22 @@ const dentistTabs:{ label:string,value:AppointmentsTab}[] = [
 
 
 interface Props {
-  navigation: NativeStackNavigationProp<TabParamList, 'HomeTab'>;
+  navigation: NativeStackNavigationProp<TabParamList, 'AppointmentsTab'>;
 }
 
 const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {user}=useAuth()
+  const route = useRoute<any>();
+  const bookingId=route.params?.params.bookingId
   const isDentist = user?.role === "dentist";
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
   const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || '' });
   const { mutate: onCancelBook } = useChangeBookingStatus(refetch)
+  const { mutate: onConfirmBook } = useConfirmBookStatus(refetch)
+
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
-  const [bookId,setBookId]=useState<number | null>(null);
+  const [bookId,setBookId]=useState<number | null>(bookingId);
   const [sheet, setSheet] = useState(false);
   const { data: selectedBookData } = useGetBooking(bookId || undefined);
   const selectedBook = selectedBookData || {} as TimeSlot;
@@ -86,7 +92,7 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
     ]).start();
 
     // Auto-open sheet after 800ms
-    const t = setTimeout(() => bookId ? setSheet(true):setSheet(false), 10);
+    const t = setTimeout(() =>  bookId ? setSheet(true):setSheet(false), 10);
     return () => clearTimeout(t);
   }, [bookId]);
 
@@ -107,12 +113,9 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
   }, []);
 
   const handleConfirm = useCallback((item: TimeSlot) => {
-    Alert.alert('Принять запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
-      { text: 'Принять',    style: 'destructive' },
-      { text: 'Да', onPress: () => navigation.navigate('BookingTab', {
-          dentistId: item.dentistId,
-          book: item,
-        }) },
+    Alert.alert('Подтвердить запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
+      { text: 'Подтвердить',    style: 'destructive' },
+      { text: 'Да', onPress: () => onConfirmBook({id: item.id}) },
     ]);
   }, []);
 
@@ -199,6 +202,10 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
   useEffect(() => {
     setData(bookingsData ?? []);
   }, [bookingsData]);
+
+  useEffect(() => {
+    setBookId(bookingId );
+  }, [bookingId]);
 
   useFocusEffect(
     useCallback(() => {

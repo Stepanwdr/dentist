@@ -10,14 +10,17 @@ interface Props {
 export const NotificationProvider:FC<Props> = ({ children } ) => {
   function handleNavigation(data: any) {
     if (!data?.screen) return;
-
     switch (data.screen) {
-      case "AppointmentsTab":
-        navigate("AppointmentsTab");
+      case "Bookings":
+        navigate("BookingsTab" as any, {
+          screen: "BookingsTab",
+          params: { bookingId: data.bookingId },
+        } as any);
         break;
-
       case "Profile":
-       navigate("ProfileTab");
+        navigate("ProfileTab" as any, {
+          screen: "ProfileTab",
+        } as any);
         break;
 
       default:

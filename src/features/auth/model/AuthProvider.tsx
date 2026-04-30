@@ -1,7 +1,7 @@
 import React, { createContext,  useEffect, useState } from "react";
 import {type AuthUser, baseApi} from "@shared/api";
 import {tokenStorage} from "@shared/lib/tokenStorage";
-import {navigationRef} from "@app/navigation/navigationRef";
+import {navigate} from "@app/navigation/navigationRef";
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const savedRefreshToken = await tokenStorage.getRefreshToken();
       if (savedToken) {
         setToken(savedToken);
-
         try {
           const me = await baseApi.get<AuthUser>("/users/account");
 
@@ -48,15 +47,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(token);
     setUser(user);
     await tokenStorage.saveTokens(token, refresh );
-    // // После успешного логина перенаправляем на главную страницу
-    // try {
-    //   // @ts-ignore - navigationRef может быть не ready в момент вызова
-    //   if (navigationRef && (navigationRef as any).current) {
-    //     (navigationRef as any).current.reset({ index: 0, routes: [{ name: 'HomeTab' }] });
-    //   }
-    // } catch (e) {
-    //   // ничего не делаем, навигация не доступна в данный момент
-    // }
+    navigate('HomeTab',{screen:"HomeTab"} as any)
   };
 
   const logout = async () => {

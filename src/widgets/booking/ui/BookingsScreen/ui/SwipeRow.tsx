@@ -73,12 +73,11 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
   const day   = new Date(item.date).getDate();
   const mon   = new Date(item.date)
     .toLocaleString('ru', { month: 'short' }).toUpperCase();
-  console.log(item)
   return (
     <View style={s.swipeWrap}>
       {/* Actions */}
       <View style={s.actions}>
-        {onConfirm && <TouchableOpacity
+        {isDentist && onConfirm && <TouchableOpacity
           style={[s.action, {backgroundColor: '#FF4D7D'}]}
           onPress={() => {
             close();

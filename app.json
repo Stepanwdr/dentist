@@ -34,7 +34,8 @@
       "edgeToEdgeEnabled": true,
       "package": "com.dentist.app",
       "googleServicesFile": "./google-services.json",
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

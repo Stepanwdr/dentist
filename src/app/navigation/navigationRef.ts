@@ -14,7 +14,9 @@ type NavigateArgs<T extends keyof TabParamList> =
 export function navigate<T extends keyof TabParamList>(
   ...args: NavigateArgs<T>
 ) {
-  if (!navigationRef.isReady()) return;
 
+
+  if (!navigationRef.isReady()) return;
+  console.log(...args);
   navigationRef.navigate(...(args as any));
 }

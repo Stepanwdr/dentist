@@ -16,7 +16,6 @@ const NextBookingCard: React.FC<Props> = ({onNextBookCreate}) => {
   const { data, refetch } = useGetNextBooking()
   const slideUp = useRef(new Animated.Value(30)).current;
   const opacity  = useRef(new Animated.Value(0)).current;
-
   const { startTime, shortMonth, day, isToday } = useMemo(() => {
     if (!data?.startTime) return {};
 

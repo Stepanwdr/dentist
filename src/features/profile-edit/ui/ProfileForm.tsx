@@ -1,11 +1,10 @@
-// src/features/profile-edit/ui/ProfileForm.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Patient } from '@shared/types';
 import { Colors } from '@shared/theme/colors';
 import { Button } from '@shared/ui';
 import { useBookingActions } from '@features/booking';
+import {Patient} from "@shared/types/patient";
 
 interface Field {
   key: keyof Patient;

@@ -1,6 +1,6 @@
 // src/features/booking/models/useBookingActions.ts
 import { useCallback } from 'react';
-import { Appointment, Doctor, Patient, Service } from '@shared/types';
+import { Appointment, Doctor, Service } from '@shared/types';
 import { useBookingStore } from './bookingStore';
 
 export function useBookingActions() {
@@ -45,7 +45,7 @@ export function useBookingActions() {
     dispatch({ type: 'RESET_DRAFT' });
   }, [dispatch]);
 
-  const updatePatient = useCallback((data: Partial<Patient>) => {
+  const updatePatient = useCallback((data: Partial<any>) => {
     dispatch({ type: 'UPDATE_PATIENT', payload: data });
   }, [dispatch]);
 
