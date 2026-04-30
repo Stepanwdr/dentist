@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {View, Text, StyleSheet, Animated} from 'react-native';
 import { useAuth } from '@features/auth/model/useAuth';
 import { Colors } from '@shared/theme/colors';
@@ -15,6 +15,7 @@ import {NextBookCard} from "@app/navigation/dentist/ui/dashboard/NextBookCard";
 import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
 import {useGetBooking, useGetBookings} from "@entities/booking/model/booking.model";
 import {toDayKey} from "@shared/utils/date";
+import {bookingColors as C} from "@shared/theme/Booking.colors";
 
 export const DentistDashboard: React.FC<Props> = () => {
   const { user } = useAuth();
@@ -44,6 +45,9 @@ export const DentistDashboard: React.FC<Props> = () => {
     { id: 'q1', name: 'Marcus Knight', time: '11:00' },
     { id: 'q2', name: 'Julian Rossi', time: '11:15' },
   ];
+
+
+
   useEffect(() => {
     Animated.parallel([
       Animated.spring(scaleAnim, {
@@ -128,4 +132,5 @@ const styles = StyleSheet.create({
   },
   nextTitle: { fontSize: 14, color: Colors.textMuted, marginBottom: 4 },
   nextText: { fontSize: 16, fontWeight: '700', color: Colors.text },
+
 });

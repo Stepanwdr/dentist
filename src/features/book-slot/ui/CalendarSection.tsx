@@ -122,6 +122,7 @@ const S = StyleSheet.create({
   calSection: {
     backgroundColor: C.white,
     paddingBottom: 4,
+    borderRadius:24
   },
   daysRow: {
     paddingHorizontal: 16,

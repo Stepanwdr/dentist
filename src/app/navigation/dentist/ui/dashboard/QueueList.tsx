@@ -49,7 +49,7 @@ export const QueueList: React.FC<Props> = ({  setBookId }) => {
   const PendingEmpty = useCallback(() => (
     <View style={s.emptyWrap}>
       <Text style={s.emptyIcon}>📋</Text>
-      <Text style={s.emptyTitle}>Нет запись в очереди</Text>
+      <Text style={s.emptyTitle}>Нет пациентов в очереди</Text>
     </View>
   ), []);
 

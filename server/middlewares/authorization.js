@@ -49,6 +49,7 @@ const EXCLUDE = [
   'PATCH:/booking/confirm',
   'GET:/booking',
   'GET:/notification/getAll',
+  'GET:/scheduleBlock/list',
 ];
 
 export default function (req, res, next) {

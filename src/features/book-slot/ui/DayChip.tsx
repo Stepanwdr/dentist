@@ -62,7 +62,7 @@ export const DayChip = memo<{
   },
   chipSel:   { backgroundColor: C.skyTop, borderColor: C.skyTop, ...shadow(C.skyTop, 0.38, 12, 5) },
   chipToday: { borderColor: C.skyTop, backgroundColor: C.skyLight },
-  chipDis:   { backgroundColor: '#F8FAFF', opacity: 0.45 },
+  chipDis:   { backgroundColor: '#eaf1ff', opacity: 0.6 },
 
   // ── Название дня (Пн, Вт...) ──
   chipDay:      { fontSize: 10, fontWeight: '500', color: C.textMuted },

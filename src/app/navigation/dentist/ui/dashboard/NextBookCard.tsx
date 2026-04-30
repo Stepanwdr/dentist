@@ -5,12 +5,23 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {BookStatus} from "@shared/ui/BookStatus";
 import {timeLeft} from "@shared/utils/date";
 import {useGetNextBooking} from "@entities/booking/model/booking.model";
-import React from "react";
+import React, {useCallback} from "react";
 import { bookingColors as C} from "@shared/theme/Booking.colors";
 
 export const NextBookCard = ({setBookId}:{ setBookId:( id: number | null)=>void }) => {
   const {data} = useGetNextBooking()
-  console.log(data)
+
+  const PendingEmpty = useCallback(() => (
+    <View style={styles.emptyWrap}>
+      <Text style={styles.emptyIcon}>📋</Text>
+      <Text style={styles.emptyTitle}>Нет следующего записа  </Text>
+    </View>
+  ), []);
+
+
+
+  if(!data) return <PendingEmpty/>
+
   return (
     <LinearGradient
       colors={[HomeColor.primary, HomeColor.primaryDark]}
@@ -106,4 +117,8 @@ const styles = StyleSheet.create({
   doctorInitials: { fontSize: 14, fontWeight: "800", color: C.skyBot },
   doctorInfo: { flex: 1 },
   doctorName: { fontSize: 18, fontWeight: "800", color: C.text, letterSpacing: -0.2 },
+  emptyWrap:  { paddingVertical: 52, alignItems: 'center', gap: 8 },
+  emptyIcon:  { fontSize: 40 },
+  emptyTitle: { fontSize: 15, fontWeight: '700', color: C.text },
+  emptyTxt:   { fontSize: 13, color: C.textMuted },
 });
