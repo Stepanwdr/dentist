@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "dentist",
-    "slug": "dentist",
+    "name": "dentrica",
+    "slug": "dentrica",
     "version": "1.0.0",
-    "scheme": "dentist",
+    "scheme": "dentrica",
     "orientation": "portrait",
     "icon": "./assets/tooth.png",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
     "newArchEnabled": true,
-    "owner": "stepan94",
+    "owner": "brjoni",
     "plugins": [
       "expo-notifications",
       "expo-secure-store"
@@ -42,7 +42,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "e6f50adb-5f1c-406e-aff6-18fc86df3967"
+        "projectId": "ac055686-53d5-4e90-bb43-521a01c12c91"
       }
     }
   }
