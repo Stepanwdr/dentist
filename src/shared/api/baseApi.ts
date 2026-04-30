@@ -4,8 +4,8 @@ import Constants from "expo-constants";
 import { tokenStorage } from "@shared/lib/tokenStorage";
 
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
-//  const API_BASE_URL =  `https://den.deliverydepartment.am`;
-const API_BASE_URL =  `http://krangk-ip-217-76-14-22.tunnelmole.net`;
+ const API_BASE_URL =  `https://den.deliverydepartment.am`;
+// const API_BASE_URL =  `http://dyh1hg-ip-83-139-31-168.tunnelmole.net`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
     (error.response?.data as any)?.message || (error.response?.data)
