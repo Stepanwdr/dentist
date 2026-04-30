@@ -140,7 +140,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
   });
   // ── Слоты из API (только реально созданные в БД) ─────
   const {
-    data:      apiSlots = [],
+    data:      apiSlots,
     isPending: loading,
     isError,
     error,
@@ -152,7 +152,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
   });
   // ── Мержим: полная сетка 09:00–20:00 + статус из API ──
   const slots = useMemo(
-    () => generateDaySlots(formatDateYMD(date), apiSlots, todayKey, currentTime),
+    () => generateDaySlots(formatDateYMD(date), apiSlots?.slots || [], todayKey, currentTime),
     [date, apiSlots, todayKey, currentTime],
   );
   // ── Handlers ──────────────────────────────────────────

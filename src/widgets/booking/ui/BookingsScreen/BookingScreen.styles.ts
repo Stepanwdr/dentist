@@ -105,8 +105,8 @@ export const s = StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center',
   },
-  dateNum:    { fontSize: 18, fontWeight: '900', color: '#fff', lineHeight: 20 },
-  dateMon:    { fontSize: 9,  color: 'rgba(255,255,255,0.8)' },
+  dateNum:    { fontSize: 18, fontWeight: '900', color: '#fff', lineHeight: 20},
+  dateMon:    { fontSize: 9,  color: 'rgba(255,255,255,0.8)', width:30, textAlign: "center" },
 
   doctorName: { flex: 1, fontSize: 13, fontWeight: '700', color: C.text },
   serviceTxt: { fontSize: 11, color: C.textSub },

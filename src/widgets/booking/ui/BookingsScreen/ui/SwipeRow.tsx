@@ -27,7 +27,7 @@ const daysLeft = (date: string) =>
 interface SwipeRowProps {
   item:         TimeSlot;
   onView:       (item: TimeSlot) => void;
-  onEdit:       (item: TimeSlot) => void;
+  onEdit?:       (item: TimeSlot) => void;
   onCancel:     (item: TimeSlot) => void;
   onConfirm?:   (item: TimeSlot) => void;
   isDentist?: boolean;
@@ -77,7 +77,7 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
     <View style={s.swipeWrap}>
       {/* Actions */}
       <View style={s.actions}>
-        {isDentist && onConfirm && <TouchableOpacity
+        {isDentist && onConfirm && item.status !== 'confirmed' && <TouchableOpacity
           style={[s.action, {backgroundColor: '#FF4D7D'}]}
           onPress={() => {
             close();
@@ -95,15 +95,18 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
           </Text>
           <Text style={s.actionLbl}>Смотреть</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[s.action, { backgroundColor: Colors.primary }]}
-          onPress={() => { close(); onEdit(item); }}
+        {onEdit && <TouchableOpacity
+          style={[s.action, {backgroundColor: Colors.primary}]}
+          onPress={() => {
+            close();
+            onEdit(item);
+          }}
         >
           <Text style={s.actionIcon}>
-            <Ionicons name="pencil" color="white" size={20} />
+            <Ionicons name="pencil" color="white" size={20}/>
           </Text>
           <Text style={s.actionLbl}>Изменить</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>}
         <TouchableOpacity
           style={[s.action, { backgroundColor: '#FF4D7D' }]}
           onPress={() => { close(); onCancel(item); }}

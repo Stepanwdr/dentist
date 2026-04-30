@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "dentist",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/tooth.png",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
     "newArchEnabled": true,
@@ -15,7 +15,7 @@
       "expo-secure-store"
     ],
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/tooth.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -28,7 +28,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/tooth.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -38,7 +38,7 @@
       "usesCleartextTraffic": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/tooth.png"
     },
     "extra": {
       "eas": {

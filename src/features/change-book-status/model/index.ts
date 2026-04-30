@@ -13,7 +13,7 @@ export const useChangeBookingStatus = (successCb:()=>void) => {
       console.log( )
       Toast.show({
         type:  'success',
-        text1: 'Запись удачно подтвержден!',
+        text1: 'Запись удачно отменен!',
       });
        successCb()
        await queryClient.invalidateQueries({queryKey:['notifications']});

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '@shared/theme/colors';
 import {SHADOW} from "@shared/theme/home";
 import {bookingColors} from "@shared/theme/Booking.colors";
+import {STATUS_STYLES} from "@shared/ui/BookStatus";
 
 type Props = {
   totalWait:number
@@ -17,15 +18,15 @@ export const BookingStats: React.FC<Props> = ({ totalWait, totalCompleted,totalC
       <View style={styles.cards}>
         <View style={[styles.card, { backgroundColor: bookingColors.pink }]}>
           <Text style={styles.value}>{totalWait}</Text>
-          <Text style={styles.label}>Ожидает</Text>
+          <Text style={styles.label}>ОЖИДАЕТ</Text>
         </View>
-        <View style={[styles.card, { backgroundColor: bookingColors.danger }]}>
-          <Text style={styles.value}>{totalConfirmed}</Text>
-          <Text style={styles.label}>Подтверждено</Text>
+        <View style={[styles.card, { backgroundColor: STATUS_STYLES.confirmed.bg }]}>
+          <Text style={[styles.value,{color:STATUS_STYLES.confirmed.color}]}>{totalConfirmed}</Text>
+          <Text style={[styles.label,{color:STATUS_STYLES.confirmed.color}]}>ПОДТВЕРЖДЕНО</Text>
         </View>
-        <View style={[styles.card, { backgroundColor: bookingColors.success }]}>
-          <Text style={[styles.value,styles.finishedValue]}>{totalCompleted}</Text>
-          <Text style={[styles.label,styles.finishedLable]}>Завершен</Text>
+        <View style={[styles.card, { backgroundColor: STATUS_STYLES.finished.bg }]}>
+          <Text style={[styles.value,styles.finishedValue,{color:STATUS_STYLES.finished.color}]}>{totalCompleted}</Text>
+          <Text style={[styles.label,styles.finishedLable,{color:STATUS_STYLES.finished.color}]}>ЗАВЕРШЕН</Text>
         </View>
       </View>
     </View>

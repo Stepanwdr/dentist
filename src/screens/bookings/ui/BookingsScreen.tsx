@@ -197,10 +197,10 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
     cancelled: CancelledEmpty,
     pending: PendingEmpty,
   }
-  const paddingBottom = { paddingBottom: insets.bottom + 100 };
+  const paddingBottom = { paddingBottom: insets.bottom + 202 };
 
   useEffect(() => {
-    setData(bookingsData ?? []);
+    setData(bookingsData?.slots ?? []);
   }, [bookingsData]);
 
   useEffect(() => {

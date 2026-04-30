@@ -41,8 +41,7 @@ export const CalendarSection = memo<{
 
     const handleMonthChange = useCallback((month: number) => {
       const y = selectedDate.getFullYear();
-      const maxDay = new Date(y, month + 1, 0).getDate();
-      onDateChange(new Date(y, month, Math.min(selectedDate.getDate(), maxDay)));
+      onDateChange(new Date(y, month, 1)); // 👈 всегда 1 число
     }, [selectedDate, onDateChange]);
 
     const handleYearChange = useCallback((year: number) => {
@@ -51,6 +50,27 @@ export const CalendarSection = memo<{
       onDateChange(new Date(year, m, Math.min(selectedDate.getDate(), maxDay)));
     }, [selectedDate, onDateChange]);
 
+    useEffect(() => {
+      scrollRef.current?.scrollTo({ x: 0, animated: false });
+    }, [selectedDate.getMonth(), selectedDate.getFullYear()]);
+    const prevMonthRef = useRef(selectedDate.getMonth());
+
+    useEffect(() => {
+      const isMonthChanged = prevMonthRef.current !== selectedDate.getMonth();
+      prevMonthRef.current = selectedDate.getMonth();
+
+      if (isMonthChanged) return; // 👈 не скроллим при смене месяца
+
+      const idx = days.findIndex(d => isSameDay(d, selectedDate));
+      if (idx < 0) return;
+
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({
+          x: Math.max(0, idx - 1) * (DAY_W + DAY_G),
+          animated: true,
+        });
+      }, 80);
+    }, [selKey]);
     return (
       <View style={S.calSection}>
         <MonthYearPills

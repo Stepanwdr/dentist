@@ -1,7 +1,7 @@
 // features/book-slot/hooks/useGetBookings.ts
 
 import { useQuery } from '@tanstack/react-query';
-import {TimeSlot} from "@shared/types/slot";
+import {bookStatus, TimeSlot} from "@shared/types/slot";
 import {GetSlotsParams} from "@features/book-slot/api/bookSlot.api";
 import {ApiResponse, baseApi} from "@shared/api";
 
@@ -31,14 +31,15 @@ export function dateToSlot(date: Date): Pick<GetSlotsParams, 'date'> & {
 }
 
 
-interface slotsResponse extends ApiResponse {
+export interface slotsResponse extends ApiResponse {
   slots: TimeSlot[]
+  stats:{[ key: string]: number}
 }
 
 interface slotResponse extends ApiResponse {
   slot: TimeSlot
 }
-export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
+export async function fetchSlots(params: GetSlotsParams): Promise<slotsResponse> {
   try {
     const q = new URLSearchParams({
       dentistId: params?.dentistId || '',
@@ -48,10 +49,7 @@ export async function fetchSlots(params: GetSlotsParams): Promise<TimeSlot[]> {
     })
 
     console.log({q})
-    const res  = await baseApi.get(`booking/bookings?${q}`) as slotsResponse;
-
-    return res.slots as TimeSlot[];
-
+    return await baseApi.get(`booking/bookings?${q}`) as slotsResponse;
 
   } catch (e) {
     console.error('[bookSlot.api] fetchSlots:', e);

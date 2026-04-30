@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(token);
     setUser(user);
     await tokenStorage.saveTokens(token, refresh );
-    navigate('HomeTab',{screen:"HomeTab"} as any)
   };
 
   const logout = async () => {

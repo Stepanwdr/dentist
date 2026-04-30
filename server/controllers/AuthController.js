@@ -133,7 +133,7 @@ class AuthController {
       }
 
       const user = await Users.create({
-        clinicId,
+        clinicId:1,
         name,
         lname,
         fname,

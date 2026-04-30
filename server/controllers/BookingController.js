@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import {BookingSlot, Users, Clinic, ScheduleBlock, Notifications} from '../models/index.js';
 import {NotificationService} from "../services/notifications/NotificationService.js";
+import Sequelize from "../services/sequelize.js";
 
 // ─── Helpers ──────────────────────────────────────────
 function toHMS(value) {
@@ -172,6 +173,7 @@ class BookingController {
         where.status = {
           [Op.in]: ['pending', 'confirmed'],
         };
+        where.dentistId = dentistId;
       }
 
       const { rows: slots, count } = await BookingSlot.findAndCountAll({
@@ -185,7 +187,25 @@ class BookingController {
         limit: safeLimit,
         offset,
       });
+      const statusCountsRaw = await BookingSlot.findAll({
+        where: where, // 👈 без status фильтра
+        attributes: [
+          'status',
+          [Sequelize.fn('COUNT', Sequelize.col('id')), 'count'],
+        ],
+        group: ['status'],
+        raw: true,
+      });
+      const statusCounts = {
+        pending: 0,
+        confirmed: 0,
+        cancelled: 0,
+        finished: 0,
+      };
 
+      for (const row of statusCountsRaw) {
+        statusCounts[row.status] = Number(row.count);
+      }
       res.json({
         status: 'ok',
         pagination: {
@@ -194,6 +214,7 @@ class BookingController {
           totalPages: Math.ceil(count / safeLimit),
           page: Number(page),
         },
+        stats:statusCounts,
         slots,
       });
 

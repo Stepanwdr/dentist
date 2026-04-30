@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { bookStatus } from "@shared/types/slot";
 
-const STATUS_STYLES: Record<bookStatus, { bg: string; color: string; label: string }> = {
+export const STATUS_STYLES: Record<bookStatus, { bg: string; color: string; label: string }> = {
   pending:   { bg: '#FEF3C7', color: '#92400E', label: 'В ожидании' },
   confirmed: { bg: '#DCFCE7', color: '#166534', label: 'Подтверждено' },
   cancelled:  { bg: '#FECACA', color: '#991B1B', label: 'Отменено' },

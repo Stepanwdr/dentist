@@ -191,7 +191,7 @@ export default function ScheduleScreen() {
     setDate(normalizeDate(new Date()));
   }
 
-  const handleTabChange = ()=>{}
+  const handleTabChange = () => {}
   const filteredBooks=tab === 'all' ? appointments : appointments.filter(item=>item.status === tab)
   return (
     <View style={styles.container}>

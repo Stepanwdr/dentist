@@ -5,13 +5,12 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {BookStatus} from "@shared/ui/BookStatus";
 import {timeLeft} from "@shared/utils/date";
 import {useGetNextBooking} from "@entities/booking/model/booking.model";
-import {Avatar} from "@shared/ui";
 import React from "react";
-import {bookingColors as C} from "@shared/theme/Booking.colors";
+import { bookingColors as C} from "@shared/theme/Booking.colors";
 
-export const NextBookCard = () => {
+export const NextBookCard = ({setBookId}:{ setBookId:( id: number | null)=>void }) => {
   const {data} = useGetNextBooking()
-
+  console.log(data)
   return (
     <LinearGradient
       colors={[HomeColor.primary, HomeColor.primaryDark]}
@@ -45,7 +44,7 @@ export const NextBookCard = () => {
       </View>
 
       <View style={styles.actionRow}>
-        <TouchableOpacity style={styles.secondaryButton}>
+        <TouchableOpacity style={styles.secondaryButton} onPress={()=>setBookId(data?.id || null)}>
           <Text style={styles.secondaryButtonText}>Смотреть</Text>
         </TouchableOpacity>
       </View>
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
   avatarPlaceholder: { width: 60, height: 60, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.3)' },
   patientNameContainer: { marginLeft: 16 },
   patientName: { fontSize: 22, fontWeight: 'bold', color: HomeColor.white },
-  appointmentTime: { fontSize: 14, color: HomeColor.white, opacity: 0.8, marginTop: 4 },
+  appointmentTime: { fontSize: 14, color: HomeColor.white, opacity: 0.8, marginTop: 4,minWidth:300 },
   actionRow: { flexDirection: 'row', alignItems: 'center' },
   secondaryButton: {borderWidth:1,borderColor: HomeColor.white, backgroundColor: HomeColor.primary, borderRadius: 16, paddingVertical: 14, paddingHorizontal: 20, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',maxWidth:180 },
   secondaryButtonText: { color: HomeColor.white, fontWeight: 'bold', marginRight: 8 },

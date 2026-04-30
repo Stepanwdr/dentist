@@ -1,7 +1,7 @@
 // ─── Hook ─────────────────────────────────────────────
 import {useQuery} from "@tanstack/react-query";
 import {bookStatus, TimeSlot} from "@shared/types/slot";
-import {fetchBookingById, fetchSlots} from "@entities/booking/api/bookingApi";
+import {fetchBookingById, fetchSlots, slotsResponse} from "@entities/booking/api/bookingApi";
 import {baseApi} from "@shared/api";
 import TimeSlots from "@shared/api/endpoints/timeSlots";
 
@@ -31,7 +31,7 @@ export function useGetBookings(
   }
 ) {
   const { dentistId = '', serviceId, date='', status='', isBusySlots = false} = params;
-  return useQuery<TimeSlot[], Error>({
+  return useQuery<slotsResponse, Error>({
     queryKey: ['bookings', params],
     queryFn:  async () => {
 

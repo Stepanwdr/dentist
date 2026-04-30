@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet} from 'react-native';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {View, Text, StyleSheet, Animated} from 'react-native';
 import { useAuth } from '@features/auth/model/useAuth';
 import { Colors } from '@shared/theme/colors';
 
@@ -12,42 +12,81 @@ import { BookingStats } from './ui/dashboard/BookingStats';
 import { DashboardOverview } from './ui/dashboard/DashboardOverview';
 import { QueueList } from './ui/dashboard/QueueList';
 import {NextBookCard} from "@app/navigation/dentist/ui/dashboard/NextBookCard";
+import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
+import {useGetBooking, useGetBookings} from "@entities/booking/model/booking.model";
+import {toDayKey} from "@shared/utils/date";
 
-export const DentistDashboard: React.FC<Props> = ({ navigation }) => {
+export const DentistDashboard: React.FC<Props> = () => {
   const { user } = useAuth();
+  const [sheet, setSheet] = useState(false);
+  const [bookId,setBookId]=useState<number | null>(null);
+  const today=toDayKey(new Date());
+  const { data: bookingsData, refetch, isPending, isRefetching } = useGetBookings({ status: 'upcoming', date:today });
+  const { data: selectedBookData } = useGetBooking(bookId || undefined);
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
   const dentistName = useMemo(() => user?.name ?? 'Доктор', [user]);
   const [query, setQuery] = useState('');
+  const { startTime, shortMonth, day, isToday } = useMemo(() => {
+    if (!selectedBookData?.startTime) return {};
 
-  // Демонстрационные данные Recent Activity
-  const recentActivityItems = [
-    { id: 'r1', name: 'Sarah Jenkins', badges: ['VIP', 'Follow-up'], lastVisit: 'LAST VISIT Oct 12, 2023', upcoming: 'Upcoming Nov 04, 10:30 AM' },
-    { id: 'r2', name: 'Marcus Thorne', badges: ['Invisalign'], lastVisit: 'Sept 28, 2023', upcoming: 'Today, 02:15 PM' },
-    { id: 'r3', name: 'Elena Rodriguez', badges: ['New Patient'], lastVisit: 'None', upcoming: '' },
-  ];
+    const date = new Date(selectedBookData.date);
+    const today = new Date();
+    return {
+      startTime: selectedBookData.startTime,
+      shortMonth: date.toLocaleString('en', { month: 'short' }), // May
+      day: date.getDate(), // 24
+      isToday: date.getDate() === today.getDate()
+    };
+  }, [selectedBookData]);
 
   const queueItems = [
     { id: 'q1', name: 'Marcus Knight', time: '11:00' },
     { id: 'q2', name: 'Julian Rossi', time: '11:15' },
   ];
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1, useNativeDriver: true,
+        tension: 55, friction: 7, delay: 200,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1, duration: 500, delay: 100, useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Auto-open sheet after 800ms
+    const t = setTimeout(() =>  bookId ? setSheet(true):setSheet(false), 10);
+    return () => clearTimeout(t);
+  }, [bookId]);
 
   return (
     <View style={styles.safe}>
       <DashboardOverview doctorName={dentistName} greeting={'Привет ДР.'} />
-      <BookingStats totalCompleted={1284} totalWait={18} totalConfirmed={2} />
+      <BookingStats totalCompleted={bookingsData?.stats.completed || 0} totalWait={bookingsData?.stats.pending || 0} totalConfirmed={bookingsData?.stats.confirmed || 0} />
       <Text style={styles.title}>
        Следующий запись
       </Text>
-      <NextBookCard/>
+      <NextBookCard setBookId={setBookId}/>
       <Text style={styles.title}>
         В очередь
       </Text>
-      <QueueList items={queueItems as any} />
+      <QueueList items={queueItems as any} setBookId={setBookId} />
+      <BottomSheetDetail
+        visible={sheet}
+        booked={selectedBookData || null}
+        onClose={()=> setBookId(null)}
+        startTime={startTime ||''}
+        shortMonth={shortMonth ||''}
+        day={String(day)}
+        isToday={true}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background,marginTop:30,padding:16, },
+  safe: { flex: 1, backgroundColor: Colors.background,marginTop:30, padding:16, paddingTop:0},
   title: { fontSize: 18, fontWeight: '700', margin: 16, color: '#4A90D9' },
   searchRow: { paddingHorizontal: 16, paddingVertical: 6 },
   searchInput: {
