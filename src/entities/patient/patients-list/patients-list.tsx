@@ -5,19 +5,20 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import {shadow} from "@features/book-slot/lib";
-import {bookingColors as C} from "@shared/theme/Booking.colors";
-import { Dentist } from "@shared/types/dentist";
+import {bookingColors, bookingColors as C} from "@shared/theme/Booking.colors";
 import {useGetPatients} from "@entities/patient/model/useGetPatients";
 import {useMeQuery} from "@shared/api";
 import {Patient} from "@shared/types/patient";
 import {useFocusEffect} from "@react-navigation/native";
+import {HomeColor} from "@shared/theme/home";
+import {Ionicons} from "@expo/vector-icons";
 
-const specialties = [
-  { label: 'Все', value: 'All' },
-  { label: 'Мои', value: 'my' },
+const tabs = [
+  { label: 'Мои пациенты', value: 'my' },
+  { label: 'Пациенты клиники', value: 'all' },
 ];
 type Props = {
   horizontal?: boolean;
@@ -25,19 +26,22 @@ type Props = {
 };
 
 export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
-  const [selected, setSelected] = useState('Все');
+  const [selected, setSelected] = useState('all');
   const { data, refetch } = useGetPatients({ search: '' })
   const {data:user}=useMeQuery()
   const filteredDoctors = useMemo(() => {
-    if (selected === 'Все') return data;
-    return data?.filter((patient) => user?.id === patient?.dentistId);
+    if (selected === 'all') return data;
+    return data?.filter((patient) => user?.id !== patient?.dentistId);
   }, [selected,data]);
-  console.log({data})
-  const handleView = (item:Patient)=>{
+
+  const handleView = (item: Patient)=>{
+
+  }
+  const onCreateNewPatient=()=>{
 
   }
 
-  const renderPatient = ({ item }:{item:Dentist}) => (
+  const renderPatient = ({ item }:{item:Patient}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
       <Image source={{ uri: item.avatar }} style={styles.image} />
 
@@ -49,30 +53,30 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
 
       {/* BOOKING BUTTON */}
       <View style={styles.cardActions}>
-        <TouchableOpacity
+
+        {onAsign ?  <TouchableOpacity
           style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
-          onPress={() =>handleView(item)
-          }
+          onPress={() =>onAsign(item)
+        }
+        >
+          <Ionicons name="person-add-outline" size={16} color={HomeColor.primary} />
+          <Text style={[styles.bookText, !horizontal && styles.btnTextPrimary]}>Назначить</Text>
+        </TouchableOpacity> :    <TouchableOpacity
+          style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
+          onPress={() => handleView(item)}
         >
           <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Смотреть</Text>
-        </TouchableOpacity>
-        {onAsign &&  <TouchableOpacity
-          style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
-          onPress={() => onAsign(item)
-          }
-        >
-          <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Назначить</Text>
         </TouchableOpacity>}
       </View>
     </View>
   );
 
   const renderFilter = ({ item }:{item: { label: string, value: string }}) => {
-    const isActive = item.label === selected;
+    const isActive = item.value === selected;
 
     return (
       <TouchableOpacity
-        onPress={() => setSelected(item.label)}
+        onPress={() => setSelected(item.value)}
         style={[
           styles.chip,
           isActive && styles.chipActive,
@@ -86,23 +90,26 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
   };
 
 
-
   useFocusEffect(useCallback(()=>refetch,[]))
 
   return (
     <View style={[styles.container, !horizontal && { paddingRight: 10}]}>
       {/* FILTER */}
-      <FlatList
-        data={specialties}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.value}
-        renderItem={renderFilter}
-        contentContainerStyle={{ gap: 8, marginBottom: 12,paddingHorizontal:12 }}
-      />
 
-      {/* DOCTORS */}
-
+      {/* PATIENTS */}
+     <View style={{justifyContent:'space-between', flexDirection:"row",alignItems:'center'}}>
+       <FlatList
+         data={tabs}
+         horizontal
+         showsHorizontalScrollIndicator={false}
+         keyExtractor={(item) => item.value}
+         renderItem={renderFilter}
+         contentContainerStyle={{ gap: 8, marginBottom: 12,paddingHorizontal:12 }}
+       />
+      <TouchableOpacity style={styles.addBtn} onPress={onCreateNewPatient} >
+          <Ionicons name="person-add-outline" size={16} color={HomeColor.white} />
+      </TouchableOpacity>
+     </View>
       <FlatList
         data={filteredDoctors}
         key={horizontal ? 'horizontal' : 'grid'} // 👈 важно!
@@ -121,7 +128,8 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
 const styles = StyleSheet.create({
   container: {},
   cardActions: {
-   flex: 1
+    flex: 1,
+    marginTop:10,
   },
   header: {
     flexDirection: 'row',
@@ -202,20 +210,13 @@ const styles = StyleSheet.create({
   },
 
   bookBtn: {
-    marginTop: 8,
-    backgroundColor: '#4A9FF5',
-    paddingVertical: 6,
-    borderRadius: 16,
-    alignItems: 'center',
+    backgroundColor: HomeColor.primaryLight, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12,flexDirection:"row",alignItems: "center", justifyContent: "center",gap:5
   },
-
   bookBtnMd: {
-    backgroundColor: '#4A9FF5',
-    borderRadius: 16,
-    height: 30,
-    textAlign:"center",
-    marginTop: 10,
+    backgroundColor: HomeColor.primaryLight, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12,flexDirection:"row",alignItems: "center", justifyContent: "center",gap:5
   },
+  btnTextPrimary: { color: HomeColor.primaryDark, fontWeight: 'bold', fontSize: 12 },
+
   bookTextMd: {
     color: '#fff',
     fontSize: 14,
@@ -226,4 +227,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
   },
+
+  addBtn: {
+    backgroundColor: bookingColors.pink,
+    borderRadius: '50%',
+    padding:5,
+    minWidth:50,
+    minHeight:50,
+    color:"white",
+     flexDirection:"row",alignItems: "center",justifyContent:"center",gap:5,
+  } ,
+
+  addBtnText: {
+    color:"white",
+  },
+  input:{
+
+  }
 });

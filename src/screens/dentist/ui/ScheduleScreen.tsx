@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { bookingColors } from "@shared/theme/Booking.colors";
 import { normalizeDate, toDayKey } from "@shared/utils/date";
@@ -10,10 +10,12 @@ import { useMeQuery } from "@shared/api";
 import { formatDateYMD } from "@shared/lib/formatDate";
 import { generateDaySlots } from "@shared/utils/generateDaySlots";
 import { useCreateScheduleBlock, useDeleteScheduleBlock, useScheduleBlocks } from "@entities/schedule-block";
-import { buildScheduleData } from "@shared/utils/buildScheduleData";
+import { buildScheduleData, ScheduleItem } from "@shared/utils/buildScheduleData";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {useConfirmBookStatus} from "@features/confirm-book/model";
 import {ActionType, AppointmentsTab, SlotItem} from "@screens/dentist/ui/SlotItem";
+import {AsignData, PatientAsignDrawer} from "@features/patient-asign/ui/PatientAsignDrawer";
+import {useFocusEffect} from "@react-navigation/native";
 
 const tabs:{label:string,value:AppointmentsTab}[] = [
   { label: 'Все', value: 'all' },
@@ -26,8 +28,10 @@ const tabs:{label:string,value:AppointmentsTab}[] = [
 export default function ScheduleScreen() {
   const [date, setDate] = useState<Date>(normalizeDate(new Date()));
   const [tab, setTab] = useState<AppointmentsTab>('all');
-  const { data } = useMeQuery();
+  const [asignData,setAsignData]=useState<AsignData | null>(null)
 
+  const { data } = useMeQuery();
+ const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const dentistId = data?.id
   const selectedDate = formatDateYMD(date);
   const todayKey = toDayKey(normalizeDate(new Date()));
@@ -44,7 +48,7 @@ export default function ScheduleScreen() {
     dentistId,
     isBusySlots:true
   });
-  const { data: blocksData } = useScheduleBlocks({
+  const { data: blocksData,refetch:refetchSchedule } = useScheduleBlocks({
     dentistId,
     date: selectedDate,
   });
@@ -75,15 +79,14 @@ export default function ScheduleScreen() {
     setDate(normalizeDate(nextDate));
   };
 
-  const handleTabChange = (_action: ActionType) => {};
-
-const handleAction=(action:ActionType,_id:string)=>{
+const handleAction=(action:ActionType,slot: ScheduleItem)=>{
+  const _id=String(slot.id)
   if (action ==='CONFIRM') {
     const bookId= _id.replace('booking-','');
       onConfirmBook({id:Number(bookId)})
   }
   if (action ==='CANCEL') {
-    const bookId= _id.replace('booking-','');
+    const bookId=_id.replace('booking-','');
     onCancelBook({id:Number(bookId),status:'cancelled'})
   }
 
@@ -113,11 +116,26 @@ const handleAction=(action:ActionType,_id:string)=>{
     deleteBlock(block.id);
   }
 
+  if (action ==='ASSIGN') {
+    setAsignData(prevState => ({...prevState,time:slot.time, date: toDayKey(date)}) as AsignData);
+    setIsDrawerOpen(true);
+  }
+
 }
   const filteredBooks = tab === 'all'
     ? scheduleData
     : scheduleData.filter((item) => item.status === tab);
 
+
+const onDrawerClose=()=>{
+  setIsDrawerOpen(false);
+  setAsignData(null);
+}
+
+useFocusEffect(useCallback(()=> {
+  void refetchSchedule
+  void refetch
+},[]))
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Расписание слотов</Text>
@@ -136,7 +154,7 @@ const handleAction=(action:ActionType,_id:string)=>{
       <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
         {filteredBooks.map((item) => (
           <SlotItem
-            onAction={handleAction}
+            onAction={(action)=> handleAction(action,item)}
             key={item.id}
             time={item.time}
             patient={item.patient}
@@ -146,6 +164,11 @@ const handleAction=(action:ActionType,_id:string)=>{
           />
         ))}
       </ScrollView>
+      <PatientAsignDrawer
+        isDrawerOpen={isDrawerOpen}
+        onDrawerClose={onDrawerClose}
+        setAsignData={setAsignData}
+        asignData={asignData} />
     </View>
   );
 }

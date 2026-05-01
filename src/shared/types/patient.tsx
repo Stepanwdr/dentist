@@ -8,6 +8,7 @@ export interface Patient {
   phone: string;
   address: string;
   dentistId?: number;
+  email: string;
   clinic?: {
     id: string;
     name: string;

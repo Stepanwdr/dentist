@@ -193,6 +193,8 @@ class UsersController {
           'fname',
           'clinicId',
           'avatar', // если есть
+          'email',
+          'phone'
         ],
 
         order: [

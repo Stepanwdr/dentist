@@ -1,22 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {bookingColors} from "@shared/theme/Booking.colors";
-import {PatientsList} from "@widgets/patients-list/patients-list";
-
-const DATA = [
-  {
-    name: 'Sarah Jenkins',
-    tag: 'VIP',
-    last: 'Oct 12, 2023',
-    next: 'Nov 04, 10:30 AM',
-  },
-  {
-    name: 'Marcus Thorne',
-    tag: 'Invisalign',
-    last: 'Sep 28, 2023',
-    next: 'Today, 02:15 PM',
-  },
-];
+import {PatientsList} from "@entities/patient/patients-list/patients-list";
 
 export default function PatientsScreen() {
   return (

@@ -31,22 +31,22 @@ export function useBookSlot(onSuccess?: (payload: TimeSlot)=> void ){
           type:  'error',
           text1: error.message,
         });
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey:bookingKeys.all(),
         });
       }
     },
 
     // Инвалидируем кэш после успеха
-    onSuccess: (_data, params) => {
+    onSuccess: async(_data, params) => {
       onSuccess?.(_data.slot);
       Toast.show({
         type:  'success',
         text1: 'Запись создана!',
         text2: `${_data.slot.date}`,
       });
-      queryClient.invalidateQueries({
-        queryKey:bookingKeys.all(),
+     await queryClient.invalidateQueries({
+        queryKey: ['bookings'],
       });
 
     },

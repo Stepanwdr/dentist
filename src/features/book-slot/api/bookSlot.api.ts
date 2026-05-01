@@ -22,6 +22,7 @@ export interface BookSlotParams {
   startTime:  string;
   endTime:    string;
   service:    string;
+  patientId?: number;
 }
 
 export interface EditBookParams extends BookSlotParams {
@@ -64,7 +65,8 @@ export async function bookSlotRequest(params: BookSlotParams): Promise<BookSlotR
       startTime:  params.startTime,
       endTime:    params.endTime,
       notes:      params.notes,
-      service:    params.service
+      service:    params.service,
+      patientId: params.patientId,
     }) as BookSlotResponse;
     return res
   } catch (e) {

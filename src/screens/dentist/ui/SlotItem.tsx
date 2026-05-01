@@ -50,8 +50,8 @@ export const SlotItem:FC<Props> = ({ time, patient, service, status, onAction,id
         ) : isBlocked ? (
           <View style={styles.blockedRow}>
             <View>
-              <Text style={styles.blockedTitle}>Slot Unavailable</Text>
-              <Text style={styles.blockedSub}>Staff Break / Maintenance</Text>
+              <Text style={styles.blockedTitle}>Слот закрыт</Text>
+              <Text style={styles.blockedSub}>Занят / перерыв</Text>
             </View>
             <TouchableOpacity style={styles.btnOpen} onPress={() => onAction('OPEN',id)}>
               <MaterialCommunityIcons name="lock-open-outline" size={16} color={HomeColor.textSub} />
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   typeDot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
   typeText: { fontSize: 12, color: HomeColor.textSub },
   blockedTitle: { fontSize: 14, color: HomeColor.textMuted, fontWeight: '600' },
-  blockedSub: { fontSize: 11, color: HomeColor.textMuted },
+  blockedSub: { fontSize: 11, color: HomeColor.textMuted,width:150, },
   btnOpen: { flexDirection: 'row', alignItems: 'center', padding: 8, borderWidth: 1, borderColor: HomeColor.border, borderRadius: 12 },
   btnOpenText: { fontSize: 12, color: HomeColor.textSub, marginLeft: 4, fontWeight: 'bold' },
   actions:{

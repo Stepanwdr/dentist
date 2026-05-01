@@ -431,6 +431,10 @@ class BookingController {
       const { dentistId, date, startTime, endTime, notes = null, service,patientId } = req.body || {};
       const userId = req.userId
      const role = req.role
+
+      if (!service) {
+        return res.status(400).json({ status: 'error', message: 'Выберите процедуру!' });
+      }
       if (!dentistId || !date || !startTime || !endTime) {
         return res.status(400).json({ status: 'error', message: 'dentistId, date, startTime, endTime are required' });
       }

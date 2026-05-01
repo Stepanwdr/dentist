@@ -14,12 +14,14 @@ interface DrawerProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  isFullHeight?: boolean;
 }
 
 export const Drawer: React.FC<DrawerProps> = ({
                                                 visible,
                                                 onClose,
                                                 children,
+                                                isFullHeight
                                               }) => {
   const translateY = useRef(new Animated.Value(height)).current;
 
@@ -70,6 +72,7 @@ export const Drawer: React.FC<DrawerProps> = ({
         style={[
           styles.drawer,
           { transform: [{ translateY }] },
+          {height: isFullHeight ? height  * 1.27  : height * 0.8 },
         ]}
         {...panResponder.panHandlers}
       >
@@ -90,7 +93,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.4)",
   },
   drawer: {
-    height: height * 0.8,
     backgroundColor: "#fff",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
