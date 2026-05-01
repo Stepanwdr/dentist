@@ -30,7 +30,7 @@ export function useGetPatients(params: Params) {
   const { search } = params;
 
   return useQuery<Patient[], Error>({
-    queryKey: usersKeys.patients({search }),
+    queryKey: usersKeys.patients({ search }),
 
     queryFn: async () => {
       const q = new URLSearchParams();

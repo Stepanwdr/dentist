@@ -172,7 +172,7 @@ class UsersController {
         ];
       }
 
-      const dentists = await Users.findAll({
+      const patients = await Users.findAll({
         where,
 
         include: [
@@ -204,7 +204,7 @@ class UsersController {
 
       res.json({
         status: 'ok',
-        dentists,
+        patients,
       });
     } catch (e) {
       next(e);

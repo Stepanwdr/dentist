@@ -28,7 +28,7 @@ type Props = {
 
 export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
   const [selected, setSelected] = useState('Все');
-  const { data,refetch } = useGetPatients({ search: '' })
+  const { data, refetch } = useGetPatients({ search: '' })
   const {data:user}=useMeQuery()
   const filteredDoctors = useMemo(() => {
     if (selected === 'Все') return data;
@@ -40,13 +40,11 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
 
   }
 
-
   const renderPatient = ({ item }:{item:Dentist}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
       <Image source={{ uri: item.avatar }} style={styles.image} />
 
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.spec}>{item.speciality}</Text>
 
       {/*<Text style={styles.rating}>*/}
       {/*  ⭐ {item.rating} ({item.reviews})*/}
