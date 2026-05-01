@@ -5,9 +5,9 @@ import React, {
   useReducer,
   ReactNode,
 } from 'react';
-import { Appointment, BookingDraft, Doctor, Patient, Service } from '@shared/types';
+import { Appointment, BookingDraft, Doctor, Service } from '@shared/types';
 import { MOCK_APPOINTMENTS } from '@entities/appointment';
-import { DEFAULT_PATIENT } from '@entities/patient';
+import {Patient} from "@shared/types/patient";
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ interface BookingState {
 const initialState: BookingState = {
   draft: { service: null, doctor: null, date: null, time: null },
   appointments: MOCK_APPOINTMENTS,
-  patient: DEFAULT_PATIENT,
+  patient: {} as Patient,
 };
 
 // ─── Actions ──────────────────────────────────────────────────────────────────

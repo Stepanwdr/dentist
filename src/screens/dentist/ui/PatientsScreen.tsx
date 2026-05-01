@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import {bookingColors} from "@shared/theme/Booking.colors";
-import PatientCard from "@app/navigation/dentist/ui/PatientCard";
+import {PatientsList} from "@widgets/patients-list/patients-list";
 
 const DATA = [
   {
@@ -22,11 +22,7 @@ export default function PatientsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Пациенты</Text>
-
-      <FlatList
-        data={DATA}
-        renderItem={({ item }) => <PatientCard item={item} />}
-      />
+      <PatientsList/>
     </View>
   );
 }

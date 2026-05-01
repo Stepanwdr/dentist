@@ -9,6 +9,8 @@ router.get('/account', UsersController.myAccount);
 
 // router.post('/appointment', UsersAppointment.appointmentRegister);
 router.get('/dentist-list', UsersController.getDentists);
+router.get('/patient-list', UsersController.getPatients);
+
 router.post('/push-token', UsersController.pushToken);
 router.get('/user-list', UsersController.getUserList);
 router.get('/clinic-users-list', UsersController.getClinicUsers);

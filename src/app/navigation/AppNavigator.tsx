@@ -7,7 +7,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DoctorsPage } from '@screens/doctors';
 import { ProfilePage } from '@screens/profile';
 import { AuthPage } from '@screens/login';
-import DentistTabs from '@app/navigation/dentist/DentistTabs';
 
 import { Colors } from '@shared/theme/colors';
 import { TabParamList } from './types';
@@ -19,6 +18,7 @@ import BookingFlow from "@screens/booking/ui/BookingFlow";
 import {CustomTabBar, Icons} from "@widgets/CustomTabBar/CustomTabBar";
 import BookingsScreen from "../../screens/bookings/ui/BookingsScreen";
 import WelcomeScreen from "@screens/welcome/WelcomeScreen";
+import DentistTabs from "@screens/dentist/DentistTabs";
 
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator<TabParamList>();

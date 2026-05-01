@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ScheduleScreen from "./ui/ScheduleScreen";
-import PatientsScreen from "@app/navigation/dentist/ui/PatientsScreen";
 import {CustomTabBar, Icons} from "@widgets/CustomTabBar/CustomTabBar";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {TabParamList} from "@app/navigation/types";
@@ -9,11 +8,12 @@ import {ProfilePage} from "@screens/profile";
 import {View} from "react-native";
 
 import { Header } from "./ui/Header";
-import {DentistDashboard} from "@app/navigation/dentist/DentistDashboard";
 import {bookingColors} from "@shared/theme/Booking.colors";
 import {Drawer} from "@shared/ux/Drawer";
 import {Notifications} from "@widgets/notifications/ui/Notifications";
 import {BookingsScreen} from "@screens/bookings";
+import {DentistDashboard} from "@screens/dentist/DentistDashboard";
+import PatientsScreen from "@screens/dentist/ui/PatientsScreen";
 
 const dentistIcons: Icons = {
   HomeTab:       { active: 'home',         inactive: 'home-outline',     label: 'Главная'   },

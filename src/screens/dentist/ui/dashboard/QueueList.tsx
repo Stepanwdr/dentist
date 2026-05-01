@@ -11,9 +11,8 @@ import {toDayKey} from "@shared/utils/date";
 import {useFocusEffect} from "@react-navigation/native";
 import {s} from "@widgets/booking/ui/BookingsScreen/BookingScreen.styles";
 
-type QueueItem = { id: string; name: string; time?: string; note?: string };
 
-type Props = { items: QueueItem[], setBookId: (id: number | null) => void};
+type Props = {  setBookId: (id: number | null) => void};
 
 export const QueueList: React.FC<Props> = ({  setBookId }) => {
   const today=toDayKey(new Date());

@@ -16,6 +16,7 @@ const EXCLUDE = [
   'POST:/users/toothchart',
   'POST:/users/add-review',
   'GET:/users/dentist-list',
+  'GET:/users/patient-list',
   'GET:/users/user-list',
   'GET:/users/clinic-users-list',
   'GET:/clinic/clinics',

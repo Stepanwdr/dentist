@@ -11,11 +11,11 @@ type Props = {
 import { BookingStats } from './ui/dashboard/BookingStats';
 import { DashboardOverview } from './ui/dashboard/DashboardOverview';
 import { QueueList } from './ui/dashboard/QueueList';
-import {NextBookCard} from "@app/navigation/dentist/ui/dashboard/NextBookCard";
+
 import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
 import {useGetBooking, useGetBookings} from "@entities/booking/model/booking.model";
 import {toDayKey} from "@shared/utils/date";
-import {bookingColors as C} from "@shared/theme/Booking.colors";
+import { NextBookCard } from "./ui/dashboard/NextBookCard";
 
 export const DentistDashboard: React.FC<Props> = () => {
   const { user } = useAuth();
@@ -40,13 +40,6 @@ export const DentistDashboard: React.FC<Props> = () => {
       isToday: date.getDate() === today.getDate()
     };
   }, [selectedBookData]);
-
-  const queueItems = [
-    { id: 'q1', name: 'Marcus Knight', time: '11:00' },
-    { id: 'q2', name: 'Julian Rossi', time: '11:15' },
-  ];
-
-
 
   useEffect(() => {
     Animated.parallel([
@@ -75,7 +68,7 @@ export const DentistDashboard: React.FC<Props> = () => {
       <Text style={styles.title}>
         В очередь
       </Text>
-      <QueueList items={queueItems as any} setBookId={setBookId} />
+      <QueueList  setBookId={setBookId} />
       <BottomSheetDetail
         visible={sheet}
         booked={selectedBookData || null}

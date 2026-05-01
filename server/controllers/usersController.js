@@ -155,6 +155,63 @@ class UsersController {
       next(e);
     }
   };
+
+  static getPatients= async (req, res, next) => {
+    try {
+      const { clinicId = 1, search } = req.query;
+
+      const where = {
+        role: 'patient',
+      };
+      // 🔍 Поиск (name / lname / fname)
+      if (search) {
+        where[Op.or] = [
+          { name:  { [Op.iLike]: `%${search}%` } },
+          { lname: { [Op.iLike]: `%${search}%` } },
+          { fname: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const dentists = await Users.findAll({
+        where,
+
+        include: [
+          {
+            model: Clinic,
+            as: 'clinic',
+            required: !!clinicId,
+            ...(clinicId && {
+              where: { id: clinicId },
+            }),
+          },
+        ],
+
+        attributes: [
+          'id',
+          'name',
+          'lname',
+          'fname',
+          'speciality',
+          'clinicId',
+          'avatar', // если есть
+        ],
+
+        order: [
+          ['lname', 'ASC'],
+          ['name', 'ASC'],
+        ],
+      });
+
+      res.json({
+        status: 'ok',
+        dentists,
+      });
+    } catch (e) {
+      next(e);
+    }
+  };
+
+
   static getUserList = async (req, res, next) => {
     try {
 

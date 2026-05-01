@@ -6,7 +6,6 @@ import { CalendarSection } from "@features/book-slot/ui/CalendarSection";
 import { useGetAvailableDates, useGetBookings } from "@entities/booking/model/booking.model";
 import { HomeColor } from "@shared/theme/home";
 import { Tabs } from "@shared/ui/Tabs";
-import { ActionType, AppointmentsTab, SlotItem } from "@app/navigation/dentist/ui/SlotItem";
 import { useMeQuery } from "@shared/api";
 import { formatDateYMD } from "@shared/lib/formatDate";
 import { generateDaySlots } from "@shared/utils/generateDaySlots";
@@ -14,6 +13,7 @@ import { useCreateScheduleBlock, useDeleteScheduleBlock, useScheduleBlocks } fro
 import { buildScheduleData } from "@shared/utils/buildScheduleData";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {useConfirmBookStatus} from "@features/confirm-book/model";
+import {ActionType, AppointmentsTab, SlotItem} from "@screens/dentist/ui/SlotItem";
 
 const tabs:{label:string,value:AppointmentsTab}[] = [
   { label: 'Все', value: 'all' },
@@ -76,6 +76,7 @@ export default function ScheduleScreen() {
   };
 
   const handleTabChange = (_action: ActionType) => {};
+
 const handleAction=(action:ActionType,_id:string)=>{
   if (action ==='CONFIRM') {
     const bookId= _id.replace('booking-','');
@@ -116,7 +117,7 @@ const handleAction=(action:ActionType,_id:string)=>{
   const filteredBooks = tab === 'all'
     ? scheduleData
     : scheduleData.filter((item) => item.status === tab);
-  console.log(filteredBooks)
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Расписание слотов</Text>
