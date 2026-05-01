@@ -7,8 +7,6 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { TabParamList } from "@app/navigation/types";
 import {shadow} from "@features/book-slot/lib";
 import {bookingColors as C} from "@shared/theme/Booking.colors";
 import { Dentist } from "@shared/types/dentist";
@@ -34,8 +32,7 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
     if (selected === 'Все') return data;
     return data?.filter((patient) => user?.id === patient?.dentistId);
   }, [selected,data]);
-
-
+  console.log({data})
   const handleView = (item:Patient)=>{
 
   }

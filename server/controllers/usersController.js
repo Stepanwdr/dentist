@@ -191,7 +191,6 @@ class UsersController {
           'name',
           'lname',
           'fname',
-          'speciality',
           'clinicId',
           'avatar', // если есть
         ],

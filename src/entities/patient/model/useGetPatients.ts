@@ -41,7 +41,7 @@ export function useGetPatients(params: Params) {
         `/users/patient-list?${q.toString()}`
       ) as { patients: Patient[] };
 
-      return res.patients;
+      return res.patients || [];
     },
 
     enabled: true,
