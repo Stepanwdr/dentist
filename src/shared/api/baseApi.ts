@@ -5,7 +5,7 @@ import { tokenStorage } from "@shared/lib/tokenStorage";
 
 // const API_BASE_URL=  `http://${Constants.expoConfig?.hostUri?.split(":")[0]}:5000`;
 //  const API_BASE_URL =  `https://den.deliverydepartment.am`;
-const API_BASE_URL =  `http://hmbgz1-ip-217-76-12-186.tunnelmole.net`;
+const API_BASE_URL =  `http://zbaxxs-ip-217-76-12-186.tunnelmole.net`;
 function handleError(error: AxiosError): never {
   const apiError: ApiError = new Error(
     (error.response?.data as any)?.message || (error.response?.data)

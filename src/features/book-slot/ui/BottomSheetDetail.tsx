@@ -72,6 +72,7 @@ export const BottomSheetDetail: React.FC<{
         {ROW('📱', 'Телефон', String(booked?.patient?.phone || booked?.dentist?.phone))}
         <View style={styles.sheetDivider} />
         {!booked?.patient && ROW('🏥', 'Адрес', String(booked?.clinic?.address))}
+        {ROW('📱', 'Сообщение', String(booked?.notes))}
         {/* Actions */}
         {handleBooksNavigate && <View style={styles.sheetActions}>
           <TouchableOpacity style={styles.sheetBtnPrimary} onPress={handleBooksNavigate} activeOpacity={0.85}>

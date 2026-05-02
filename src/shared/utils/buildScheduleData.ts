@@ -1,5 +1,5 @@
 import { ScheduleBlock } from "@entities/schedule-block";
-import { AppointmentsTab } from "@app/navigation/dentist/ui/SlotItem";
+import { AppointmentsTab } from "@shared/types/booking";
 import { Patient } from "@shared/types/patient";
 import { TimeSlot } from "@shared/types/slot";
 

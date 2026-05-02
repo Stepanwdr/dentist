@@ -3,12 +3,8 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {HomeColor} from "@shared/theme/home";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {Patient} from "@shared/types/patient";
+import { AppointmentsTab } from "@shared/types/booking";
 
-export type AppointmentsTab =
-  | 'free'
-  | 'booked'
-  | 'blocked'
-  | 'pending' | 'all';
 
 export type ActionType = "ASSIGN" | "CLOSE" | 'OPEN' | 'CONFIRM' | 'CANCEL'
 

@@ -456,7 +456,7 @@ class BookingController {
       }
      const dentistClinic = dentist.toJSON().clinicId;
       const pId= role === 'dentist' ? patientId : userId
-      const created = await BookingSlot.create({ dentistId, clinicId: dentistClinic, date, startTime: s, endTime: e, notes,isBooked:true,service, createdById: userId ,patientId:pId});
+      const created = await BookingSlot.create({ dentistId, clinicId: dentistClinic, date, startTime: s, endTime: e, notes,isBooked:true,service, createdById: userId ,pId});
 
       await created.reload({
         include: [

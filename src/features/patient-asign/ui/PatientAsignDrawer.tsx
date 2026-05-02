@@ -39,7 +39,7 @@ export const PatientAsignDrawer:FC<Props> = ({isDrawerOpen,onDrawerClose,asignDa
   const onAsign=(patient:Patient)=>{
     setAsignData({...asignData!, patient})
   }
-const end= addMinutesToTime(`${asignData?.time}:00`,30)
+const end= addMinutesToTime(`${asignData?.time}:00`,60)
   const assignAndNotify = async () => {
     if (!asignData) return;
     const dentistId = user?.dentistId ?? user?.id ?? null;
@@ -53,7 +53,6 @@ const end= addMinutesToTime(`${asignData?.time}:00`,30)
       notes: asignData.notes,
     };
 
-    console.log({payload})
     createBook({...payload})
     queryClient.invalidateQueries({ queryKey: bookingKeys.all() });
   };

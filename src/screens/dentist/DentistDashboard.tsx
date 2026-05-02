@@ -16,6 +16,7 @@ import {BottomSheetDetail} from "@features/book-slot/ui/BottomSheetDetail";
 import {useGetBooking, useGetBookings} from "@entities/booking/model/booking.model";
 import {toDayKey} from "@shared/utils/date";
 import { NextBookCard } from "./ui/dashboard/NextBookCard";
+import {useFocusEffect} from "@react-navigation/native";
 
 export const DentistDashboard: React.FC<Props> = () => {
   const { user } = useAuth();
@@ -56,6 +57,10 @@ export const DentistDashboard: React.FC<Props> = () => {
     const t = setTimeout(() =>  bookId ? setSheet(true):setSheet(false), 10);
     return () => clearTimeout(t);
   }, [bookId]);
+
+  useFocusEffect(useCallback(()=> {
+    void refetch
+  },[]))
 
   return (
     <View style={styles.safe}>

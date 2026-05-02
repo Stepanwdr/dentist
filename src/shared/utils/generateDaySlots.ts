@@ -3,7 +3,7 @@ import { TimeSlot } from "@shared/types/slot";
 
 const DAY_START_H = 9;
 const DAY_END_H = 20;
-const STEP_MIN = 30;
+const STEP_MIN = 60;
 
 function pad(n: number) {
   return String(n).padStart(2, '0');

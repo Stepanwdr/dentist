@@ -82,7 +82,6 @@ export const QueueList: React.FC<Props> = ({  setBookId }) => {
 
   useFocusEffect(useCallback(()=> refetch,[]))
 
-
   return (
     <FlatList
       showsVerticalScrollIndicator={false}

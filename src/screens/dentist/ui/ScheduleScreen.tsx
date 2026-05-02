@@ -13,9 +13,10 @@ import { useCreateScheduleBlock, useDeleteScheduleBlock, useScheduleBlocks } fro
 import { buildScheduleData, ScheduleItem } from "@shared/utils/buildScheduleData";
 import {useChangeBookingStatus} from "@features/change-book-status/model";
 import {useConfirmBookStatus} from "@features/confirm-book/model";
-import {ActionType, AppointmentsTab, SlotItem} from "@screens/dentist/ui/SlotItem";
+import {ActionType, SlotItem} from "@screens/dentist/ui/SlotItem";
 import {AsignData, PatientAsignDrawer} from "@features/patient-asign/ui/PatientAsignDrawer";
 import {useFocusEffect} from "@react-navigation/native";
+import {AppointmentsTab} from "@shared/types/booking";
 
 const tabs:{label:string,value:AppointmentsTab}[] = [
   { label: 'Все', value: 'all' },
@@ -136,6 +137,8 @@ useFocusEffect(useCallback(()=> {
   void refetchSchedule
   void refetch
 },[]))
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Расписание слотов</Text>
