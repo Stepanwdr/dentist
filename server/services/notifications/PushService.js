@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 
 const serviceAccount = JSON.parse(
-  fs.readFileSync(new URL("./dentist-37300-firebase-adminsdk-fbsvc-0b5e88a337.json", import.meta.url))
+  fs.readFileSync(new URL("./dentist-37300-firebase-adminsdk-fbsvc-735a660183.json", import.meta.url))
 );
 
 
