@@ -21,7 +21,7 @@ class UsersController {
       });
 
       try {
-        await NotificationService.send(data.userId,31,{
+        await NotificationService.send(data.userId,{
           title: "У вас запись через 2 часа",
           body: "У вас запись через 2 часа",
           type: "booking",

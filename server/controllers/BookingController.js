@@ -369,7 +369,7 @@ class BookingController {
 
       // Notify patient about confirmation
       try {
-        await NotificationService.send(userId,slot?.patient?.id,{
+        await NotificationService.send(slot?.patient?.id,{
           title: `Запись в ${slot.startTime} подтвердeн!`,
           body: `Др ${slot.dentist.name} подтвердил ваш запись!`,
           type: "booking_confirm",
