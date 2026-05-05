@@ -88,7 +88,7 @@ export const DentistDashboard: React.FC<Props> = () => {
 };
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background,marginTop:30, padding:16, paddingTop:0},
+  safe: { flex: 1, backgroundColor: Colors.background,marginTop:30, padding:16, paddingTop:0,paddingBottom:80},
   title: { fontSize: 18, fontWeight: '700', margin: 16, color: '#4A90D9' },
   searchRow: { paddingHorizontal: 16, paddingVertical: 6 },
   searchInput: {

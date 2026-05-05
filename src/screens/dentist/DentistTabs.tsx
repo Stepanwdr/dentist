@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ScheduleScreen from "./ui/ScheduleScreen";
 import {CustomTabBar, Icons} from "@widgets/CustomTabBar/CustomTabBar";
@@ -9,7 +9,7 @@ import {View} from "react-native";
 
 import { Header } from "./ui/Header";
 import {bookingColors} from "@shared/theme/Booking.colors";
-import {Drawer} from "@shared/ux/Drawer";
+import {Drawer, DrawerRef} from "@shared/ux/Drawer";
 import {Notifications} from "@widgets/notifications/ui/Notifications";
 import {BookingsScreen} from "@screens/bookings";
 import {DentistDashboard} from "@screens/dentist/DentistDashboard";
@@ -36,16 +36,19 @@ const Stack = createNativeStackNavigator<DentistParamList>();
 
 export const DentistTabs: React.FC = () => {
   const [openNotifModal,setOpenNotifModal] = useState(false);
-
+   const drawerRef = useRef<DrawerRef>(null);
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <CustomTabBar icons={dentistIcons} {...props} />}
       screenLayout={({ children }) => (
         <View style={{ flex: 1,backgroundColor:bookingColors.skyLight}}>
-          <Header onToggle={()=>setOpenNotifModal(prev => !prev)} isOpen={openNotifModal}/>
+          <Header onToggle={()=> {
+            drawerRef.current?.open()
+            setOpenNotifModal(true)
+          }} isOpen={openNotifModal}/>
             {children}
-          <Drawer visible={openNotifModal} onClose={() => setOpenNotifModal(prev => !prev)}>
+          <Drawer ref={drawerRef} onClose={() => setOpenNotifModal(prev => !prev)}>
             <Notifications />
           </Drawer>
        </View>

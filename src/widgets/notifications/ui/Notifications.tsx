@@ -133,7 +133,7 @@ export const Notifications = () => {
         data={notifications}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        contentContainerStyle={{ padding: 8, paddingBottom: 80 }}
+        contentContainerStyle={{ padding: 8, paddingBottom: 20 }}
         ListEmptyComponent={
           <View style={styles.center}>
             <Text style={styles.notData}>Нет уведомлений</Text>

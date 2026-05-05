@@ -50,7 +50,6 @@ export const TimeScreen: React.FC<{
         service: service.label
       })
     }
-
   }
 
   const handleSlotSelect = (date: string, slot: TimeSlot) => {
@@ -58,6 +57,8 @@ export const TimeScreen: React.FC<{
     setSelectedDate(date);
     setSlot(slot);
   };
+
+
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="dark-content" backgroundColor={C.white} />

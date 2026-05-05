@@ -15,7 +15,7 @@ export interface GetSlotsParams {
 }
 
 export interface BookSlotParams {
-  dentistId:  number;
+  dentistId?:  number;
   date?:       string;
   serviceId?: string;
   notes:      string;
@@ -84,7 +84,8 @@ export async function editBookRequest(params: EditBookParams): Promise<BookSlotR
       startTime:  params.startTime,
       endTime:    params.endTime,
       notes:      params.notes,
-      service:    params.service
+      service:    params.service,
+      patientId:  params.patientId,
     }) as BookSlotResponse;
     return res
   } catch (e) {

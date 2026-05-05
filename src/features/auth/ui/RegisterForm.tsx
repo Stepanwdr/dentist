@@ -1,5 +1,5 @@
 // src/features/auth/ui/RegisterForm.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,7 @@ export interface RegisterFormProps {
   loading: boolean;
   serverError: string | null;
   onSubmit: (values: RegisterFormValues) => void;
+  isNewPatient?: boolean;
 }
 
 // ─── Phone formatter ──────────────────────────────────────────────────────────
@@ -43,15 +44,20 @@ export interface RegisterFormProps {
 function formatPhone(text: string): string {
   const digits = text.replace(/\D/g, '').slice(0, 11);
 
-  if (digits.length === 0)  return '';
-  if (digits.length <= 3)   return `+${digits}`;
-  if (digits.length <= 5)   return `+${digits.slice(0, 3)} ${digits.slice(3)}`;
-  if (digits.length <= 8)   return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`;
-  if (digits.length <= 10)  return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`;
-  return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10)}`;
-  // → +374 91 123 45 67
-}
+  if (!digits) return '';
 
+  const country = digits.slice(0, 3); // 374
+  const operator = digits.slice(3, 5); // 91
+  const rest = digits.slice(5); // 123456
+
+  if (digits.length <= 3) return `+${country}`;
+  if (digits.length <= 5) return `+${country} ${operator}`;
+  if (digits.length <= 7) return `+${country} ${operator} ${rest}`;
+  if (digits.length <= 9)
+    return `+${country} ${operator} ${rest.slice(0, 2)} ${rest.slice(2)}`;
+
+  return `+${country} ${operator} ${rest.slice(0, 2)} ${rest.slice(2, 4)} ${rest.slice(4, 6)}`;
+}
 
 // ─── Password strength ────────────────────────────────────────────────────────
 
@@ -75,6 +81,23 @@ function getPasswordStrength(password: string): StrengthResult {
     3: { score: 3, label: 'Сильный', color: Colors.success },
   };
   return map[score] as StrengthResult;
+}
+
+// Password generator
+function generatePassword(length: number = 12): string {
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  const specials = '!@#$%^&*()_+[]{}|;:,.<>?';
+  const all = lower + upper + digits + specials;
+  let pw = '';
+  pw += lower[Math.floor(Math.random() * lower.length)];
+  pw += upper[Math.floor(Math.random() * upper.length)];
+  pw += digits[Math.floor(Math.random() * digits.length)];
+  pw += specials[Math.floor(Math.random() * specials.length)];
+  for (let i = 4; i < length; i++) pw += all[Math.floor(Math.random() * all.length)];
+  pw = pw.split('').sort(() => Math.random() - 0.5).join('');
+  return pw;
 }
 
 // ─── Shared input field ───────────────────────────────────────────────────────
@@ -143,6 +166,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   loading,
   serverError,
   onSubmit,
+  isNewPatient
 }) => {
   const [values, setValues] = useState<RegisterFormValues>({
     fname: '', email: '', phone: '', password: '', lname:"", role: 'patient'
@@ -151,7 +175,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
 
-  const strength = getPasswordStrength(values.password);
+  const strength = useMemo(() => getPasswordStrength(values.password), [values.password]);
+
+  // Handler to fill password with generated value
+  const fillGeneratedPassword = () => {
+    const pwd = generatePassword(12);
+    // @ts-ignore
+    setValues(prev => ({ ...prev, password: pwd }));
+    if (errors?.password) setErrors(prev => ({ ...prev, password: undefined }));
+  };
 
   function setField(key: keyof RegisterFormValues) {
     return (value: string) => {
@@ -212,20 +244,31 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   return (
     <View>
       {/* Role selector */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 6 }}>
+      {!isNewPatient && <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 6}}>
         <TouchableOpacity
           onPress={() => setRole('patient')}
-          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, backgroundColor: role === 'patient' ? Colors.primary : Colors.background, marginRight: 8,}}
+          style={{
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 999,
+            backgroundColor: role === 'patient' ? Colors.primary : Colors.background,
+            marginRight: 8,
+          }}
         >
-          <Text style={{ color: role === 'patient' ? Colors.surface : Colors.text, width:'100%' }}>Пациент</Text>
+          <Text style={{color: role === 'patient' ? Colors.surface : Colors.text, width: '100%'}}>Пациент</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setRole('dentist')}
-          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, backgroundColor: role === 'dentist' ? Colors.primary : Colors.background }}
+          style={{
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 999,
+            backgroundColor: role === 'dentist' ? Colors.primary : Colors.background
+          }}
         >
-          <Text style={{ color: role === 'dentist' ? Colors.surface : Colors.text }}>Доктор</Text>
+          <Text style={{color: role === 'dentist' ? Colors.surface : Colors.text}}>Доктор</Text>
         </TouchableOpacity>
-      </View>
+      </View>}
 
       {/* Name */}
       <Field
@@ -279,16 +322,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           secure={!showPassword}
           error={errors.password}
           rightSlot={
-            <TouchableOpacity
-              onPress={() => setShowPassword(v => !v)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={18}
-                color={Colors.textMuted}
-              />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity
+                onPress={() => setShowPassword(v => !v)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={18}
+                  color={Colors.textMuted}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  const pwd = generatePassword(12);
+                  // @ts-ignore
+                  setValues(prev => ({ ...prev, password: pwd }));
+                  if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                }}
+                style={{ marginLeft: 6, padding: 6, borderRadius: 6, backgroundColor: Colors.surface }}
+              >
+                <Ionicons name="shuffle" size={18} color={Colors.textMuted} />
+              </TouchableOpacity>
+            </View>
           }
         />
 
@@ -333,7 +389,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         {loading ? (
           <ActivityIndicator color={Colors.surface} size="small" />
         ) : (
-          <Text style={s.submitBtnText}>Создать аккаунт</Text>
+        <>
+          {isNewPatient ? <Text style={s.submitBtnText}>Создать</Text> :
+            <Text style={s.submitBtnText}>Создать аккаунт</Text>}
+        </>
         )}
       </TouchableOpacity>
 

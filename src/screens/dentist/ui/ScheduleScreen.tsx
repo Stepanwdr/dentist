@@ -17,6 +17,7 @@ import {ActionType, SlotItem} from "@screens/dentist/ui/SlotItem";
 import {AsignData, PatientAsignDrawer} from "@features/patient-asign/ui/PatientAsignDrawer";
 import {useFocusEffect} from "@react-navigation/native";
 import {AppointmentsTab} from "@shared/types/booking";
+import {EmptyData} from "@shared/ui/EmptyData";
 
 const tabs:{label:string,value:AppointmentsTab}[] = [
   { label: 'Все', value: 'all' },
@@ -138,7 +139,6 @@ useFocusEffect(useCallback(()=> {
   void refetch
 },[]))
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Расписание слотов</Text>
@@ -155,6 +155,7 @@ useFocusEffect(useCallback(()=> {
         <Tabs<AppointmentsTab> active={tab} onChange={setTab} tabs={tabs} />
       </View>
       <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+        {filteredBooks.length === 0 && <EmptyData/>}
         {filteredBooks.map((item) => (
           <SlotItem
             onAction={(action)=> handleAction(action,item)}

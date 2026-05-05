@@ -5,7 +5,7 @@ import { AsignData } from "./PatientAsignDrawer";
 import {Avatar} from "@shared/ui";
 import {Ionicons} from "@expo/vector-icons";
 import {Colors} from "@shared/theme/colors";
-import {ServicePickerRef, ServicePickerSheet} from "@shared/ui/ServicePickerSheet";
+import {DrawerPicker, ServicePickerRef} from "@features/patient-asign/ui/DrawerPicker";
 
 
 interface IProps {
@@ -30,7 +30,7 @@ export const AsignForm:FC<IProps> = ({asignData, assignAndNotify,onChangeField})
   };
 
   return (
-    <View style={{alignItems:"center",position:'relative',flex:1}}>
+    <View style={{alignItems:"center",position:'relative',flex:1,overflow:"scroll"}}>
       <View style={{gap:5,alignItems:'center',position:'relative'}} >
         <View>
           <Avatar initials={asignData.patient.name} size={100}/>
@@ -113,10 +113,10 @@ export const AsignForm:FC<IProps> = ({asignData, assignAndNotify,onChangeField})
       <TouchableOpacity onPress={assignAndNotify} style={styles.bookBtn}>
         <Text style={styles.bookTextMd}>Назначит и уведомлять</Text><Ionicons name={'send-outline'} color={'white'}/>
       </TouchableOpacity>
-      <ServicePickerSheet
-        ref={sheetRef}
-        services={services}
+      <DrawerPicker
         onSelect={(value) => onChangeField("service", value)}
+        services={services}
+        ref={sheetRef}
       />
     </View>
   );

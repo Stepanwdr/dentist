@@ -5,7 +5,7 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {shadow} from "@features/book-slot/lib";
 import {bookingColors, bookingColors as C} from "@shared/theme/Booking.colors";
@@ -15,6 +15,7 @@ import {Patient} from "@shared/types/patient";
 import {useFocusEffect} from "@react-navigation/native";
 import {HomeColor} from "@shared/theme/home";
 import {Ionicons} from "@expo/vector-icons";
+import {NoneUser} from "@shared/ui/NoneUser";
 
 const tabs = [
   { label: 'Мои пациенты', value: 'my' },
@@ -22,30 +23,27 @@ const tabs = [
 ];
 type Props = {
   horizontal?: boolean;
-  onAsign?: (patient:Patient) => void;
+  onAsign?: (patient:Patient, service?: string) => void;
+  setDrawerOpen?: (open:boolean) => void;
+  openDrawer?: () => void;
 };
 
-export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
+export const PatientsList: FC<Props> = ({ horizontal, onAsign, openDrawer}) => {
   const [selected, setSelected] = useState('all');
   const { data, refetch } = useGetPatients({ search: '' })
+  // Drawer for adding new patient
   const {data:user}=useMeQuery()
   const filteredDoctors = useMemo(() => {
     if (selected === 'all') return data;
     return data?.filter((patient) => user?.id !== patient?.dentistId);
   }, [selected,data]);
-
-  const handleView = (item: Patient)=>{
-
-  }
-  const onCreateNewPatient=()=>{
-
-  }
-
+  const handleView=(item:Patient)=>{}
   const renderPatient = ({ item }:{item:Patient}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
-      <Image source={{ uri: item.avatar }} style={styles.image} />
+      {item.avatar? <Image source={{uri: item.avatar}} style={styles.image}/>:<NoneUser/>}
 
       <Text style={styles.name}>{item.name}</Text>
+
 
       {/*<Text style={styles.rating}>*/}
       {/*  ⭐ {item.rating} ({item.reviews})*/}
@@ -56,16 +54,16 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
 
         {onAsign ?  <TouchableOpacity
           style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
-          onPress={() =>onAsign(item)
-        }
+          onPress={() =>onAsign(item) }
         >
           <Ionicons name="person-add-outline" size={16} color={HomeColor.primary} />
           <Text style={[styles.bookText, !horizontal && styles.btnTextPrimary]}>Назначить</Text>
-        </TouchableOpacity> :    <TouchableOpacity
+        </TouchableOpacity> : <TouchableOpacity
           style={[styles.bookBtn,!horizontal && styles.bookBtnMd]}
           onPress={() => handleView(item)}
         >
-          <Text style={[styles.bookText, !horizontal && styles.bookTextMd]}>Смотреть</Text>
+          <Ionicons name="eye-outline" size={16} color={HomeColor.primary} />
+          <Text style={[styles.bookText, !horizontal && styles.btnTextPrimary]}>Смотреть</Text>
         </TouchableOpacity>}
       </View>
     </View>
@@ -93,23 +91,23 @@ export const PatientsList: FC<Props> = ({ horizontal, onAsign}) => {
   useFocusEffect(useCallback(()=>refetch,[]))
 
   return (
-    <View style={[styles.container, !horizontal && { paddingRight: 10}]}>
+    <View style={[styles.container, !horizontal && { paddingRight: 10}]}> 
       {/* FILTER */}
 
       {/* PATIENTS */}
-     <View style={{justifyContent:'space-between', flexDirection:"row",alignItems:'center'}}>
-       <FlatList
-         data={tabs}
-         horizontal
-         showsHorizontalScrollIndicator={false}
-         keyExtractor={(item) => item.value}
-         renderItem={renderFilter}
-         contentContainerStyle={{ gap: 8, marginBottom: 12,paddingHorizontal:12 }}
-       />
-      <TouchableOpacity style={styles.addBtn} onPress={onCreateNewPatient} >
+      <View style={{justifyContent:'space-between', flexDirection:"row",alignItems:'center'}}>
+        <FlatList
+          data={tabs}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.value}
+          renderItem={renderFilter}
+          contentContainerStyle={{ gap: 8, marginBottom: 12,paddingHorizontal:12 }}
+        />
+        <TouchableOpacity style={styles.addBtn} onPress={()=> openDrawer && openDrawer()} >
           <Ionicons name="person-add-outline" size={16} color={HomeColor.white} />
-      </TouchableOpacity>
-     </View>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={filteredDoctors}
         key={horizontal ? 'horizontal' : 'grid'} // 👈 важно!
@@ -235,7 +233,7 @@ const styles = StyleSheet.create({
     minWidth:50,
     minHeight:50,
     color:"white",
-     flexDirection:"row",alignItems: "center",justifyContent:"center",gap:5,
+    flexDirection:"row",alignItems: "center",justifyContent:"center",gap:5,
   } ,
 
   addBtnText: {

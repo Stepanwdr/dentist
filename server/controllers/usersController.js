@@ -212,7 +212,6 @@ class UsersController {
     }
   };
 
-
   static getUserList = async (req, res, next) => {
     try {
 

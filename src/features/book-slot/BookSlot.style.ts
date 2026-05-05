@@ -49,7 +49,7 @@ export const bookSlotStyle = StyleSheet.create({
   },
   loadTxt:    { fontSize: 13, color: C.textMuted },
   emptyTitle: { fontSize: 15, fontWeight: '700', color: C.text },
-  emptyTxt:   { fontSize: 13, color: C.textMuted },
+  emptyTxt:   { fontSize: 13, color: C.textMuted ,width:200,textAlign:"center" },
 
   // ── Прогресс-бар (TimeScreen) ──
   timeHeader: {

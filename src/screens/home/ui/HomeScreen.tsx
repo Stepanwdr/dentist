@@ -12,10 +12,9 @@ import {HeaderCard} from "@widgets/header-card/ui/HeaderCard";
 import { DoctorList } from "@widgets/doctors-list/ui/DoctorList";
 import {  NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { TabParamList } from "@app/navigation/types";
-import {Drawer} from "@shared/ux/Drawer";
+import {Drawer, DrawerRef} from "@shared/ux/Drawer";
 import {Notifications} from "@widgets/notifications/ui/Notifications";
 import {useNotifications} from "@entities/notifications/model/notification.hook";
-import { useMeQuery } from "@shared/api";
 import NextBookingCard from "@widgets/booking/ui/NextBookingCard";
 import { HomeColor, SHADOW_SM } from "@shared/theme/home";
 import { TimeLineSection } from "@widgets/TimeLineSection/TimeLineSection";
@@ -27,9 +26,9 @@ interface IProps {
 }
 
 const HomeScreen: React.FC<IProps> = ({navigation}) => {
+  const drawerRef = useRef<DrawerRef>(null);
   const insets = useSafeAreaInsets();
   const {refetch} = useNotifications({page:1});
-  const { refetch: refetchUseMe } = useMeQuery();
   const headerY = useRef(new Animated.Value(-20)).current;
   const headerO = useRef(new Animated.Value(0)).current;
   const [openNotifModal,setOpenNotifModal] = useState(false);
@@ -37,7 +36,9 @@ const HomeScreen: React.FC<IProps> = ({navigation}) => {
     const onNextBookCreate = ()=> {
       navigation.navigate('BookingTab',{ screen: "Time", params:{} })
     }
-
+  const openDrawer = () => {
+    drawerRef.current?.open();
+  };
   useEffect(() => {
     Animated.parallel([
       Animated.timing(headerY, { toValue: 0, duration: 500, useNativeDriver: true }),
@@ -48,7 +49,6 @@ const HomeScreen: React.FC<IProps> = ({navigation}) => {
 
   useEffect(() => {
     if(openNotifModal) void refetch()
-    if(!openNotifModal) void refetchUseMe()
   }, [openNotifModal]);
 
   return (
@@ -65,8 +65,11 @@ const HomeScreen: React.FC<IProps> = ({navigation}) => {
         insetTop={2}
         headerY={headerY}
         headerO={headerO}
-        onBellPress={()=>
-          setOpenNotifModal(prevState => !prevState)}
+        onBellPress={()=>{
+          openDrawer()
+        }
+
+        }
       />
       </Animated.View>
       <ScrollView
@@ -86,8 +89,8 @@ const HomeScreen: React.FC<IProps> = ({navigation}) => {
         <Text style={styles.sectionTitle}>Dentists</Text>
         <DoctorList navigation={navigation} horizontal />
       </ScrollView>
-        <Drawer visible={openNotifModal} onClose={() => setOpenNotifModal(false)}>
-          <Notifications/>
+        <Drawer ref={drawerRef} onClose={()=>{}} enableGesturesInScrollView={false} >
+          <Notifications />
         </Drawer>
     </View>
   );
@@ -98,6 +101,7 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: HomeColor.bg,
+    paddingBottom:80
   },
   connectorSection: {
     alignItems: 'center',

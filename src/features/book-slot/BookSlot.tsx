@@ -127,7 +127,6 @@ const BookSlot: React.FC<TimeScreenProps> = ({
         right: slots[i + 1] ?? null,
       });
     }
-
     return [header, ...pairs];
   }, [slots, loading]);
 
@@ -204,7 +203,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
     loading ? null : (
       <View style={S.center}>
         <Text style={{ fontSize: 32 }}>📅</Text>
-        <Text style={S.emptyTitle}>Нет слотов</Text>
+        <Text style={S.emptyTitle}>Сегодня нет слотов</Text>
         <Text style={S.emptyTxt}>Выберите другую дату</Text>
       </View>
     )
@@ -232,8 +231,7 @@ const BookSlot: React.FC<TimeScreenProps> = ({
         minYear={minYear}
         maxYear={maxYear}
       />
-
-      <FlatList
+      {slots.length === 0 ? <ListEmpty/> : <FlatList
         data={rows}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -249,6 +247,9 @@ const BookSlot: React.FC<TimeScreenProps> = ({
         windowSize={5}
         initialNumToRender={8}
       />
+      }
+
+
     </View>
   );
 };

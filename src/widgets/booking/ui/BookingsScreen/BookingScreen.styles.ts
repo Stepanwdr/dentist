@@ -73,10 +73,8 @@ export const s = StyleSheet.create({
     position:      'absolute',
     right: 0, top: 0, bottom: 0,
     flexDirection: 'row',
-    width:         ACTIONS_W,
   },
   action: {
-    width:          ACTION_W,
     alignItems:     'center',
     justifyContent: 'center',
     gap:            3,

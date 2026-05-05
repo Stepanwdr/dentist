@@ -7,7 +7,7 @@ import TimeSlots from "@shared/api/endpoints/timeSlots";
 
 // ─── Query key factory ────────────────────────────────
 export const bookingKeys = {
-  all:   (status?:bookStatus)=>['bookings',status] as const,
+  all:   (status?:bookStatus | 'upcoming')=>['bookings',status] as const,
   book: (id: number | string) =>
     [...bookingKeys.all(), 'book', id] as const,
   slots: (dentistId: string, date: string) =>
@@ -32,7 +32,7 @@ export function useGetBookings(
 ) {
   const { dentistId = '', serviceId, date='', status='', isBusySlots = false} = params;
   return useQuery<slotsResponse, Error>({
-    queryKey: ['bookings', params],
+    queryKey: ['bookings',params],
     queryFn:  async () => {
 
       return await fetchSlots({date, serviceId, status, dentistId:String(dentistId), isBusySlots });

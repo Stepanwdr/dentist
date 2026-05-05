@@ -1,99 +1,54 @@
-import React, { useEffect, useRef } from "react";
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableWithoutFeedback,
-  Animated,
-  PanResponder,
-} from "react-native";
-
-const { height } = Dimensions.get("window");
-
-interface DrawerProps {
-  visible: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-  isFullHeight?: boolean;
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
+import {Dimensions, StyleSheet, TouchableOpacity, View} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+export interface DrawerRef {
+  open: () => void;
+  close: () => void;
 }
 
-export const Drawer: React.FC<DrawerProps> = ({
-                                                visible,
-                                                onClose,
-                                                children,
-                                                isFullHeight
-                                              }) => {
-  const translateY = useRef(new Animated.Value(height)).current;
+interface DrawerProps {
+  children: React.ReactNode;
+  onClose?: () => void;
+  enableGesturesInScrollView?: boolean;
+  gestureEnabled?: boolean;
+}
+const { height } = Dimensions.get('window');
+export const Drawer = forwardRef<DrawerRef, DrawerProps>(
+  ({ children, onClose,enableGesturesInScrollView=true,gestureEnabled }, ref) => {
+    const sheetRef = useRef<ActionSheetRef>(null);
+    const open = () => sheetRef.current?.show();
+    const close = () => sheetRef.current?.hide();
 
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: visible ? 0 : height,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [visible]);
+    useImperativeHandle(ref, () => ({
+      open,
+      close,
+    }));
 
-  // 👉 gesture (свайп вниз)
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) =>
-        Math.abs(gesture.dy) > 5,
-
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dy > 0) {
-          translateY.setValue(gesture.dy);
-        }
-      },
-
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy > 120) {
-          onClose();
-        } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
-  if (!visible) return null;
-
-  return (
-    <View style={styles.container}>
-      {/* backdrop */}
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.backdrop} />
-      </TouchableWithoutFeedback>
-
-      {/* drawer */}
-      <Animated.View
-        style={[
+    return (
+      <ActionSheet
+        ref={sheetRef}
+        onClose={onClose}
+        enableGesturesInScrollView={enableGesturesInScrollView}
+        closeOnTouchBackdrop={true}
+        gestureEnabled={gestureEnabled}
+        containerStyle={[
           styles.drawer,
-          { transform: [{ translateY }] },
-          {height: isFullHeight ? height  * 1.27  : height * 0.8 },
+          {
+            height:height - 80,
+          },
         ]}
-        {...panResponder.panHandlers}
       >
-        <View style={styles.handle} />
+        {!gestureEnabled && <View style={styles.handle}/>}
+        {!gestureEnabled && <TouchableOpacity style={styles.close} onPress={close}><Ionicons name={'close'}/></TouchableOpacity>}
         {children}
-      </Animated.View>
-    </View>
-  );
-};
+      </ActionSheet>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "flex-end",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
   drawer: {
-    backgroundColor: "#fff",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
@@ -105,5 +60,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     alignSelf: "center",
     marginBottom: 10,
+  },
+  close: {
+    width: 25,
+    height: 25,
+    borderRadius: '50%',
+    backgroundColor: "#ccc",
+    alignSelf: "flex-end",
+    marginBottom: 10,
+    textAlign:"center",
+    alignItems:"center",
+    justifyContent:'center',
+    right:0
   },
 });

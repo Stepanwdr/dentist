@@ -10,9 +10,11 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { TabParamList } from "@app/navigation/types";
 import {shadow} from "@features/book-slot/lib";
-import {bookingColors as C} from "@shared/theme/Booking.colors";
+import {bookingColors, bookingColors as C} from "@shared/theme/Booking.colors";
 import {useGetDentists } from "@entities/dentist/model/useGetDentists";
 import { Dentist } from "@shared/types/dentist";
+import {Ionicons} from "@expo/vector-icons";
+import {NoneUser} from "@shared/ui/NoneUser";
 
 const specialties = [
   { label: 'Все', value: 'All' },
@@ -42,7 +44,7 @@ export const DoctorList: FC<Props> = ({navigation, horizontal}) => {
 
   const renderDoctor = ({ item }:{item:Dentist}) => (
     <View style={[styles.card, !horizontal && { width: "50%" }]} >
-      <Image source={{ uri: item.avatar }} style={styles.image} />
+      {item.avatar ? <Image source={{uri: item.avatar}} style={styles.image}/> : <NoneUser/>}
 
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.spec}>{item.speciality}</Text>

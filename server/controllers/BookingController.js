@@ -417,7 +417,6 @@ class BookingController {
         order:  [['date', 'ASC']],
         raw:    true,
       });
-      console.log({rows})
       const dates = rows.map(r => r.date);
       res.json({ status: 'ok', dates });
     } catch (e) {

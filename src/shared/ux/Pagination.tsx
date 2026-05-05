@@ -35,7 +35,6 @@ export const Pagination: FC<Props> = ({pagination,onPageChange}) => {
 const styles = StyleSheet.create({
 
   pagination: {
-    bottom: 60,
     left: 0,
     right: 0,
     flexDirection: "row",
@@ -45,6 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding:10,
     borderRadius: 24,
+    marginBottom:20,
     ...shadow()
   },
 

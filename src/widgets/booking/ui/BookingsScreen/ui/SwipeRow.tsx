@@ -9,9 +9,9 @@ import {Ionicons} from "@expo/vector-icons";
 import {Colors} from "@shared/theme/colors";
 import {BookStatus} from "@shared/ui/BookStatus";
 import { timeLeft } from "@shared/utils/date";
+import {HomeColor} from "@shared/theme/home";
 
-const ACTION_W   = 70;
-const ACTIONS_W  = ACTION_W * 3;
+const ACTION_W   = 80;
 const THRESHOLD  = 60;
 
 const dateColor = (date: string) => {
@@ -38,14 +38,13 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
 }) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen     = useRef(false);
-
+  const ACTIONS_W = ACTION_W * [onEdit,onCancel,onConfirm,onView].filter(f=>Boolean(f)).length;
   const close = useCallback(() => {
     Animated.spring(translateX, {
       toValue: 0, useNativeDriver: true, tension: 180, friction: 12,
     }).start();
     isOpen.current = false;
   }, []);
-
   const open = useCallback(() => {
     Animated.spring(translateX, {
       toValue: -ACTIONS_W, useNativeDriver: true, tension: 180, friction: 12,
@@ -76,18 +75,18 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
   return (
     <View style={s.swipeWrap}>
       {/* Actions */}
-      <View style={s.actions}>
-        {isDentist && onConfirm && item.status !== 'confirmed' && <TouchableOpacity
-          style={[s.action, {backgroundColor: '#FF4D7D'}]}
+      <View style={[s.actions, {minWidth: ACTIONS_W, height: ACTION_W}]}>
+         <TouchableOpacity
+          style={[s.action, {backgroundColor: '#FF4D7D', minWidth: ACTION_W}]}
           onPress={() => {
             close();
-            onConfirm(item);
+            onConfirm && onConfirm(item);
           }}
         >
           <Text style={s.actionLbl}>Подтвердить</Text>
-        </TouchableOpacity>}
+        </TouchableOpacity>
         <TouchableOpacity
-          style={[s.action, { backgroundColor: '#4DD9AC' }]}
+          style={[s.action, { backgroundColor: '#4DD9AC',minWidth: ACTION_W }]}
           onPress={() => { close(); onView(item); }}
         >
           <Text style={s.actionIcon}>
@@ -96,7 +95,7 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
           <Text style={s.actionLbl}>Смотреть</Text>
         </TouchableOpacity>
         {onEdit && <TouchableOpacity
-          style={[s.action, {backgroundColor: Colors.primary}]}
+          style={[s.action, {backgroundColor: Colors.primary,minWidth: ACTION_W}]}
           onPress={() => {
             close();
             onEdit(item);
@@ -108,11 +107,11 @@ export const SwipeRow: React.FC<SwipeRowProps> = ({
           <Text style={s.actionLbl}>Изменить</Text>
         </TouchableOpacity>}
         <TouchableOpacity
-          style={[s.action, { backgroundColor: '#FF4D7D' }]}
+          style={[s.action, { backgroundColor: HomeColor.primaryLight ,minWidth: ACTION_W}]}
           onPress={() => { close(); onCancel(item); }}
         >
-          <Text style={s.actionIcon}>✕</Text>
-          <Text style={s.actionLbl}>Отмена</Text>
+          <Text style={[s.actionIcon,{color:HomeColor.primaryDark}]}>✕</Text>
+          <Text style={[s.actionLbl,{color:HomeColor.primaryDark}]}>Отмена</Text>
         </TouchableOpacity>
 
       </View>

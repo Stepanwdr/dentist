@@ -19,6 +19,8 @@ import {Tabs} from "@shared/ui/Tabs";
 import {useAuth} from "@features/auth/model/useAuth";
 import {useConfirmBookStatus} from "@features/confirm-book/model";
 import {useRoute} from "@react-navigation/core";
+import {Drawer} from "@shared/ux/Drawer";
+import {EditBookDrawer} from "@screens/bookings/ui/EditBookDrawer";
 
 
 export type AppointmentsTab =
@@ -50,9 +52,11 @@ interface Props {
 const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {user}=useAuth()
+  const [editBookId, setEditBookingId] = useState('');
   const route = useRoute<any>();
   const bookingId=route.params?.params.bookingId
   const isDentist = user?.role === "dentist";
+  const isPatient = user?.role === "patient";
   const [tab,  setTab]  = useState<AppointmentsTab>('upcoming');
   const { data: bookingsData, refetch, isPending,isRefetching } = useGetBookings({ status: tab || '' });
   const { mutate: onCancelBook } = useChangeBookingStatus(refetch)
@@ -61,7 +65,7 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState<TimeSlot[]>([]); // ← заменить на данные из хука
   const [bookId,setBookId]=useState<number | null>(bookingId);
   const [sheet, setSheet] = useState(false);
-  const { data: selectedBookData } = useGetBooking(bookId || undefined);
+  const { data: selectedBookData } = useGetBooking(bookId || editBookId || undefined);
   const selectedBook = selectedBookData || {} as TimeSlot;
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
@@ -102,15 +106,26 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
     setBookId(item.id)
   }, []);
 
+  const handleBookEditConfirm= (item: TimeSlot) =>{
+    if(isDentist){
+      setEditBookingId(String(item.id))
+    }
+    if(isPatient){
+      navigation.navigate('BookingTab', {
+        dentistId: item.dentistId,
+        book: item,
+      })
+    }
+  }
+
   const handleEdit = useCallback((item: TimeSlot) => {
     Alert.alert('Изменить запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
       { text: 'Отмена',    style: 'cancel' },
-      { text: 'Да', onPress: () => navigation.navigate('BookingTab', {
-          dentistId: item.dentistId,
-          book: item,
-        }) },
+      { text: 'Да', onPress: () => handleBookEditConfirm(item) },
     ]);
   }, []);
+
+
 
   const handleConfirm = useCallback((item: TimeSlot) => {
     Alert.alert('Подтвердить запись', `${item.startTime} – ${item.endTime} · ${item.date}`, [
@@ -150,7 +165,7 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
       onView={handleView}
       onEdit={handleEdit}
       onCancel={handleCancel}
-      onConfirm={handleConfirm}
+      onConfirm={isDentist  && item.status !== 'confirmed' ? handleConfirm :undefined}
       isDentist={isDentist}
     />
   ), [handleView, handleEdit, handleCancel]);
@@ -246,7 +261,6 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
          contentContainerStyle={[s.listContent, paddingBottom]}
        />}
 
-
       <BottomSheetDetail
         visible={sheet}
         booked={selectedBook}
@@ -256,7 +270,8 @@ const BookingsScreen: React.FC<Props> = ({navigation}) => {
         day={String(day)}
         isToday={isToday}
       />
-      
+
+      <EditBookDrawer bookId={editBookId} close={()=>setEditBookingId('')} book={selectedBook}  />
     </View>
   );
 };

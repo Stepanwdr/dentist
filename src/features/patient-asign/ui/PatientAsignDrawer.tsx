@@ -1,7 +1,7 @@
 import {Image, StyleSheet, Text} from 'react-native'
 
-import {Drawer} from "@shared/ux/Drawer";
-import React, {FC, useState} from "react";
+import {Drawer, DrawerRef} from "@shared/ux/Drawer";
+import React, {FC, useCallback, useEffect, useRef, useState} from "react";
 import {PatientsList} from "@entities/patient/patients-list/patients-list";
 import {Patient} from "@shared/types/patient";
 import {AsignForm} from "@features/patient-asign/ui/AsignForm";
@@ -10,6 +10,9 @@ import {queryClient, useMeQuery} from "@shared/api";
 import {ScheduleItem} from "@shared/utils/buildScheduleData";
 import {addMinutesToTime} from "@shared/utils/addMinutesToTime";
 import {bookingKeys} from "@entities/booking/model/booking.model";
+import {RegisterForm} from "@features/auth/ui/RegisterForm";
+import {CreatePatientDrawer, CreatePatientDrawerRef} from "@features/CraetePatientDrawer/CraetePatientDrawer";
+import {useFocusEffect} from "@react-navigation/native";
 
 
 export interface AsignData extends ScheduleItem {
@@ -31,9 +34,13 @@ interface Props {
 
 export const PatientAsignDrawer:FC<Props> = ({isDrawerOpen,onDrawerClose,asignData,setAsignData}) => {
   const {data:user} =useMeQuery()
+  const drawerRef=useRef<DrawerRef>(null);
+  const drawerRegiserRef=useRef<CreatePatientDrawerRef>(null);
   const { mutate: createBook, isPending } = useBookSlot(()=>{
     onDrawerClose()
   })
+
+  const [showRegister,setShowRegister]=useState(false);
 
 
   const onAsign=(patient:Patient)=>{
@@ -60,10 +67,30 @@ const end= addMinutesToTime(`${asignData?.time}:00`,60)
   const onChangeField=(field:string,value:string)=>{
     setAsignData({...asignData, [field]:value} as AsignData )
   }
+
+  useEffect(() => {
+    if(isDrawerOpen)drawerRef.current?.open()
+    else drawerRef.current?.close()
+  }, [isDrawerOpen]);
+
+  useFocusEffect(useCallback(()=>{
+     if(showRegister){
+       drawerRegiserRef.current?.open()
+     }else {
+       drawerRegiserRef.current?.close()
+     }
+  },[showRegister]));
+
+
+  console.log({showRegister})
   return (
-    <Drawer onClose={onDrawerClose} visible={isDrawerOpen} isFullHeight >
+    <Drawer ref={drawerRef} onClose={()=>{
+      onDrawerClose()
+    }} gestureEnabled={Boolean(asignData?.patient)}>
       <Text style={styles.title}>{asignData ? 'Детали назначение' : 'Список пациентов'}</Text>
-      {asignData?.patient ? <AsignForm asignData={asignData} onChangeField={onChangeField} assignAndNotify={assignAndNotify} /> :  <PatientsList onAsign={onAsign}/>}
+      {!asignData?.patient &&  <PatientsList openDrawer={()=>setShowRegister(true)} onAsign={onAsign}/> }
+      {asignData?.patient && <AsignForm asignData={asignData} onChangeField={onChangeField} assignAndNotify={assignAndNotify} />}
+      <CreatePatientDrawer ref={drawerRegiserRef} onClose={()=>{setShowRegister(false)}}  />
     </Drawer>
   );
 };

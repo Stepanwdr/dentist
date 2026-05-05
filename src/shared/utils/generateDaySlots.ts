@@ -41,6 +41,14 @@ export function generateDaySlots(
     const block = blocks.find((item) =>
       item.startTime < endTime && item.endTime > startTime,
     );
+    // Skip slots that have already passed for today; do not include in results
+    const now = new Date();
+    const currentDateKey = date; // already in YYYY-MM-DD
+    const isPastToday = (currentDateKey < today) || (currentDateKey === today && startTime < currentTime);
+    if (isPastToday) {
+      minutes += STEP_MIN;
+      continue;
+    }
 
     const threshold = new Date(`${date}T${currentTime}`);
     threshold.setMinutes(threshold.getMinutes() + 40);
@@ -55,8 +63,8 @@ export function generateDaySlots(
     const disabledReason = block
       ? block.reason || 'Blocked'
       : date < today || (date === today && startTime <= currentTime)
-        ? 'РџСЂРѕС€Р»Рѕ'
-        : 'РњР°Р»Рѕ РІСЂРµРјРµРЅРё';
+        ? 'Прошло'
+        : 'Мало времени';
 
     result.push({
       id: existing?.id ?? -minutes,

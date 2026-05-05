@@ -7,20 +7,23 @@ import {timeLeft} from "@shared/utils/date";
 import {useGetNextBooking} from "@entities/booking/model/booking.model";
 import React, {useCallback} from "react";
 import { bookingColors as C} from "@shared/theme/Booking.colors";
+import {useFocusEffect} from "@react-navigation/native";
 
 export const NextBookCard = ({setBookId}:{ setBookId:( id: number | null)=>void }) => {
-  const {data} = useGetNextBooking()
+  const {data,refetch} = useGetNextBooking()
 
   const PendingEmpty = useCallback(() => (
     <View style={styles.emptyWrap}>
       <Text style={styles.emptyIcon}>📋</Text>
-      <Text style={styles.emptyTitle}>Нет следующего записа  </Text>
+      <Text style={styles.emptyTitle}>Нет следующего записи</Text>
     </View>
   ), []);
 
+  useFocusEffect(useCallback(()=>refetch,[]))
 
 
   if(!data) return <PendingEmpty/>
+
 
   return (
     <LinearGradient

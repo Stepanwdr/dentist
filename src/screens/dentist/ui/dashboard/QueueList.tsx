@@ -77,7 +77,7 @@ export const QueueList: React.FC<Props> = ({  setBookId }) => {
       onConfirm={handleConfirm}
       isDentist={true}
     />
-  ), [handleView, handleEdit, handleCancel]);
+  ), [handleView, handleEdit, handleCancel,handleConfirm ]);
 
 
   useFocusEffect(useCallback(()=> refetch,[]))
